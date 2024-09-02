@@ -22,3 +22,7 @@
 ## bugs
 
 + variable_speed_motor() 中： for循环计算时间  int currentperiod = speed_to_period(s_curve_speed) / 2;
+
+## 急需
+
++ uart功能模块化 转移到其他文件
