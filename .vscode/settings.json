@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "8051.h": "c",
+        "delay.h": "c"
+    }
+}
