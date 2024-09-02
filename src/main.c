@@ -1,4 +1,4 @@
-/*	ipa4wk61s4 --version  */
+/*	ipa15w4k61s4 --version  */
 #include <8051.h>
 #include <delay.h>
 #include <uart.h>
