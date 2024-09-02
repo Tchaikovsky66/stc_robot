@@ -2,5 +2,8 @@
     "files.associations": {
         "8051.h": "c",
         "delay.h": "c"
-    }
+    },
+    "C_Cpp.intelliSenseEngineFallback": "disabled", //需要添加的
+    "C_Cpp.intelliSenseEngine": "Tag Parser",  //  需要添加的
+
 }
