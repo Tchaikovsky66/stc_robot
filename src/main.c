@@ -19,12 +19,14 @@ volatile float minperiod = 4;  //4*100us
 volatile float msteps = 800;
 volatile float maxspeed = 150; //187.5
 
-volatile __bit interruptButtonFlag = 0; 
+volatile __bit interruptButtonFlag = 0; //按键中断
 
-__xdata volatile char rx_buffer[BUFFER_SIZE];
-volatile unsigned char rx_index = 0;
-volatile __bit string_received_flag = 0;
+__xdata volatile char rx_buffer[BUFFER_SIZE];		//uart 接收缓存buffer
+volatile unsigned char rx_index = 0;		//uart接收计数
+volatile __bit string_received_flag = 0;		//uart接收标志位
 
+
+/*整数次幂函数*/
 float int_pow(float base, int exponent) {
     float result = 1.0;
     int i;
@@ -36,7 +38,7 @@ float int_pow(float base, int exponent) {
 
 
 
-//串口初始化
+/*串口初始化*/
 void UART_Init(void)
 {
     SCON = 0x50;		//8位数据,可变波特率
@@ -55,6 +57,7 @@ void UART_Init(void)
     ES = 1; // Enable serial interrupt
 }
 
+/*串口中断*/
 void UART_ISR(void) __interrupt (4)
 {
 	if (RI) // Check if receive interrupt flag is set
@@ -86,27 +89,28 @@ void Interrupt0_Init(void)
     EA = 1;   // 使能全局中断
 }
 
-//按键中断 INT0	P3^2
+/*按键中断 INT0	P3^2*/
 void my_ISR(void) __interrupt (0) 
 {
     interruptButtonFlag = 1;  // 设置标志，表示按键已按下
 }
+
+/*电机初始化 考虑弃用*/
 void motor_init(void)
 {
 	msteps = 800;  //400steps per r 
 	maxspeed = 187.5; //	r/min
 	minperiod = 400;	//0.4ms
 }
+/*速度-周期转换 rotate_motor使用*/
 float speed_to_period(float speed)		//	100us/step
 {
-	// 确保速度不为零，避免除以零的情况
-    if (speed <= 0) {
-        return 0xFFFF; // 返回一个非常大的值，表示无法处理
-    }
 	speed = speed/60;		//	r/min -> r/s
 	float period = (1000*10/msteps)/speed;		//	100us/step
 	return period;
 }
+ 
+/*输出每步*/
 void one_step(int period)
 {
 	P1_0 = 0;
@@ -114,7 +118,7 @@ void one_step(int period)
 	P1_0 = 1;
 	delay_100us(period);	//速度转换成周期
 }
-//控制步进电机旋转
+/*控制步进电机旋转（不变速）*/
 void rotate_motor(unsigned int steps,__bit dir, unsigned int speed)
 {
 	P1_1 = dir;
@@ -133,70 +137,31 @@ void rotate_motor(unsigned int steps,__bit dir, unsigned int speed)
 
 }
 
-//电机可变级变速 acc==1 加速 0减速
-// void variable_speed_motor(unsigned int steps, __bit acc, __bit dir, unsigned int setspeed)
-// {
-// 	P1_1 = dir; //方向
-// 	float variable = 100;
-// 	float minspeed = 20;
-// 	float in = (setspeed - minspeed) / variable;
-// 	unsigned int currentspeed = acc ? minspeed : setspeed;
-// 	for(int i = 0; i < variable; i++) //100级变速
-// 	{		
-// 		int currentperiod = speed_to_period(currentspeed)/2;
-// 		for(int j = 0; j < steps / variable; j++ )
-// 		{
-// 			if(interruptButtonFlag)	//外部中断
-// 			{
-// 				return;
-// 			}
-// 			one_step(currentperiod);
-// 		}
-// 		acc ? (currentspeed += in) : (currentspeed -= in);
-// 		if(currentspeed > setspeed)
-// 			currentspeed = setspeed;
-// 		if(currentspeed<minspeed)
-// 			currentspeed = minspeed;
-// 	}
-// }
- 
-void calculate_s_curve_speeds(unsigned int speed)
+/* 计算速度变化曲线 输入速度，输出周期 储存在s_curve_speeds[i]*/
+void  calculate_s_curve_periods(float speed)
 {
 	float minspeed = 10;
     for (int i = 0; i < variable; i++)
     {
         float t = (float)i / (variable - 1);
 			s_curve_speeds[i] = minspeed + (speed - minspeed) * (3 * int_pow(t, 2) - 2 * int_pow(t, 3));
-    }
-}
-
-void calculate_s_curve_speeds_slow(unsigned int speed)
-{
-	float minspeed = 10;
-    for (int i = 0; i < variable; i++)
-    {
-        float t = (float)i / (variable - 1);
-
+			s_curve_speeds[i] = (1000*10/msteps)/(s_curve_speeds[i]/60);
 			s_curve_speeds_slow[i] =  speed - (speed - minspeed) * (3 * int_pow(t, 2) - 2 * int_pow(t, 3));
+			s_curve_speeds_slow[i] = (1000*10/msteps)/(s_curve_speeds[i]/60);
     }
 }
 
-
-// 电机曲线变速 acc==1 加速 0减速
+/* 电机曲线变速 acc==1 加速 0减速 */
 void variable_speed_motor(unsigned int steps, __bit acc, __bit dir)
 {
     P1_1 = dir; // 方向
-	// calculate_s_curve_speeds(speed);
-	// calculate_s_curve_speeds_slow(speed);
-
-
     for (int i = 0; i < variable; i++) // 100级变速
     {
         // 计算S型曲线速度
         float s_curve_speed = acc? s_curve_speeds[i] : s_curve_speeds_slow[i];
 		
 		
-        int currentperiod = speed_to_period(s_curve_speed) / 2;
+        int currentperiod = s_curve_speed / 2;
         for (int j = 0; j < steps / variable; j++)
         {
             if (interruptButtonFlag) // 外部中断
@@ -208,8 +173,8 @@ void variable_speed_motor(unsigned int steps, __bit acc, __bit dir)
     }
 }
 
-
-void contorlMotor(float distance,__bit dir, unsigned int setspeed)
+/* 步进电机控制（距离：单位mm，方向0|1，速度r/min） */	
+void contorlMotor(float distance,__bit dir, unsigned int setspeed) 
 {
 	 unsigned int accsteps;
 	 unsigned int decsteps;
@@ -230,8 +195,7 @@ void contorlMotor(float distance,__bit dir, unsigned int setspeed)
 	 if(steps <= 0)
 	 	steps = 0;
 	P1_1 = dir; //方向
-	calculate_s_curve_speeds(setspeed);		//计算加速速度曲线，存入xdata s_cuclate_speed[variable]中
-	calculate_s_curve_speeds_slow(setspeed);
+	 calculate_s_curve_periods(setspeed);		//计算加速速度曲线，存入xdata s_cuclate_speed[variable]中
 	if(interruptButtonFlag == 0)		//判断中断
 		variable_speed_motor(accsteps,1,dir);
 	if(interruptButtonFlag == 0)
@@ -249,7 +213,6 @@ void contorlMotor(float distance,__bit dir, unsigned int setspeed)
 //主函数
 void main(void)
 {
-	 // 配置中断优先级
     UART_Init(); // Initialize UART
 	Interrupt0_Init();
 	motor_init();

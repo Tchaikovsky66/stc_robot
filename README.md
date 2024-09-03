@@ -9,6 +9,7 @@
 5. 控制步进电机旋转步数、速度、方向。rotate_motor(unsigned int steps,__bit dir);
 6. 有级变速功能
 7. 通过输入距离方向控制电机,s型加速 contorlMotor()
+8. calculate_s_curve_periods(speed) 计算速度变化曲线，将速度转换为周期
 
 ## 待实现
 
@@ -21,7 +22,10 @@
 
 ## bugs
 
-+ variable_speed_motor() 中： for循环计算时间  int currentperiod = speed_to_period(s_curve_speed) / 2;
++ 循环中，检测按键后发送uart失败
+  + 发现有时串口软件问题
+  + 电机控制和串口发送一起时，电机控制也不工作
+  + 电机控制过后，串口接受到消息不返回
 
 ## 急需
 
