@@ -17,11 +17,11 @@ extern __xdata float s_curve_speeds_slow[];
 
 float int_pow(float base, int exponent); 
 float speed_to_period(float speed);		//	100us/step
-void one_step(int period);
-void rotate_motor(unsigned int steps,__bit dir, unsigned int speed);
+void one_step(char type, int period);
+void rotate_motor(char type, unsigned int steps,__bit dir, unsigned int speed);
 void calculate_s_curve_periods(float speed);
-void variable_speed_motor(unsigned int steps, __bit acc, __bit dir);
-void contorlMotor(float distance,__bit dir, unsigned int setspeed);
+void variable_speed_motor(char type, unsigned int steps, __bit acc, __bit dir);
+void contorlMotor(char type, float distance,__bit dir, unsigned int setspeed);
 
 
 
