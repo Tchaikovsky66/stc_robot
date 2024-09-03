@@ -195,7 +195,7 @@ void variable_speed_motor(unsigned int steps, __bit acc, __bit dir)
         // 计算S型曲线速度
         float s_curve_speed = acc? s_curve_speeds[i] : s_curve_speeds_slow[i];
 		
-
+		
         int currentperiod = speed_to_period(s_curve_speed) / 2;
         for (int j = 0; j < steps / variable; j++)
         {
