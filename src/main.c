@@ -100,7 +100,7 @@ void main(void)
 		if(string_received_flag)
 		{
 			string_received_flag = 0;
-			UART_SendString(rx1_buffer);
+			UART_SendString(rx_buffer);
 		}
 
     }
