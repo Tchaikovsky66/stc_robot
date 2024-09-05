@@ -3,7 +3,7 @@
 #define BUFFER_SIZE 16
 
 __xdata volatile char rx_buffer[BUFFER_SIZE];		//uart 接收缓存buffer
-volatile unsigned char rx_index = 0;		//uart接收计数
+volatile unsigned char rx_cnt = 0;		//uart接收计数
 volatile __bit string_received_flag = 0;		//uart接收标志位
 
 /*串口初始化*/
@@ -42,6 +42,8 @@ void UART_SendString(char *str)
     }
 }
 
+
+
 /*串口中断*/
 void UART_ISR(void) __interrupt (4)
 {
@@ -52,16 +54,34 @@ void UART_ISR(void) __interrupt (4)
 
         if (received_char == '\n') // Check for end of string
         {
-            rx_buffer[rx_index] = '\0'; // Null-terminate the string
+            rx_buffer[rx_cnt] = '\0'; // Null-terminate the string
             string_received_flag = 1; // Set string received flag
-            rx_index = 0; // Reset buffer index
+            //rx_cnt = 0; // Reset buffer index
         }
         else
         {
-            if (rx_index < BUFFER_SIZE - 1) // Prevent buffer overflow
+            if (rx_cnt < BUFFER_SIZE - 1) // Prevent buffer overflow
             {
-                rx_buffer[rx_index++] = received_char;// Store received character
+                rx_buffer[rx_cnt++] = received_char;// Store received character
             }
         }
     }
-}
+}   
+
+// void my_isr(void) __interrupt (4)
+// {
+//     if(RI)
+//     {
+//         RI = 0;
+//         if(rx_cnt == BUFFER_SIZE)
+//         {
+//             rx_cnt = 0;
+//             string_received_flag = 1;
+//         }        
+//         else
+//         {
+//             char received_char = SBUF;
+//             rx_buffer[rx_cnt++] = received_char;
+//         }
+//     }
+// }

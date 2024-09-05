@@ -3,39 +3,67 @@
 #define variable 100 // 100级变速
 
 volatile float minperiod = 4.0;  //4*100us
-volatile float msteps = 800.0;
-volatile float maxspeed = 150.0; //187.5
+volatile float msteps = 3200.0;	//3200/10
+volatile float maxspeed = 100.0; //187.5
 // 定义数组来存储预先计算的S型速度值
 __xdata float s_curve_speeds[variable];
 __xdata float s_curve_speeds_slow[variable];
+__xdata float motor_acc[variable];
+
+volatile __bit x_0_flag = 0;	//检查x方向0位
+volatile __bit x_1_flag = 0;	//检查左边是否碰撞
+volatile __bit x_ok = 0;		//判断x方向是否可动作
+// typedef struct 
+// {
+// 	/* data */
+// 	int x;
+// 	int y1;
+// 	int y2;
+// }Point;
+
+Point current_position;
+Point target_position;
 
 /*整数次幂函数*/
-float int_pow(float base, int exponent) 
-{
-    float result = 1.0;
-    int i;
-    for (i = 0; i < exponent; ++i) {
-        result *= base;
-    }
-    return result;
-}
+// float int_pow(float base, int exponent) 
+// {
+//     float result = 1.0;
+//     int i;
+//     for (i = 0; i < exponent; ++i) {
+//         result *= base;
+//     }
+//     return result;
+// }
 
 /*速度-周期转换 rotate_motor使用*/
 float speed_to_period(float speed)		//	100us/step
 {
 	speed = speed/60;		//	r/min -> r/s
-	float period = (1000*10/msteps)/speed;		//	100us/step
+	float period = (1000*10/(msteps/10))/speed;		//	100us/step
 	return period;
 }
 
 /*输出每步*/
-void one_step(char type,int period)
+int one_step(char type,int period)
 {
+	x_0_flag = !P1_3; 	//右0位
+	x_1_flag = !P1_4;	//左限位
+
+	P4_1 = 0;
+	if(x_1_flag)
+	{
+		x_ok = 0;
+		return 1;
+	}
+	if(x_0_flag && !x_ok)		//x在0️位且x不可动作
+	{
+		return 1;
+	}
 	if(type == 0)		//电机x
 	{
-		P1_0 = 0;
+		P0_1 = 0;
 		delay_100us(period);	//速度转换成周期
-		P1_0 = 1;
+		P0_1 = 1;
 		delay_100us(period);	//速度转换成周期
 	}
 	if(type == 1)		//电机y1
@@ -52,87 +80,112 @@ void one_step(char type,int period)
 		P0_6 = 1;
 		delay_100us(period);	//速度转换成周期
 	}
+
+	return 0;
 	
 }
 
-/*控制步进电机旋转（不变速）*/
-void rotate_motor(char type,unsigned int steps,__bit dir, unsigned int speed)
+void direct_acc(int speed)
 {
-	if(type == 0)
+	int minspeed = 20;
+	if(speed>maxspeed)
+		speed = maxspeed;
+	for(int i = 0;i<variable;i++)
 	{
-		P1_1 = dir;
+		motor_acc[i] = minspeed + i*(speed-minspeed)/variable;
+		motor_acc[i] = (1000*10/(msteps/10))/(motor_acc[i]/60);
+        motor_acc[i] = motor_acc[i]/2;
+		if(motor_acc[i] < 10)
+			motor_acc[i] = 10;
+		if(motor_acc[i] > 50)
+			motor_acc[i] = 50;
 	}
-	if(type == 1)
-	{
-		P0_3 = dir;
-	}
-	if(type == 2)
-	{
-		P0_5 = dir;
-	}
-	
-	int currentperiod = speed_to_period(speed)/2;
+}
+
+/*控制步进电机旋转（不变速）*/
+int rotate_motor(char type,unsigned int steps, unsigned int speed)
+{
+	//int currentperiod = speed_to_period(speed)/2;
 	for(int i = 0;i < steps; i++)
 	{
 		if(interruptButtonFlag)	//外部中断
 		{
-			return;
+			return 1 ;
 		}
 		else
 		{
-			one_step(type, currentperiod);
+			if(one_step(type, motor_acc[99]))
+			{
+				return 1;
+			}
 		}
 	}	
 
+	return 0;
 }
-
 
 /* 计算速度变化曲线 输入速度，输出周期 储存在s_curve_speeds[i]*/
-void  calculate_s_curve_periods(float speed)
-{
-	float minspeed = 10;
-    for (int i = 0; i < variable; i++)
-    {
-        float t = (float)i / (variable - 1);
-			s_curve_speeds[i] = minspeed + (speed - minspeed) * (3 * int_pow(t, 2) - 2 * int_pow(t, 3));
-			s_curve_speeds[i] = (1000*10/msteps)/(s_curve_speeds[i]/60);
-			s_curve_speeds_slow[i] =  speed - (speed - minspeed) * (3 * int_pow(t, 2) - 2 * int_pow(t, 3));
-			s_curve_speeds_slow[i] = (1000*10/msteps)/(s_curve_speeds[i]/60);
-    }
-}
+// void  calculate_s_curve_periods(float speed)
+// {
+// 	float minspeed = 20;
+//     for (int i = 0; i < variable; i++)
+//     {
+//         float t = (float)i / (variable - 1);
+// 			s_curve_speeds[i] = speed * (3 * int_pow(t, 2) - 2 * int_pow(t, 3));
+// 			if(s_curve_speeds[i]>speed)
+// 				s_curve_speeds[i] = speed;
+// 			if(s_curve_speeds[i]<minspeed);
+// 				s_curve_speeds[i] = minspeed;
+// 			s_curve_speeds[i] = ((1000*10/msteps)/(s_curve_speeds[i]/60))/2;
+
+// 			s_curve_speeds_slow[i] =  speed * (1 - (3 * int_pow(t, 2) - 2 * int_pow(t, 3)));
+// 			if(s_curve_speeds_slow[i]<minspeed);
+// 				s_curve_speeds_slow[i] = minspeed;
+// 			if(s_curve_speeds_slow[i]>speed)
+// 				s_curve_speeds_slow[i] = speed;
+// 			s_curve_speeds_slow[i] = ((1000*10/msteps)/(s_curve_speeds[i]/60))/2;
+//     }
+// }
 
 
 /* 电机曲线变速 acc==1 加速 0减速 */
-void variable_speed_motor(char type, unsigned int steps, __bit acc, __bit dir)
+int variable_speed_motor(char type, unsigned int steps, __bit acc)
 {
-	if(type == 0)
+	if(acc)
 	{
-		P1_1 = dir;
+		for (int i = 0; i < variable; i++) // 100级变速
+		{	
+			for (int j = 0; j < steps / variable; j++)
+			{
+				if (interruptButtonFlag) // 外部中断
+				{
+					return 1;
+				}
+				if(one_step(type, motor_acc[i]))
+					return 1;
+			}
+	
+		}
 	}
-	if(type == 1)
+
+	if(acc == 0)
 	{
-		P0_3 = dir;
+		for (int i = 99; i >=0; i--) // 100级变速
+		{	
+			for (int j = 0; j < steps / variable; j++)
+			{
+				if (interruptButtonFlag) // 外部中断
+				{
+					return 1;
+				}
+				if(one_step(type, motor_acc[i]))
+					return 1;
+			}
+	
+		}
 	}
-	if(type == 2)
-	{
-		P0_5 = dir;
-	}
-    for (int i = 0; i < variable; i++) // 100级变速
-    {
-        // 计算S型曲线速度
-        float s_curve_speed = acc? s_curve_speeds[i] : s_curve_speeds_slow[i];
-		
-		
-        int currentperiod = s_curve_speed / 2;
-        for (int j = 0; j < steps / variable; j++)
-        {
-            if (interruptButtonFlag) // 外部中断
-            {
-                return;
-            }
-            one_step(type, currentperiod);
-        }
-    }
+	return 0;
+
 }
 
 
@@ -143,11 +196,12 @@ void contorlMotor(char type,float distance,__bit dir, unsigned int setspeed)
 	 unsigned int decsteps;
 	 float circle = distance/90;
 	 float steps = msteps*circle;
-	 if(steps>=400)		//加减速步数
+
+	 if(steps>=1600)		//加减速步数
 	 {
-	 	accsteps = 200;
-	  	decsteps = 200;
-		steps = steps - 400;
+	 	accsteps = 800;
+	  	decsteps = 800;
+		steps = steps - 1600;
 	 }
 	 else //距离过短，加减速平分
 	 {
@@ -157,18 +211,66 @@ void contorlMotor(char type,float distance,__bit dir, unsigned int setspeed)
 	 }
 	 if(steps <= 0)
 	 	steps = 0;
-	P1_1 = dir; //方向
-	 calculate_s_curve_periods(setspeed);		//计算加速速度曲线，存入xdata s_cuclate_speed[variable]中
-	if(interruptButtonFlag == 0)		//判断中断
-		variable_speed_motor(type,accsteps,1,dir);
-	if(interruptButtonFlag == 0)
-		rotate_motor(type,steps,dir,setspeed);
-	if(interruptButtonFlag == 0)
-		variable_speed_motor(type,decsteps,0,dir);
-	if(interruptButtonFlag == 1)
+
+	P0_0 = dir;
+	P0_2 = 0;
+	P0_3 = dir;
+	
+	
+	//calculate_s_curve_periods(setspeed);		//计算加速速度曲线，存入xdata s_cuclate_speed[variable]中
+	direct_acc(setspeed);
+	if(interruptButtonFlag == 1 || variable_speed_motor(type,accsteps,1))		//判断中断
+	{
+
+		return ;
+	}
+	if(interruptButtonFlag == 1 || rotate_motor(type,steps,setspeed) )
+	{
+
+		return ;
+	}
+	if(interruptButtonFlag == 1 ||variable_speed_motor(type,decsteps,0))
+	{
+		return ;
+	}
+	if(interruptButtonFlag)
 	{
 		interruptButtonFlag = 0;
 		return;
 
 	}
+}
+
+
+
+/* 坐标初始化*/
+void init_point(Point* p,int x, int y1)
+{
+	p -> x = x;
+	p -> y1 = y1;
+	// p -> y2 = y2;
+}
+
+/* 设置目标点 */
+void set_target_point(Point* target, int x, int y1)
+{
+    target->x = x;
+    target->y1 = y1;
+	// target->y2 = y2;
+}
+
+
+//移动到目标
+int move_to_target(Point* current,Point* target)
+{
+	float distence_x = target->x - current->x;
+	float distence_y1 = target->y1 - current->y1;
+
+	distence_x>0?contorlMotor(0,distence_x,motor_left,100):contorlMotor(0,-distence_x,motor_right,100);
+	//distence_y1>0?contorlMotor(1,distence_y1,y1_up,100):contorlMotor(1,-distence_x,y1_down,100);
+
+	current->x = target->x;
+	current->y1 = target->y1;
+
+	return 0;
 }
