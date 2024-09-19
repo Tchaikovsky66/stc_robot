@@ -68,14 +68,39 @@ void led_blink(int time)
 void motor_init(void)
 {
 	led_blink(4);
-	contorlMotor(0,900,motor_right,20);
-	if(x_0_flag)
+
+	contorlMotor(1,600,y1_up,200);
+	if(y1_0_flag)
 	{
-		//x_0_flag = 0;
-		init_point(&current_position,0,0);
+		y1_ok = 1;
+	}
+	contorlMotor(2,600,y2_up,200);
+	if(y2_0_flag)
+	{
+		y2_ok = 1;
+	}
+	contorlMotor(0,900,motor_left,200);
+	if(x_left_flag)
+	{
+		x_left_flag = 0;
+		init_position();
 		x_ok = 1;
 	}
 	
+}
+
+void move_test(void)
+{
+
+	contorlMotor(1,100,y1_down,300);
+	delay_ms(10);
+	contorlMotor(1,100,y1_up,300);
+	delay_ms(10);
+}
+
+void catch_rotor(void)
+{
+
 }
 
 //主函数
@@ -84,42 +109,40 @@ void main(void)
 	 // 设置P0.0到P0.6为推挽输出模式
     P0M0 |= 0x7f; // 设置P0M0的第0到第6位为1（0b01111111）
     P0M1 &= ~0x00; // 设置P0M1的第0到第7位为0（0b00000000）
-	// P1M0 |= 0x7f; 
-	// P1M1 &= ~0x00;
-
-	//P0 = 0x00;
 
     UART_Init(); // Initialize UART
 	Interrupt0_Init();
 	UART_SendString("start!\r\n");
 
 	delay_ms(100);
-  	// 初始化当前坐标
-	init_point(&current_position,0,0);
-	motor_init();
+
+	motor_init();		//位置初始化
+
     while (1)
     {		
-		if(x_ok)
+		unsigned char roll = 0x00;
+		if(x_ok && y1_ok)
 		{
-			set_target_point(&target_position,180,0);
-			move_to_target(&current_position,&target_position);
-			P4_1 = 1;
-			delay_ms(10);
 
-			set_target_point(&target_position,320,0);
-			move_to_target(&current_position,&target_position);
-			P4_1 = 1;
-			delay_ms(10);
+			//循环发送信息
+			 UART_SendFrame(0x03,0x00,roll);
+			 roll++;
+			led_blink(2);
 
-			set_target_point(&target_position,180,0);
-			move_to_target(&current_position,&target_position);
-			P4_1 = 1;
-			delay_ms(10);
+			go_position(0,50,50,400);
 
-			set_target_point(&target_position,50,0);
-			move_to_target(&current_position,&target_position);
-			P4_1 = 1;
-			delay_ms(10);
+
+			go_position(0,0,0,500);
+
+			go_position(400,200,200,400);
+
+			go_position(400,0,0,500);
+
+			go_position(660,0,0,500);
+			go_position(0,0,0,550);
+
+
+			
 		}
 		
 
@@ -129,26 +152,7 @@ void main(void)
 		// 	contorlMotor(0,45,motor_left,50);
 		// 	current_position.x = current_position.x-100;
 		// }
-		// if(Button20_Pressed())
-		// {
-        // 	//UART_SendString("Hello, world!\r\n"); // Send string
-		// 	contorlMotor(0,180,motor_right,100);
-		// 	//current_position.x = current_position.x+100;
-		// 	//rotate_motor(0,3200,60);
-		// 	// for(int i = 0;i<1600-1;i++)
-		// 	// {
-		// 	// 	one_step(0,motor_acc[99]);
-		// 	// }
-		// }
-		// if(Button44_Pressed())
-		// {
-		// 	//UART_SendString("Hello, world!\r\n"); // Send string
-		// 	//contorlMotor(45,motor_left,60);
-		// 	set_target_point(&target_position, 30, 15);
-
-    	// 	// 移动步进电机到目标坐标
-   		// 	move_to_target(&current_position, &target_position);
-		// }
+		
 		// if(string_received_flag)
 		// {
 		// 	//rx1_process();

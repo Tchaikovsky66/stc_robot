@@ -1,24 +1,20 @@
-# include <uart.h>
+#include <uart.h>
 
-#define BUFFER_SIZE 16
 
-__xdata volatile char rx_buffer[BUFFER_SIZE];		//uart 接收缓存buffer
+
+__xdata volatile char rx_buffer[UART_BUFFER_SIZE];		//uart 接收缓存buffer
 volatile unsigned char rx_cnt = 0;		//uart接收计数
 volatile __bit string_received_flag = 0;		//uart接收标志位
 
 /*串口初始化*/
 void UART_Init(void)
 {
-    SCON = 0x50;		//8位数据,可变波特率
-	AUXR |= 0x40;		//定时器时钟1T模式
-
-	AUXR &= 0xFE;		//串口1选择定时器1为波特率发生器
-	TMOD &= 0x0F;		//设置定时器模式
-	TL1 = 0xD0;		//设置定时初始值
-	TH1 = 0xFF;		//设置定时初始值
-
-	ET1 = 0;		//禁止定时器%d中断
-	TR1 = 1;		//定时器1开始计时
+	SCON = 0x50;		//8位数据,可变波特率
+	AUXR |= 0x01;		//串口1选择定时器2为波特率发生器
+	AUXR |= 0x04;		//定时器时钟1T模式
+	T2L = 0xD0;			//设置定时初始值
+	T2H = 0xFF;			//设置定时初始值
+	AUXR |= 0x10;		//定时器2开始计时
 
     // 使能串口中断
     EA = 1; // Enable global interrupt
@@ -26,11 +22,11 @@ void UART_Init(void)
 }
 
 /*发送单个字符*/
-void UART_SendChar(char c)
-{
-    SBUF = c; // Load data into UART buffer
-    while (!TI); // Wait for transmission to complete
-    TI = 0; // Clear transmission interrupt flag
+// UART发送单个字节
+void UART_SendByte(unsigned char byte) {
+    SBUF = byte;
+    while (!TI);  // 等待发送完成
+    TI = 0;       // 清除发送中断标志
 }
 
 /*发送字符串*/
@@ -38,35 +34,34 @@ void UART_SendString(char *str)
 {
     while (*str)
     {
-        UART_SendChar(*str++);
+        UART_SendByte(*str++);
+    }
+}
+
+void UART_SendFrame(unsigned char address, unsigned char data1, unsigned char data2) {
+    UART_SendByte(FRAME_HEADER1);
+    UART_SendByte(FRAME_HEADER2);
+    UART_SendByte(DATA_LENGTH);
+    UART_SendByte(COMMAND);
+    UART_SendByte(address);
+    UART_SendByte(data1);
+    UART_SendByte(data2);
+}
+
+
+/*串口中断*/
+void UART_ISR(void) __interrupt (4) 
+{
+    if (RI) {
+        RI = 0;  // 清除接收中断标志
+        rx_buffer[rx_cnt++] = SBUF;  // 读取接收到的数据
+        if (rx_cnt >= UART_BUFFER_SIZE) {
+            rx_cnt = 0;  // 防止缓冲区溢出
+        }
     }
 }
 
 
-
-/*串口中断*/
-void UART_ISR(void) __interrupt (4)
-{
-	if (RI) // Check if receive interrupt flag is set
-    {
-        RI = 0; // Clear receive interrupt flag
-        char received_char = SBUF ;// Read received data
-
-        if (received_char == '\n') // Check for end of string
-        {
-            rx_buffer[rx_cnt] = '\0'; // Null-terminate the string
-            string_received_flag = 1; // Set string received flag
-            //rx_cnt = 0; // Reset buffer index
-        }
-        else
-        {
-            if (rx_cnt < BUFFER_SIZE - 1) // Prevent buffer overflow
-            {
-                rx_buffer[rx_cnt++] = received_char;// Store received character
-            }
-        }
-    }
-}   
 
 // void my_isr(void) __interrupt (4)
 // {
