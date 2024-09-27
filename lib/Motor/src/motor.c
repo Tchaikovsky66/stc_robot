@@ -31,7 +31,7 @@ void init_position(void)
 	y2  = 0;
 }
 
-void go_position(int target_x,int target_y1,int target_y2,int setspeed)
+void go_position(int target_x,int target_y1,int target_y2,int setxspeed,int setyspeed)
 {
 	int dif_x = target_x - x;
 	int dif_y1 = target_y1 - y1;
@@ -39,28 +39,27 @@ void go_position(int target_x,int target_y1,int target_y2,int setspeed)
 
 if(dif_y1 != 0)
 	{
+
 		if(dif_y1>0)
 		{
-			contorlMotor(1,dif_y1,y1_down,setspeed);
+			contorlMotor(1,dif_y1,y1_down,setyspeed);
 		}
 		else
 		{
-			contorlMotor(1,-dif_y1,y1_up,setspeed);
+			contorlMotor(1,-dif_y1,y1_up,setyspeed);
 		}
-
 		y1 = target_y1;
 	}
 	if(dif_y2 != 0)
 	{
 		if(dif_y2>0)
 		{
-			contorlMotor(2,dif_y2,y2_down,setspeed);
+			contorlMotor(2,dif_y2,y2_down,setyspeed);
 		}
 		else
 		{
-			contorlMotor(2,-dif_y2,y2_up,setspeed);
+			contorlMotor(2,-dif_y2,y2_up,setyspeed);
 		}
-
 		y2 = target_y2;
 	}
 
@@ -68,13 +67,12 @@ if(dif_y1 != 0)
 	{
 		if(dif_x>0)
 		{
-			contorlMotor(0,dif_x,motor_right,setspeed);
+			contorlMotor(0,dif_x,motor_right,setxspeed);
 		}
 		else
 		{
-			contorlMotor(0,-dif_x,motor_left,setspeed);
+			contorlMotor(0,-dif_x,motor_left,setxspeed);
 		}
-
 		x = target_x;
 	}
 	

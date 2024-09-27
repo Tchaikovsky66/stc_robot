@@ -10,7 +10,6 @@ void Timer0Init_ms(void)		//1毫秒@11.0592MHz
 	TR0 = 1;		//定时器0开始计时
 }
 
-
 void delay_ms(unsigned int ms) {
     unsigned int i;
   for (i = 0; i < ms; i++) {

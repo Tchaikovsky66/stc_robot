@@ -7,11 +7,13 @@
 #define FRAME_HEADER2 0xA5
 #define DATA_LENGTH 0x04
 #define COMMAND 0x80
-#define UART_BUFFER_SIZE 10
+#define UART_BUFFER_SIZE 16
 
 extern __xdata volatile char rx_buffer[];		//uart 接收缓存buffer
 extern volatile unsigned char rx_cnt;		//uart接收计数
 extern volatile __bit string_received_flag;		//uart接收标志位
+
+extern __xdata unsigned char CFGBUF[32]; //接收到的数据缓存
 
 void UART_SendByte(char);
 void UART_SendString(char *str);

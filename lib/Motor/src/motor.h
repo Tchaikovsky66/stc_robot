@@ -43,6 +43,6 @@ int variable_speed_motor(char type, unsigned int steps, __bit acc);
 void contorlMotor(char type, int distance,__bit dir, float setspeed);
 
 void init_position(void);
-void go_position(int target_x,int target_y1,int target_y2,int setspeed);
+void go_position(int target_x,int target_y1,int target_y2,int setxspeed,int setyspeed);
 
 #endif // !_MOTOR_H 

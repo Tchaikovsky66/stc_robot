@@ -112,8 +112,13 @@ int main()
     
     printf("steps:%d\n",distance_to_steps(350));
 
-
-
-
-
+    int x = 0x0A;
+    if(x == 10)
+    {
+        printf("x = 10\n");
+    }
+    else
+    {
+        printf("x != 1\n");
+    }
 }

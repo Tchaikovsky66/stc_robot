@@ -12,46 +12,42 @@ __xdata volatile int  tmp_x = 0;
 __xdata volatile int  tmp_y = 0;
 __xdata volatile char tmp_num = 0;
 
+__xdata volatile int result[UART_BUFFER_SIZE / 2];
 
+// 全局变量声明
+int model = 0;
+int core_diameter = 0;
+int end_face_distance = 0;
+int up_down_speed = 0;
+int up_down_distance = 0;
+int left_right_speed = 0;
+int left_right_distance = 0;
 
-// void rx1_process(void)
-// {
-// 	int i = 0;
-// 	int f = 0;
-// 	int p = 0;
-// 	if(rx_cnt == 2)
-// 	{		
-// 		char i = rx_buffer[0];
-// 		if((i == 's') || (i == 'S'))	//暂停
-// 		{			
-// 			UART_SendString("stop");
-// 			interruptButtonFlag = 1;		
-// 		}
-// 	}
-// 	tmp_num = rx_buffer[0];
-// 	if((rx_buffer[1] == ',') && (rx_cnt >= 5))
-// 	{
-// 		for(f = 0,i = 2;i<rx_cnt;i++)
-// 		{
-// 			if(rx_buffer[i] == ',')	
-// 				break;
-// 			f = f*10 + rx_buffer[i] - '0';
-// 			tmp_x = f;
-// 		}
-// 		// if(rx_buffer[i] != ',')
-// 		// 	f = 0;
-// 		i++;
-// 		for(p = 0,i = 2;i<rx_cnt;i++)
-// 		{
-// 			if(rx_buffer[i] == ',')	
-// 				break;
-// 			p = p*10 + rx_buffer[i] - '0';
-// 			tmp_y = p;
-// 		}
-// 	}
+void update_parameters(void) {
+    model = (CFGBUF[0] << 8) | CFGBUF[1];
+    core_diameter = (CFGBUF[2] << 8) | CFGBUF[3];
+    end_face_distance = (CFGBUF[4] << 8) | CFGBUF[5];
+    up_down_speed = (CFGBUF[6] << 8) | CFGBUF[7];
+    up_down_distance = (CFGBUF[8] << 8) | CFGBUF[9];
+    left_right_speed = (CFGBUF[10] << 8) | CFGBUF[11];
+    left_right_distance = (CFGBUF[12] << 8) | CFGBUF[13];
+}
 
-// 	rx_cnt = 0;
-// }
+void rx1_process(void)
+{
+	
+	for (int i = 0;i<UART_BUFFER_SIZE;i+=2)
+	{
+		result[i / 2] = (rx_buffer[i] << 8) | rx_buffer[i + 1];
+    }
+	if(result[0] == 0x01)
+	{
+		P4_0 = 1;
+		delay_ms(100);
+		P4_0 = 0;
+		delay_ms(100);
+	}
+}
 
 /* led41闪烁次数 */
 void led_blink(int time)
@@ -103,6 +99,8 @@ void catch_rotor(void)
 
 }
 
+
+
 //主函数
 void main(void)
 {
@@ -114,36 +112,48 @@ void main(void)
 	Interrupt0_Init();
 	UART_SendString("start!\r\n");
 
-	delay_ms(100);
+	//delay_ms(100);
 
-	motor_init();		//位置初始化
+	//motor_init();		//位置初始化
 
     while (1)
-    {		
-		unsigned char roll = 0x00;
-		if(x_ok && y1_ok)
-		{
+    {	
 
-			//循环发送信息
-			 UART_SendFrame(0x03,0x00,roll);
-			 roll++;
-			led_blink(2);
+		update_parameters();
+		if(model == 0x01)
+		{	
+			update_parameters();
+			go_position(40,20,20,left_right_speed,up_down_speed);
 
-			go_position(0,50,50,400);
+			UART_SendString("go_position(400,200,200,left_right_speed,up_down_speed)\r\n");
 
+			go_position(0,0,0,left_right_speed,up_down_speed);
 
-			go_position(0,0,0,500);
+			UART_SendString("go_position(0,0,0,left_right_speed,up_down_speed)\r\n");
 
-			go_position(400,200,200,400);
-
-			go_position(400,0,0,500);
-
-			go_position(660,0,0,500);
-			go_position(0,0,0,550);
-
-
-			
 		}
+		
+		// unsigned char roll = 0x00;
+		// if(x_ok && y1_ok)
+		// {
+
+		// 	//循环发送信息
+		// 	 UART_SendFrame(0x03,0x00,roll);
+		// 	 roll++;
+		// 	led_blink(2);
+
+		// 	go_position(0,50,50,400);
+
+
+		// 	go_position(0,0,0,500);
+
+		// 	go_position(400,200,200,400);
+
+		// 	go_position(400,0,0,500);
+
+		// 	go_position(660,0,0,500);
+		// 	go_position(0,0,0,550);			
+		// }
 		
 
 		// if(Button21_Pressed())
