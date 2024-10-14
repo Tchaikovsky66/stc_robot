@@ -135,7 +135,7 @@ int one_step(char type,int period)
 	x_right_flag = !P1_3; 	//右0位
 	x_left_flag = !P1_4;	//左限位
 	y1_0_flag = !P3_3;	//y1 0位	
-	y2_0_flag = !P3_6;	//y1 0位	
+	y2_0_flag = !P3_6;	//y2 0位	
 
 
 	if(x_right_flag)
@@ -163,9 +163,9 @@ int one_step(char type,int period)
 	if(type == 0)		//电机x
 	{
 		//P0_1 = !P0_1;
-		P0_1 = 0;		//输出脉冲
-		delay_10us(period);	//速度转换成周期
 		P0_1 = 1;		//输出脉冲
+		delay_10us(period);	//速度转换成周期
+		P0_1 = 0;		//输出脉冲
 		delay_10us(period);	//速度转换成周期
 	}
 	if(type == 1)		//电机y1
@@ -180,7 +180,7 @@ int one_step(char type,int period)
 	{
 		P0_6 = 0;
 		delay_10us(period);	//速度转换成周期
-		P0_6 = 0;
+		P0_6 = 1;
 		delay_10us(period);	//速度转换成周期
 	}
 
@@ -300,4 +300,13 @@ void contorlMotor(char type,int distance,__bit dir, float setspeed)
 		interruptButtonFlag = 0;
 		return;
 	}
+
+	//复位io口
+	P0_0 = 0;		//电机0 方向
+	P0_1 = 0;		//电机0 脉冲
+	P0_2 = 0;		//电机0 enable
+	P0_3 = 0;		//电机1 方向 	
+	P0_4 = 0;		//电机1 脉冲
+	P0_5 = 0;		//电机1 方向
+	P0_6 = 0;		//电机2 脉冲
 }

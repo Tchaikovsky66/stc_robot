@@ -15,23 +15,33 @@ __xdata volatile char tmp_num = 0;
 __xdata volatile int result[UART_BUFFER_SIZE / 2];
 
 // 全局变量声明
-int model = 0;
-int core_diameter = 0;
-int end_face_distance = 0;
-int up_down_speed = 0;
-int up_down_distance = 0;
-int left_right_speed = 0;
-int left_right_distance = 0;
+// int model = 0;
+// int core_diameter = 0;
+// int end_face_distance = 0;
+// int up_down_speed = 0;
+// int up_down_distance = 0;
+// int left_right_speed = 0;
+// int left_right_distance = 0;
 
-void update_parameters(void) {
-    model = (CFGBUF[0] << 8) | CFGBUF[1];
-    core_diameter = (CFGBUF[2] << 8) | CFGBUF[3];
-    end_face_distance = (CFGBUF[4] << 8) | CFGBUF[5];
-    up_down_speed = (CFGBUF[6] << 8) | CFGBUF[7];
-    up_down_distance = (CFGBUF[8] << 8) | CFGBUF[9];
-    left_right_speed = (CFGBUF[10] << 8) | CFGBUF[11];
-    left_right_distance = (CFGBUF[12] << 8) | CFGBUF[13];
-}
+// void update_parameters(void) {
+//     model = (CFGBUF[0] << 8) | CFGBUF[1];
+//     core_diameter = (CFGBUF[2] << 8) | CFGBUF[3];
+//     end_face_distance = (CFGBUF[4] << 8) | CFGBUF[5];
+//     up_down_speed = (CFGBUF[6] << 8) | CFGBUF[7];
+//     up_down_distance = (CFGBUF[8] << 8) | CFGBUF[9];
+//     left_right_speed = (CFGBUF[10] << 8) | CFGBUF[11];
+//     left_right_distance = (CFGBUF[12] << 8) | CFGBUF[13];
+// 	//UART_SendString(CFGBUF);
+// 	delay_ms(10);
+// 	int i = 0;
+// 	if(RCVOK == 0xff)
+// 	{
+// 		for(i;i<32;i++)
+// 		{
+// 			UART_SendByte(CFGBUF[i]);
+// 		}
+// 	}
+// }
 
 void rx1_process(void)
 {
@@ -63,7 +73,7 @@ void led_blink(int time)
 
 void motor_init(void)
 {
-	led_blink(4);
+	led_blink(2);
 
 	contorlMotor(1,600,y1_up,200);
 	if(y1_0_flag)
@@ -104,6 +114,8 @@ void catch_rotor(void)
 //主函数
 void main(void)
 {
+	unsigned char roll = 0x00;
+	UART_SendFrame(0x03,0x00,roll);
 	 // 设置P0.0到P0.6为推挽输出模式
     P0M0 |= 0x7f; // 设置P0M0的第0到第6位为1（0b01111111）
     P0M1 &= ~0x00; // 设置P0M1的第0到第7位为0（0b00000000）
@@ -116,31 +128,64 @@ void main(void)
 
 	//motor_init();		//位置初始化
 
+	//while(RCVOK == 0x00); // 等待接收完成
+
+	roll = 0x03;
+	UART_SendFrame(0x03,0x00,roll);
+
     while (1)
     {	
-
-		update_parameters();
-		if(model == 0x01)
+		//led_blink(1);	
+		if(model == 0x01 && RCVOK == 0xff)	// 如果接收到0x01指令	并且接收标志为0xff	
 		{	
-			update_parameters();
-			go_position(40,20,20,left_right_speed,up_down_speed);
+			RCVOK = 0x00; // 清空接收标志	
+			go_position(400,200,200,left_right_speed,up_down_speed);
 
-			UART_SendString("go_position(400,200,200,left_right_speed,up_down_speed)\r\n");
-
+			//UART_SendString("go_position(400,200,200,left_right_speed,up_down_speed)\r\n");
+			UART2_SendString("0x00 0x01 0x02\r\n");
 			go_position(0,0,0,left_right_speed,up_down_speed);
 
-			UART_SendString("go_position(0,0,0,left_right_speed,up_down_speed)\r\n");
+			//UART_SendString("go_position(0,0,0,left_right_speed,up_down_speed)\r\n");
+			UART2_SendString("0x00 0x01 0x02\r\n");
+			led_blink(1);
+			RCVOK = 0;
+		}
+		if(model == 0x02 && RCVOK == 0xff)
+		{
+
+			led_blink(2);
+			RCVOK = 0;
 
 		}
-		
-		// unsigned char roll = 0x00;
+		if(Button21_Pressed())
+		{
+        	//UART_SendString("Hello, world!\r\n"); // Send string
+			roll++;
+			UART_SendFrame(0x03,0x00,roll);
+		}
+
+		if(Button20_Pressed())
+		{
+			roll--;
+			UART_SendFrame(0x03,0x00,roll);
+		}
+		if(Button44_Pressed())
+		{  
+			get_dwin_data();
+			delay_ms(10);
+			if (RCVOK == 0xff)
+			{
+				for(int i = 0;i<32;i++)
+				{
+					UART_SendByte(CFGBUF[i]);
+				}
+				RCVOK == 0x00;
+			}
+			
+		}
+
 		// if(x_ok && y1_ok)
 		// {
-
-		// 	//循环发送信息
-		// 	 UART_SendFrame(0x03,0x00,roll);
-		// 	 roll++;
-		// 	led_blink(2);
 
 		// 	go_position(0,50,50,400);
 
@@ -156,12 +201,6 @@ void main(void)
 		// }
 		
 
-		// if(Button21_Pressed())
-		// {
-        // 	//UART_SendString("Hello, world!\r\n"); // Send string
-		// 	contorlMotor(0,45,motor_left,50);
-		// 	current_position.x = current_position.x-100;
-		// }
 		
 		// if(string_received_flag)
 		// {

@@ -14,12 +14,25 @@ extern volatile unsigned char rx_cnt;		//uart接收计数
 extern volatile __bit string_received_flag;		//uart接收标志位
 
 extern __xdata unsigned char CFGBUF[32]; //接收到的数据缓存
+extern __xdata unsigned char RCVOK;
 
-void UART_SendByte(char);
-void UART_SendString(char *str);
+extern int model;
+extern int core_diameter;
+extern int end_face_distance;
+extern int up_down_speed;
+extern int up_down_distance;
+extern int left_right_speed;
+extern int left_right_distance;
+
+void UART_SendByte(unsigned char byte);
+void UART2_SendByte(unsigned char byte);
+void UART_SendString(unsigned char *str);
+void UART2_SendString(unsigned char *str);   
 void UART_Init(void);
+void UART2_Init(void);
 void UART_ISR(void) __interrupt (4);
 unsigned int HexToDec(char *hex);
 void UART_SendFrame(unsigned char address, unsigned char data1, unsigned char data2);
+void get_dwin_data(void);
 
 #endif // !_UART_H
