@@ -23,41 +23,36 @@ __xdata volatile int result[UART_BUFFER_SIZE / 2];
 // int left_right_speed = 0;
 // int left_right_distance = 0;
 
-// void update_parameters(void) {
-//     model = (CFGBUF[0] << 8) | CFGBUF[1];
-//     core_diameter = (CFGBUF[2] << 8) | CFGBUF[3];
-//     end_face_distance = (CFGBUF[4] << 8) | CFGBUF[5];
-//     up_down_speed = (CFGBUF[6] << 8) | CFGBUF[7];
-//     up_down_distance = (CFGBUF[8] << 8) | CFGBUF[9];
-//     left_right_speed = (CFGBUF[10] << 8) | CFGBUF[11];
-//     left_right_distance = (CFGBUF[12] << 8) | CFGBUF[13];
-// 	//UART_SendString(CFGBUF);
-// 	delay_ms(10);
-// 	int i = 0;
-// 	if(RCVOK == 0xff)
-// 	{
-// 		for(i;i<32;i++)
-// 		{
-// 			UART_SendByte(CFGBUF[i]);
-// 		}
-// 	}
-// }
+int update_parameters(void) {
+    model = (CFGBUF[0] << 8) | CFGBUF[1];
+    core_diameter = (CFGBUF[2] << 8) | CFGBUF[3];
+    end_face_distance = (CFGBUF[4] << 8) | CFGBUF[5];
+    up_down_speed = (CFGBUF[6] << 8) | CFGBUF[7];
+    up_down_distance = (CFGBUF[8] << 8) | CFGBUF[9];
+    left_right_speed = (CFGBUF[10] << 8) | CFGBUF[11];
+    left_right_distance = (CFGBUF[12] << 8) | CFGBUF[13];
 
-void rx1_process(void)
+	if(RCVOK == 0xff)
+	{
+		RCVOK == 0;
+		return 1;
+	}
+	else
+		return 0;
+}
+
+void print_all_data(void)
 {
-	
-	for (int i = 0;i<UART_BUFFER_SIZE;i+=2)
+	int i = 0;
+	if(RCVOK == 0xff)
 	{
-		result[i / 2] = (rx_buffer[i] << 8) | rx_buffer[i + 1];
-    }
-	if(result[0] == 0x01)
-	{
-		P4_0 = 1;
-		delay_ms(100);
-		P4_0 = 0;
-		delay_ms(100);
+		for(i;i<32;i++)
+		{
+			UART_SendByte(CFGBUF[i]);
+		}
 	}
 }
+
 
 /* led41闪烁次数 */
 void led_blink(int time)
@@ -135,9 +130,11 @@ void main(void)
 
     while (1)
     {	
-		//led_blink(1);	
-		if(model == 0x01 && RCVOK == 0xff)	// 如果接收到0x01指令	并且接收标志为0xff	
+		if(update_parameters())
+		{
+			if(model == 0x01 )	// 如果接收到0x01指令	并且接收标志为0xff	
 		{	
+			print_all_data();
 			RCVOK = 0x00; // 清空接收标志	
 			go_position(400,200,200,left_right_speed,up_down_speed);
 
@@ -150,13 +147,15 @@ void main(void)
 			led_blink(1);
 			RCVOK = 0;
 		}
-		if(model == 0x02 && RCVOK == 0xff)
+		if(model == 0x02)
 		{
-
+			print_all_data();
 			led_blink(2);
 			RCVOK = 0;
-
 		}
+		}
+		//led_blink(1);	
+		
 		if(Button21_Pressed())
 		{
         	//UART_SendString("Hello, world!\r\n"); // Send string
@@ -173,16 +172,10 @@ void main(void)
 		{  
 			get_dwin_data();
 			delay_ms(10);
-			if (RCVOK == 0xff)
-			{
-				for(int i = 0;i<32;i++)
-				{
-					UART_SendByte(CFGBUF[i]);
-				}
-				RCVOK == 0x00;
-			}
-			
+			print_all_data();
 		}
+			
+	}
 
 		// if(x_ok && y1_ok)
 		// {
@@ -213,5 +206,5 @@ void main(void)
 		// 	string_received_flag = 0;			
 		// }
 
-    }
+    
 }

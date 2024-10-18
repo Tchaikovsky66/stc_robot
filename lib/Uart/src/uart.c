@@ -5,7 +5,7 @@ volatile unsigned char rx_cnt = 0;                 // uart接收计数
 volatile __bit string_received_flag = 0;           // uart接收标志位
 
 __xdata unsigned char RCVOK = 0, RCVDATA = 0, RX5A, RXA5, RXLEN, RXCMD, RXADRH, RXADRL, RXDLEN, TXTIME, RXDATA1, RXDATA2;
-unsigned char TX_P, RX_P;    // 收发缓冲区的指针位置
+unsigned char TX_P, RX_P = 0x00;    // 收发缓冲区的指针位置
 __xdata unsigned char CFGBUF[32]; // 接收到的数据缓存
 __xdata unsigned char TXBUF[84] = {0x5A, 0xA5, 0x4, 0x83, 0x0, 0x10, 0x10};
 __xdata unsigned char TMPBUF[2];
@@ -117,45 +117,25 @@ void UART_ISR(void) __interrupt(4)
             RXADRL = RXDLEN;
             RXDLEN = i;
             // 检查帧同步数据 5A A5 24 83 00 10 10 +32B DATA
-            if ((RX5A == 0x5A) && (RXA5 == 0xA5) && (RXLEN == 0x24) && (RXCMD == 0x83) && (RXADRH == 0x00) && (RXADRL == 0x10) && (RXDLEN == 0x10))
+            if ((RX5A == 0x5A) && (RXA5 == 0xA5) && (RXLEN) && (RXCMD == 0x83) && (RXADRH == 0x00) && (RXADRL) && (RXDLEN))
             {
                 RCVDATA = 0xff;
+                RX_P = (RXADRL - 0x10)*2;
+                RXDLEN = RXDLEN*2;
                 RX_P = 0;
             }
-
-
         }
-
-        // switch (RCVDATA)
-        // {
-        //     case 0x11:
-        //         {
-        //             TMPBUF[RX_P] = i;
-        //             RX_P++;
-        //             model = (TMPBUF[0] << 8 | TMPBUF[1]);
-
-        //             RCVDATA = 0x00;
-        //             RCVOK = 0xff;
-        //         }
-        //         break;
-
-            else //保存所有数据
-                {
-                    CFGBUF[RX_P] = i;
-                    RX_P++;
-                    if (RX_P == 32)
-                    { 
-                        model = (CFGBUF[0] << 8) | CFGBUF[1];
-                        core_diameter = (CFGBUF[2] << 8) | CFGBUF[3];
-                        end_face_distance = (CFGBUF[4] << 8) | CFGBUF[5];
-                        up_down_speed = (CFGBUF[6] << 8) | CFGBUF[7];
-                        up_down_distance = (CFGBUF[8] << 8) | CFGBUF[9];
-                        left_right_speed = (CFGBUF[10] << 8) | CFGBUF[11];
-                        left_right_distance = (CFGBUF[12] << 8) | CFGBUF[13];
-                        RCVDATA = 0x00;
-                        RCVOK = 0xff;
-                    }
-                }
+        else //保存所有数据
+        {
+            CFGBUF[RX_P] = i;
+            RX_P++;
+            if (RX_P == RXDLEN)
+            { 
+                RCVDATA = 0x00;
+                RCVOK = 0xff;
+   
+            }
+        }
             
         
         
