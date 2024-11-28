@@ -6,16 +6,16 @@ volatile __bit string_received_flag = 0;           // uart接收标志位
 
 __xdata unsigned char RCVOK = 0, RCVDATA = 0, RX5A, RXA5, RXLEN, RXCMD, RXADRH, RXADRL, RXDLEN, TXTIME, RXDATA1, RXDATA2;
 unsigned char TX_P, RX_P = 0x00;    // 收发缓冲区的指针位置
-__xdata unsigned char CFGBUF[32]; // 接收到的数据缓存
-__xdata unsigned char TXBUF[84] = {0x5A, 0xA5, 0x4, 0x83, 0x0, 0x10, 0x10};
-__xdata unsigned char TMPBUF[2];
-int model = 0;
-int core_diameter = 0;
-int end_face_distance = 0;
-int up_down_speed = 0;
-int up_down_distance = 0;
-int left_right_speed = 0;
-int left_right_distance = 0;
+__xdata unsigned char CFGBUF[100]; // 接收到的数据缓存
+
+volatile int model = 0;
+volatile int core_diameter = 0;
+volatile int end_face_distance = 0;
+volatile int up_down_speed = 0;
+volatile int up_down_distance = 0;
+volatile int left_right_speed = 0;
+volatile int left_right_distance = 0;
+volatile __bit all_data_flag = 0;
 /*串口初始化*/
 void UART_Init(void)
 {
@@ -30,6 +30,8 @@ void UART_Init(void)
     ES = 1;
 
     REN = 1;
+
+    IP = 0x10; //串行口为高优先级中断
 }
 /* !!!err */
 // void UART2_Init(void)	//57600bps@24.000MHz
@@ -51,14 +53,6 @@ void UART_SendByte(unsigned char byte)
         ;   // 等待发送完成
     TI = 0; // 清除发送中断标志
 }
-// 使用串口2发送单个字节
-void UART2_SendByte(unsigned char byte)
-{
-    S2BUF = byte;
-    while (!(S2CON & 0x02));  // 等待发送完成
-    S2CON &= ~0x02;  // 清除发送中断标志
-}
-
 /*发送字符串*/
 void UART_SendString(unsigned char *str)
 {
@@ -67,22 +61,27 @@ void UART_SendString(unsigned char *str)
         UART_SendByte(*str++);
     }
 }
-// 使用串口2发送字符串
-void UART2_SendString(unsigned char *str)
+
+void delete_data_flag(void)
 {
-    while (*str)
-    {
-        UART2_SendByte(*str++);
-    }
+    UART_SendByte(0x5A);
+    UART_SendByte(0xA5);
+    UART_SendByte(0x05);
+    UART_SendByte(0x82); 
+    UART_SendByte(0x00);
+    UART_SendByte(0x16);
+    UART_SendByte(0x00); 
+    UART_SendByte(0x00);   
+
 }
 
 //发送帧 
 void UART_SendFrame(unsigned char address, unsigned char data1, unsigned char data2)
 {
-    UART_SendByte(FRAME_HEADER1);
-    UART_SendByte(FRAME_HEADER2);
-    UART_SendByte(DATA_LENGTH);
-    UART_SendByte(COMMAND);
+    UART_SendByte(0x5A);
+    UART_SendByte(0xA5);
+    UART_SendByte(0x04);
+    UART_SendByte(0x80);
     UART_SendByte(address);
     UART_SendByte(data1);
     UART_SendByte(data2);
@@ -97,8 +96,7 @@ void get_dwin_data(void)
     UART_SendByte(0x83);
     UART_SendByte(0x00);
     UART_SendByte(0x10);
-    UART_SendByte(0x10);
-    
+    UART_SendByte(0x20);
 }
 void UART_ISR(void) __interrupt(4)
 {

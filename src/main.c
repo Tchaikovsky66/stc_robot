@@ -1,4 +1,5 @@
 /*	ipa15w4k61s4 --version1  9.2*/
+#include <stdio.h>
 #include <8051.h>
 #include <delay.h>
 #include <uart.h>
@@ -7,12 +8,13 @@
 #include <int_isr.h>
 
 
-
 __xdata volatile int  tmp_x = 0;
 __xdata volatile int  tmp_y = 0;
 __xdata volatile char tmp_num = 0;
 
 __xdata volatile int result[UART_BUFFER_SIZE / 2];
+__xdata char buf[10] = {0};
+
 
 // 全局变量声明
 // int model = 0;
@@ -23,14 +25,16 @@ __xdata volatile int result[UART_BUFFER_SIZE / 2];
 // int left_right_speed = 0;
 // int left_right_distance = 0;
 
-int update_parameters(void) {
-    model = (CFGBUF[0] << 8) | CFGBUF[1];
+int update_parameters(void) 
+{
+    model = (CFGBUF[48] << 8) | CFGBUF[49];
     core_diameter = (CFGBUF[2] << 8) | CFGBUF[3];
     end_face_distance = (CFGBUF[4] << 8) | CFGBUF[5];
     up_down_speed = (CFGBUF[6] << 8) | CFGBUF[7];
     up_down_distance = (CFGBUF[8] << 8) | CFGBUF[9];
     left_right_speed = (CFGBUF[10] << 8) | CFGBUF[11];
     left_right_distance = (CFGBUF[12] << 8) | CFGBUF[13];
+	all_data_flag = CFGBUF[13] & 0x01;
 
 	if(RCVOK == 0xff)
 	{
@@ -46,7 +50,7 @@ void print_all_data(void)
 	int i = 0;
 	if(RCVOK == 0xff)
 	{
-		for(i;i<32;i++)
+		for(i;i<100;i++)
 		{
 			UART_SendByte(CFGBUF[i]);
 		}
@@ -87,7 +91,6 @@ void motor_init(void)
 		init_position();
 		x_ok = 1;
 	}
-	
 }
 
 void move_test(void)
@@ -121,8 +124,6 @@ void main(void)
 
 	//delay_ms(100);
 
-	//motor_init();		//位置初始化
-
 	//while(RCVOK == 0x00); // 等待接收完成
 
 	roll = 0x03;
@@ -132,27 +133,31 @@ void main(void)
     {	
 		if(update_parameters())
 		{
+            update_parameters();
+            sprintf(buf,"model = %d\n",model);
+            UART_SendString(buf);
 			if(model == 0x01 )	// 如果接收到0x01指令	并且接收标志为0xff	
-		{	
-			print_all_data();
-			RCVOK = 0x00; // 清空接收标志	
-			go_position(400,200,200,left_right_speed,up_down_speed);
+            {	
+                print_all_data();
+                go_position(400,200,200,left_right_speed,up_down_speed);
 
-			//UART_SendString("go_position(400,200,200,left_right_speed,up_down_speed)\r\n");
-			UART2_SendString("0x00 0x01 0x02\r\n");
-			go_position(0,0,0,left_right_speed,up_down_speed);
+                UART_SendString("go_position(400,200,200,left_right_speed,up_down_speed)\r\n");
+                go_position(0,0,0,left_right_speed,up_down_speed);
 
-			//UART_SendString("go_position(0,0,0,left_right_speed,up_down_speed)\r\n");
-			UART2_SendString("0x00 0x01 0x02\r\n");
-			led_blink(1);
-			RCVOK = 0;
-		}
-		if(model == 0x02)
-		{
-			print_all_data();
-			led_blink(2);
-			RCVOK = 0;
-		}
+                UART_SendString("go_position(0,0,0,left_right_speed,up_down_speed)\r\n");
+                led_blink(1);
+            }
+            if(model == 0x02)
+            {
+                print_all_data();
+                led_blink(2);
+                RCVOK = 0;
+            }
+            if(all_data_flag == 1)
+            {
+                delete_data_flag();
+                UART_SendString("all_data_flag\r\n");
+            }
 		}
 		//led_blink(1);	
 		
