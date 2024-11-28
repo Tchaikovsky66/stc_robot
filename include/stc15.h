@@ -3,11 +3,7 @@
 
 /////////////////////////////////////////////////
 
-//åŒ…å«æœ¬å¤´æ–‡ä»¶å,ä¸ç”¨å¦å¤–å†åŒ…å«"REG51.H"
-
-/*è‡ªå®šä¹‰*/
-
-
+//°üº¬±¾Í·ÎÄ¼şºó,²»ÓÃÁíÍâÔÙ°üº¬"REG51.H"
 
 __sfr       __at(0x80)      P0;
     __sbit  __at(0x80)      P00;
@@ -266,8 +262,8 @@ __sfr       __at(0xFA)      CCAP0H;
 __sfr       __at(0xFB)      CCAP1H;
 __sfr       __at(0xFC)      CCAP2H;
 
-//å¦‚ä¸‹ç‰¹æ®ŠåŠŸèƒ½å¯„å­˜å™¨ä½äºæ‰©å±•RAMåŒºåŸŸ
-//è®¿é—®è¿™äº›å¯„å­˜å™¨,éœ€å…ˆå°†P_SW2çš„BIT7è®¾ç½®ä¸º1,æ‰å¯æ­£å¸¸è¯»å†™
+//ÈçÏÂÌØÊâ¹¦ÄÜ¼Ä´æÆ÷Î»ÓÚÀ©Õ¹RAMÇøÓò
+//·ÃÎÊÕâĞ©¼Ä´æÆ÷,ĞèÏÈ½«P_SW2µÄBIT7ÉèÖÃÎª1,²Å¿ÉÕı³£¶ÁĞ´
 
 __xdata volatile unsigned short __at(0xFFF0) PWMC;
 __xdata volatile unsigned char  __at(0xFFF0) PWMCH;
@@ -316,7 +312,4 @@ __xdata volatile unsigned char  __at(0xFF52) PWM7T2H;
 __xdata volatile unsigned char  __at(0xFF53) PWM7T2L;
 __xdata volatile unsigned char  __at(0xFF54) PWM7CR;
 
-/////////////////////////////////////////////////
-
-#endif
-
+///////////////ñ0ğ&ÒÍ|[
