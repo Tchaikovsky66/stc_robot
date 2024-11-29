@@ -5,6 +5,8 @@ extern __xdata unsigned char RCVOK, RCVDATA, RX5A, RXA5, RXLEN, RXCMD, RXADRH, R
 extern unsigned char TX_P, RX_P;    // 收发缓冲区的指针位置
 extern volatile __xdata unsigned char CFGBUF[100]; // 接收到的数据缓存
 
+void WriteData(unsigned char address,unsigned char data1,unsigned char data2);
+void GoToPage(unsigned char roll);
 void GetAllData(void);
 void SendAllData(void);
 void Uart1_Init(void);

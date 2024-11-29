@@ -5,6 +5,30 @@ __xdata unsigned char RCVOK = 0x00, RCVDATA = 0x00, RX5A, RXA5, RXLEN, RXCMD, RX
 unsigned char TX_P, RX_P = 0x00;    // 收发缓冲区的指针位置
 volatile __xdata unsigned char CFGBUF[100]; // 接收到的数据缓存
 
+
+
+void WriteData(unsigned char address,unsigned char data1,unsigned char data2)
+{
+    Uart1_SendByte(0x5A);
+    Uart1_SendByte(0xA5);
+    Uart1_SendByte(0x05);
+    Uart1_SendByte(0x82); 
+    Uart1_SendByte(0x00);
+    Uart1_SendByte(address);
+    Uart1_SendByte(data1); 
+    Uart1_SendByte(data2);
+} 
+void GoToPage(unsigned char roll)
+{
+    Uart1_SendByte(0x5A);
+    Uart1_SendByte(0xA5);
+    Uart1_SendByte(0x04);
+    Uart1_SendByte(0x80);
+    Uart1_SendByte(0x03);
+    Uart1_SendByte(0x00);
+    Uart1_SendByte(roll);
+}
+
 void GetAllData(void)
 {
     Uart1_SendByte(0x5A);
@@ -18,11 +42,11 @@ void GetAllData(void)
 
 void SendAllData(void)
 {
-    int i = 0;
-		for(i;i<64;i++)
-		{
-			Uart1_SendByte(CFGBUF[i]);
-		}
+    int i = 0x00;
+    for(i;i<0x2B*2;i++)
+    {
+        Uart1_SendByte(CFGBUF[i]);
+    }
 }
 
 void Uart1_Init(void)
