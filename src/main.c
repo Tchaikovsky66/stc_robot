@@ -4,7 +4,8 @@
 #include <uart.h>
 #include <delay.h>
 #include <button.h>
-
+#include <isr.h>
+#include <motor.h>
 
 float p = 3.1415926;
 int a = 0;
@@ -26,7 +27,12 @@ volatile int up_down_distance = 0;
 volatile int left_right_speed = 0;
 volatile int left_right_distance = 0;
 volatile __bit all_data_flag = 0;
+volatile __bit left_flag = 0;
+volatile __bit right_flag = 0;
 
+volatile int steps;
+volatile int delay_10us;
+//单片机更新值
 void update_parameters(void) 
 {
         model = (CFGBUF[0x28*2] << 8) | CFGBUF[0x28*2+1];
@@ -37,37 +43,102 @@ void update_parameters(void)
         left_right_speed = (CFGBUF[0x24*2] << 8) | CFGBUF[0x24*2+1];
         left_right_distance = (CFGBUF[0x22*2] << 8) | CFGBUF[0x22*2+1];
         all_data_flag = CFGBUF[0x16*2+1] & 0x01;
+        left_flag = CFGBUF[0x16*2+1] & 0x02;
+        right_flag = CFGBUF[0x16*2+1] & 0x04;
+
 }
 
-//err
+//初始化值。地址(0x01),数据(300);
+void InitValue(unsigned char address,unsigned int data)
+{
+    unsigned char low_byte = data & 0xFF;
+    unsigned char high_byte = (data>>8) & 0xFF;
+    CFGBUF[address] = high_byte;
+    CFGBUF[address + 1] = low_byte;
+}
 
-// void InitData(void)
-// {
-//     int i = 0x00;
-//     for(i;i<100;i++)
-//     {
-//         Uart1_SendByte(rx_buf[i]);
-//     }
-// }
+//初始化数据
+void InitData(void)
+{
+    //初始化
+    // WriteData(0x28,0x00,0x03);       //写单个字节
+    InitValue(UP_DOWN_DISTANCE,40);
+    InitValue(UP_DOWN_SPEED,250);
+    InitValue(LEFT_RIGHT_SPEED,300);
+    InitValue(LEFT_RIGHT_DISTANCE,50);
+    InitValue(MODEL,1);
 
+    //发送
+    Uart1_SendByte(0x5A);
+    Uart1_SendByte(0xA5);
+    Uart1_SendByte(0x59);
+    Uart1_SendByte(0x82); 
+    Uart1_SendByte(0x00);
+    Uart1_SendByte(0x00);
+    int i = 0;
+    for(i;i<89;i++)
+    {
+        Uart1_SendByte(CFGBUF[i]);
+    }
+}
+ 
 void main(void)
 {
     Uart1_Init();
-    //Interrupt0_Init();
-    WriteData(0x28,0x00,0x03);
-    WriteData(0x10,0x00,0x01);
-    WriteData(0x24,0x00,0xC8);
-    WriteData(0x25,0x00,0xC8);
-    WriteData(0x22,0x00,0x32);
-    WriteData(0x23,0x00,0x32);
+    Interrupt0_Init();
     DelayMs(10);
     GoToPage(0x03);
     DelayMs(10);
-    GetAllData();
-    DelayMs(10);
+    InitData();         //数据初始化
+    GetAllData();       //从串口屏获取全部数据
+    DelayMs(10);    
 
     while(1)
     {
+        if(left_flag)
+        {
+            Uart1_SendString("go left\r\n");
+            DelayMs(10);
+            P0_0 = 1;
+            P0_2 = 1;
+            CalculateStepsAndDelay(left_right_distance,left_right_speed,&steps,&delay_10us);
+            MotorSteps(1,steps,delay_10us);
+            
+            //恢复标志位
+            WriteData(0x16,0x00,0x00);
+            CFGBUF[0x16*2+1] = 0x00;
+            DelayMs(10);
+
+            left_flag = 0;
+        }
+        if(right_flag)
+        {
+            Uart1_SendString("go right\r\n");
+            DelayMs(10);
+            P0_0 = 0;
+            P0_2 = 1;
+            CalculateStepsAndDelay(left_right_distance,left_right_speed,&steps,&delay_10us);
+            MotorSteps(1,steps,delay_10us);
+            //恢复标志位 n
+            WriteData(0x16,0x00,0x00);
+            CFGBUF[0x16*2+1] = 0x00;
+
+            DelayMs(10);
+
+            right_flag = 0;
+        }
+        if(interruptButtonFlag)
+        {
+            interruptButtonFlag = 0;
+            int i = 0;
+            Uart1_SendString("interrupt!!!!!!\r\n");
+            DelayMs(10);
+            for(i = 0;i<1000;i++)
+            {
+                //P0_0 = !P0_0;
+                Delay10Us(1); 
+            }
+        }
         if(Button44_Pressed())
         {
             GetAllData();
@@ -85,10 +156,12 @@ void main(void)
             DelayMs(10);
             update_parameters();
             DelayMs(10);
+            Uart1_SendString("receive some data\r\n");
             // Uart1_SendByte(CFGBUF[48]);
             // Uart1_SendByte(CFGBUF[49]);
-           // sprintf(buf,"model = %d,all_data_falg = %d\r\n",model,all_data_flag);
-            //Uart1_SendString(buf);
+            sprintf(buf,"model = %d,all_data_falg = %d\r\n,left_flag = %d,right_flag =%d \r\n",model,all_data_flag,left_flag,right_flag);
+            Uart1_SendString(buf);
+            DelayMs(10);
         }
 
         if(all_data_flag)
@@ -100,6 +173,7 @@ void main(void)
             update_parameters();
             DelayMs(10);
             Uart1_SendString("update all data\r\n");
+            RCVOK = 0x00;
         }
         DelayMs(10);
         
@@ -121,7 +195,5 @@ void main(void)
         //     DelayMs(100);
         //     P00 = 1;
         // }
-       
-
     }
 }
