@@ -6,6 +6,7 @@
 #include <button.h>
 #include <isr.h>
 #include <motor.h>
+#include "../../include/stc15.h"
 
 float p = 3.1415926;
 int a = 0;
@@ -84,6 +85,7 @@ void InitData(void)
  
 void main(void)
 {
+    Motor_init();
     Uart1_Init();
     Interrupt0_Init();
     DelayMs(10);

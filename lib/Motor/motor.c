@@ -2,6 +2,7 @@
 #include <8051.h>
 #include <delay.h>
 #include <uart.h>
+#include "../../include/stc15.h"
 //电机初始化
 void Motor_init(void)
 {

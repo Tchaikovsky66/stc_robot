@@ -1,6 +1,6 @@
 #include <button.h>
 #include <delay.h>
-
+#include "../../include/stc15.h"
 //按键20按下
 char Button20_Pressed(void)
 {
@@ -34,12 +34,12 @@ char Button21_Pressed(void)
 
 char Button44_Pressed(void)
 {
-    if (P4_4 == 0) // Check if button is pressed (assuming active low)
+    if (P44 == 0) // Check if button is pressed (assuming active low)
     {
         DelayMs(20); // Debounce delay
-        if (P4_4 == 0) // Check again to confirm
+        if (P44 == 0) // Check again to confirm
         {
-            while (P4_4 == 0); // Wait for button release
+            while (P44 == 0); // Wait for button release
             DelayMs(20); // Debounce delay
             return 1; // Button press confirmed
         }

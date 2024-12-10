@@ -1,5 +1,6 @@
 #include <uart.h>
 #include <8051.h>
+#include "../../include/stc15.h"
 
 __xdata unsigned char RCVOK = 0x00, RCVDATA = 0x00, RX5A, RXA5, RXLEN, RXCMD, RXADRH, RXADRL, RXDLEN, TXTIME, RXDATA1, RXDATA2;
 unsigned char TX_P, RX_P = 0x00;    // 收发缓冲区的指针位置
