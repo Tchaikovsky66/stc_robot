@@ -3,6 +3,8 @@
 #include <delay.h>
 #include <uart.h>
 #include "../../include/stc15.h"
+
+
 //电机初始化
 void Motor_init(void)
 {
@@ -15,12 +17,12 @@ void CalculateStepsAndDelay(float distance_cm, float speed_cm_per_s, int *steps,
 {
 
     const float steps_per_revolution = 2000.0;
-    const float distance_per_revolution_cm = 10.0;
+    const float distance_per_revolution_cm = 100.0;
 
     *steps = (int)((distance_cm / distance_per_revolution_cm) * steps_per_revolution);
-    
+    *steps = *steps*2;
  
-    float steps_per_second = (speed_cm_per_s * steps_per_revolution) / distance_per_revolution_cm;
+    float steps_per_second = (speed_cm_per_s * steps_per_revolution) / (distance_per_revolution_cm/10);
     
  
     *delay_10us = (int)(1000000.0 / steps_per_second/2);

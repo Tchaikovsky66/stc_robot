@@ -64,8 +64,8 @@ void InitData(void)
     //初始化
     // WriteData(0x28,0x00,0x03);       //写单个字节
     InitValue(UP_DOWN_DISTANCE,40);
-    InitValue(UP_DOWN_SPEED,250);
-    InitValue(LEFT_RIGHT_SPEED,300);
+    InitValue(UP_DOWN_SPEED,200);
+    InitValue(LEFT_RIGHT_SPEED,200);
     InitValue(LEFT_RIGHT_DISTANCE,50);
     InitValue(MODEL,1);
 
@@ -85,6 +85,14 @@ void InitData(void)
  
 void main(void)
 {
+    P41 = 0;
+    DelayMs(500);
+    P41 = 1;
+    DelayMs(500);
+    P41 = 0;
+    DelayMs(500);
+    P41 = 1;
+    DelayMs(500);
     Motor_init();
     Uart1_Init();
     Interrupt0_Init();
@@ -93,16 +101,17 @@ void main(void)
     DelayMs(10);
     InitData();         //数据初始化
     GetAllData();       //从串口屏获取全部数据
+    P41 = 0;
     DelayMs(10);    
-
     while(1)
     {
         if(left_flag)
         {
+            P41 = 1;
             Uart1_SendString("go left\r\n");
             DelayMs(10);
             P0_0 = 1;
-            P0_2 = 1;
+            P0_2 = 0;
             CalculateStepsAndDelay(left_right_distance,left_right_speed,&steps,&delay_10us);
             MotorSteps(1,steps,delay_10us);
             
@@ -112,13 +121,15 @@ void main(void)
             DelayMs(10);
 
             left_flag = 0;
+            P41 = 0;
         }
         if(right_flag)
         {
+            P41 = 1;
             Uart1_SendString("go right\r\n");
             DelayMs(10);
             P0_0 = 0;
-            P0_2 = 1;
+            P0_2 = 0;
             CalculateStepsAndDelay(left_right_distance,left_right_speed,&steps,&delay_10us);
             MotorSteps(1,steps,delay_10us);
             //恢复标志位 n
@@ -128,32 +139,12 @@ void main(void)
             DelayMs(10);
 
             right_flag = 0;
-        }
-        if(interruptButtonFlag)
-        {
-            interruptButtonFlag = 0;
-            int i = 0;
-            Uart1_SendString("interrupt!!!!!!\r\n");
-            DelayMs(10);
-            for(i = 0;i<1000;i++)
-            {
-                //P0_0 = !P0_0;
-                Delay10Us(1); 
-            }
-        }
-        if(Button44_Pressed())
-        {
-            GetAllData();
-            DelayMs(500);
-            SendAllData();
-            DelayMs(500);
-            //update_parameters();
-            //sprintf(buf,"model = %d\r\n",model);
-            //Uart1_SendString(buf);
+            P41 = 0;
         }
 
         if(RCVOK == 0xff)
         {
+            P41 = 1;
             RCVOK = 0x00;
             DelayMs(10);
             update_parameters();
@@ -164,18 +155,22 @@ void main(void)
             sprintf(buf,"model = %d,all_data_falg = %d\r\n,left_flag = %d,right_flag =%d \r\n",model,all_data_flag,left_flag,right_flag);
             Uart1_SendString(buf);
             DelayMs(10);
+            P41 = 0;
         }
 
         if(all_data_flag)
         {
+            P41 = 1;
             WriteData(0x16,0x00,0x00);
             DelayMs(5);
-            GetAllData();
+            
             DelayMs(10);
             update_parameters();
             DelayMs(10);
             Uart1_SendString("update all data\r\n");
             RCVOK = 0x00;
+            GetAllData();
+            P41 = 0;
         }
         DelayMs(10);
         
