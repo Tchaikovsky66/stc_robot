@@ -105,6 +105,24 @@ void main(void)
     DelayMs(10);    
     while(1)
     {
+        // if(left_flag)
+        // {
+        //     P41 = 1;
+        //     Uart1_SendString("go left\r\n");
+        //     DelayMs(10);
+        //     P0_0 = 1;
+        //     P0_2 = 0;
+        //     CalculateStepsAndDelay(left_right_distance,left_right_speed,&steps,&delay_10us);
+        //     MotorSteps(1,steps,delay_10us);
+            
+        //     //恢复标志位
+        //     WriteData(0x16,0x00,0x00);
+        //     CFGBUF[0x16*2+1] = 0x00;
+        //     DelayMs(10);
+
+        //     left_flag = 0;
+        //     P41 = 0;
+        // }
         if(left_flag)
         {
             P41 = 1;
@@ -112,9 +130,7 @@ void main(void)
             DelayMs(10);
             P0_0 = 1;
             P0_2 = 0;
-            CalculateStepsAndDelay(left_right_distance,left_right_speed,&steps,&delay_10us);
-            MotorSteps(1,steps,delay_10us);
-            
+            MotorGo(1,left_right_distance,left_right_speed);
             //恢复标志位
             WriteData(0x16,0x00,0x00);
             CFGBUF[0x16*2+1] = 0x00;
@@ -130,8 +146,8 @@ void main(void)
             DelayMs(10);
             P0_0 = 0;
             P0_2 = 0;
-            CalculateStepsAndDelay(left_right_distance,left_right_speed,&steps,&delay_10us);
-            MotorSteps(1,steps,delay_10us);
+            MotorGo(1,left_right_distance,left_right_speed);
+
             //恢复标志位 n
             WriteData(0x16,0x00,0x00);
             CFGBUF[0x16*2+1] = 0x00;
