@@ -8,18 +8,11 @@
 #include <motor.h>
 #include "../../include/stc15.h"
 
+
 float p = 3.1415926;
 int a = 0;
 __xdata char buf[100] = {0};
 __xdata char buf1[10] = {0xff};
-// __xdata char rx_buf[100] = {0x5A, 0xA5, 0x2E, 0x82, 0x00, 0x10,
-//     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-//     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-//     0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-//     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-//     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x32, 0x00, 0x32, 0x01, 0x2c, 0x01, 0x2c, 0x00, 0x00,
-//     0x00, 0x00, 0x00, 0x03, 0x00, 0x0a, 0x00, 0x00
-// };
 volatile int model = 0;
 volatile int core_diameter = 0;
 volatile int end_face_distance = 0;
@@ -82,6 +75,7 @@ void InitData(void)
         Uart1_SendByte(CFGBUF[i]);
     }
 }
+
  
 void main(void)
 {
@@ -105,32 +99,18 @@ void main(void)
     DelayMs(10);    
     while(1)
     {
-        // if(left_flag)
+        // if(X_R_LIMIT == LIMIT_RICHED)
         // {
-        //     P41 = 1;
-        //     Uart1_SendString("go left\r\n");
-        //     DelayMs(10);
-        //     P0_0 = 1;
+        //     X_DIR = GO_LEFT;
         //     P0_2 = 0;
-        //     CalculateStepsAndDelay(left_right_distance,left_right_speed,&steps,&delay_10us);
-        //     MotorSteps(1,steps,delay_10us);
-            
-        //     //恢复标志位
-        //     WriteData(0x16,0x00,0x00);
-        //     CFGBUF[0x16*2+1] = 0x00;
-        //     DelayMs(10);
-
-        //     left_flag = 0;
-        //     P41 = 0;
+        //     MotorGo(1,100,100);
         // }
         if(left_flag)
         {
             P41 = 1;
             Uart1_SendString("go left\r\n");
             DelayMs(10);
-            P0_0 = 1;
-            P0_2 = 0;
-            MotorGo(1,left_right_distance,left_right_speed);
+            MotorGo(X_MOTOR,GO_LEFT,left_right_distance,left_right_speed);
             //恢复标志位
             WriteData(0x16,0x00,0x00);
             CFGBUF[0x16*2+1] = 0x00;
@@ -144,10 +124,7 @@ void main(void)
             P41 = 1;
             Uart1_SendString("go right\r\n");
             DelayMs(10);
-            P0_0 = 0;
-            P0_2 = 0;
-            MotorGo(1,left_right_distance,left_right_speed);
-
+            MotorGo(X_MOTOR,GO_RIGHT,left_right_distance,left_right_speed);
             //恢复标志位 n
             WriteData(0x16,0x00,0x00);
             CFGBUF[0x16*2+1] = 0x00;
