@@ -2,6 +2,7 @@
 #include <8051.h>
 #include <delay.h>
 #include "../../include/stc15.h"
+#include "../../include/main.h"
 
 // 将所有变量定义为片外RAM
 __xdata unsigned char RCVOK = 0x00;
@@ -22,7 +23,7 @@ volatile unsigned char __xdata CFGBUF[100];
  */
 void WriteData(unsigned char address, unsigned char data1, unsigned char data2)
 {
-
+    EN_485 = 1;
     Uart1_SendByte(0x5A);
     Uart1_SendByte(0xA5);
     Uart1_SendByte(0x05);
@@ -31,6 +32,7 @@ void WriteData(unsigned char address, unsigned char data1, unsigned char data2)
     Uart1_SendByte(address);
     Uart1_SendByte(data1);
     Uart1_SendByte(data2);
+    EN_485 = 0;
 }
 
 /**
@@ -39,7 +41,7 @@ void WriteData(unsigned char address, unsigned char data1, unsigned char data2)
  */
 void GoToPage(unsigned char roll)
 {
-
+    EN_485 = 1;
     Uart1_SendByte(0x5A);
     Uart1_SendByte(0xA5);
     Uart1_SendByte(0x04);
@@ -47,6 +49,7 @@ void GoToPage(unsigned char roll)
     Uart1_SendByte(0x03);
     Uart1_SendByte(0x00);
     Uart1_SendByte(roll);
+    EN_485 = 0;
 }
 
 /**
@@ -55,14 +58,24 @@ void GoToPage(unsigned char roll)
  */
 void GetAllData(void)
 {
+    static const unsigned char get_all_adata[] = {0x5A, 0xA5, 0x04, 0x83, 0x00, 0x10, 0x2B};
+    Uart1_SendBuffer(get_all_adata, sizeof(get_all_adata));
 
-    Uart1_SendByte(0x5A);
-    Uart1_SendByte(0xA5);
-    Uart1_SendByte(0x04);
-    Uart1_SendByte(0x83);
-    Uart1_SendByte(0x00);
-    Uart1_SendByte(0x10);
-    Uart1_SendByte(0x2B);
+}
+
+/**
+ * @brief 发送指定长度的数据缓冲区
+ * @param buffer 数据缓冲区指针
+ * @param length 要发送的数据长度
+ */
+void Uart1_SendBuffer(const unsigned char *buffer, unsigned int length)
+{
+    EN_485 = 1;
+    for (unsigned int i = 0; i < length; i++)
+    {
+        Uart1_SendByte(buffer[i]);
+    }  
+    EN_485 = 0;
 }
 
 /**
@@ -71,13 +84,8 @@ void GetAllData(void)
  */
 void SendAllData(void)
 {
-    static int i;
-
-    for (i = 0; i < 0x2B * 2; i++)
-    {
-        Uart1_SendByte(CFGBUF[i]);
-    }
-    DelayMs(10);
+    Uart1_SendBuffer(CFGBUF, 0x2B * 2);
+    
 }
 
 void UartInit(void) // 9600bps@24.000MHz
@@ -117,10 +125,12 @@ void Uart1_SendByte(char byte)
 
 void Uart1_SendString(const char *str) // 串口1发送不限长度字符串
 {
+    EN_485 = 1;
     while (*str)
     {
         Uart1_SendByte(*str++);
     }
+    EN_485 = 0;
 }
 
 void Uart1_Isr(void) __interrupt(4) // 串口1中

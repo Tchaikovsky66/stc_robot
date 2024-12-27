@@ -13,6 +13,7 @@ __xdata int up_down_speed = 0;
 __xdata int up_down_distance = 0;
 __xdata int left_right_speed = 0;
 __xdata int left_right_distance = 0;
+__xdata int distance_X2 = 0;
 
 // 标志位使用bit类型
 volatile __bit all_data_flag = 0;
@@ -21,7 +22,7 @@ volatile __bit right_flag = 0;
 volatile __bit up_flag = 0;
 volatile __bit down_flag = 0;
 volatile __bit init_pos_flag = 0;
-
+volatile __bit init_pos_end_flag = 0;
 /**
  * @brief 向指定地址写入16位数据
  * @param address 目标地址
@@ -49,21 +50,23 @@ void InitData(void)
     InitValue(UP_DOWN_DISTANCE, 40);
     InitValue(UP_DOWN_SPEED, 200);
     InitValue(LEFT_RIGHT_SPEED, 200);
-    InitValue(LEFT_RIGHT_DISTANCE, 50);
+    InitValue(LEFT_RIGHT_DISTANCE, 1);
     InitValue(MODEL, 1);
     CFGBUF[0] = 1;
 
     // 发送固定头部数据
-    for (unsigned char i = 0; i < sizeof(init_data); i++)
-    {
-        Uart1_SendByte(init_data[i]);
-    }
+    // for (unsigned char i = 0; i < sizeof(init_data); i++)
+    // {
+    //     Uart1_SendByte(init_data[i]);
+    // }
+    Uart1_SendBuffer(init_data, 6);
 
     // 发送配置数据
-    for (int i = 0; i < 89; i++)
-    {
-        Uart1_SendByte(CFGBUF[i]);
-    }
+    // for (int i = 0; i < 89; i++)
+    // {
+    //     Uart1_SendByte(CFGBUF[i]);
+    // }
+    Uart1_SendBuffer(CFGBUF, 89);
 }
 
 /**
@@ -75,6 +78,7 @@ void InitData(void)
 
 void UploadData(unsigned char address, unsigned int data)
 {
+    EN_485 = 1;
     InitValue(address, data);
 
     // 固定发送8字节数据
@@ -86,6 +90,7 @@ void UploadData(unsigned char address, unsigned int data)
     Uart1_SendByte(address / 2);
     Uart1_SendByte(CFGBUF[address]);
     Uart1_SendByte(CFGBUF[address + 1]);
+    EN_485 = 0;
 }
 
 /**
@@ -94,20 +99,25 @@ void UploadData(unsigned char address, unsigned int data)
  */
 void update_parameters(void)
 {
-    init_pos_flag = CFGBUF[0x13 * 2 + 1] >> 3;
+    init_pos_flag = CFGBUF[0x13 * 2 + 1] & 0x01;
+    init_pos_end_flag = CFGBUF[0x13 * 2 + 1] & 0x02;
     sign1_flag = CFGBUF[0x13 * 2] & 0x01;
     sign2_flag = CFGBUF[0x13 * 2] & 0x02;
     sign3_flag = CFGBUF[0x13 * 2] & 0x04;
-    sign1_x = (CFGBUF[0x19 * 2] << 8) | CFGBUF[0x19 * 2 + 1];
-    sign1_y = (CFGBUF[0x1A * 2] << 8) | CFGBUF[0x1A * 2 + 1];
+    sign1_x = (CFGBUF[0x18 * 2] << 8) | CFGBUF[0x18 * 2 + 1];
+    sign1_y = (CFGBUF[0x19 * 2] << 8) | CFGBUF[0x19 * 2 + 1];
+    sign1_y2 = (CFGBUF[0x1A * 2] << 8) | CFGBUF[0x1A * 2 + 1];
     sign2_x = (CFGBUF[0x1B * 2] << 8) | CFGBUF[0x1B * 2 + 1];
     sign2_y = (CFGBUF[0x1C * 2] << 8) | CFGBUF[0x1C * 2 + 1];
-    sign3_x = (CFGBUF[0x1D * 2] << 8) | CFGBUF[0x1D * 2 + 1];
-    sign3_y = (CFGBUF[0x1E * 2] << 8) | CFGBUF[0x1E * 2 + 1];
+    sign2_y2 = (CFGBUF[0x1D * 2] << 8) | CFGBUF[0x1D * 2 + 1];
+    sign3_x = (CFGBUF[0x1E * 2] << 8) | CFGBUF[0x1E * 2 + 1];
+    sign3_y = (CFGBUF[0x1F * 2] << 8) | CFGBUF[0x1F * 2 + 1];
+    sign3_y2 = (CFGBUF[0x20 * 2] << 8) | CFGBUF[0x20 * 2 + 1];
+    distance_X2 = (CFGBUF[0x21 * 2] << 8) | CFGBUF[0x21 * 2 + 1];
+    left_right_distance = (CFGBUF[0x22 * 2] << 8) | CFGBUF[0x22 * 2 + 1];
     up_down_distance = (CFGBUF[0x23 * 2] << 8) | CFGBUF[0x23 * 2 + 1];
     left_right_speed = (CFGBUF[0x24 * 2] << 8) | CFGBUF[0x24 * 2 + 1];
     up_down_speed = (CFGBUF[0x25 * 2] << 8) | CFGBUF[0x25 * 2 + 1];
-    left_right_distance = (CFGBUF[0x22 * 2] << 8) | CFGBUF[0x22 * 2 + 1];
     model = (CFGBUF[0x28 * 2] << 8) | CFGBUF[0x28 * 2 + 1];
     core_diameter = (CFGBUF[0x29 * 2] << 8) | CFGBUF[0x29 * 2 + 1];
     end_face_distance = (CFGBUF[0x2A * 2] << 8) | CFGBUF[0x2A * 2 + 1];

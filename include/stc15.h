@@ -5,6 +5,8 @@
 
 //������ͷ�ļ���,���������ٰ���"REG51.H"
 
+__sfr       __at(0xc7)      IAP_CONTR;
+
 __sfr       __at(0x80)      P0;
     __sbit  __at(0x80)      P00;
     __sbit  __at(0x81)      P01;

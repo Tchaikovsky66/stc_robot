@@ -3,7 +3,6 @@
 
 #include <8051.h>
 
-extern volatile __bit interruptButtonFlag;
 void Interrupt0_Init(void);
 void my_ISR(void) __interrupt (0);
 

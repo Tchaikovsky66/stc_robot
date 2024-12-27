@@ -4,12 +4,17 @@
 #include <uart.h>
 #include "../../include/stc15.h"
 #include "../../include/main.h"
+#include <config.h>
 
 #define SPEED_ARRAY_SIZE 101 // 0-100共101个值
 
 // 声明延迟值数组
 __xdata volatile int delay_array[SPEED_ARRAY_SIZE];
 char Allow_Move = 0;
+char Allow_Catch = 0;
+volatile int tmp_steps = 0;
+volatile int target_steps = 0;
+volatile int set_to_catch_steps = 0;
 /**
  * @brief 电机初始化
  * @note 设置端口模式，初始化电机状态，执行回零操作
@@ -23,19 +28,37 @@ void Motor_init(void)
 
     P3M0 |= 0x80;
     P3M1 &= ~0x80;
-    // P37 推挽输出
+    // P37 推挽输出 P30-P36 准双向口    
 
     X_STEP = 0; // x轴电机脉冲归零
     X_EN = X_EN_OFF;
 
     P37 = 1;
 
+    Allow_Move = 1;
+    MotorGo(Y1_MOTOR, GO_DOWN, 20, 200);
+    MotorGo(Y2_MOTOR, GO_DOWN, 20, 200);
     Allow_Move = 0;
-    if (MotorGo(X_MOTOR, GO_RIGHT, 5000, 100) == ERR)
+
+    if (MotorGo(Y1_MOTOR, GO_UP, 500, 200) == ERR)
     {
         Allow_Move = 1;
-        X_DIR = GO_LEFT;
-        MotorGo(X_MOTOR, GO_LEFT, 100, 100);
+        MotorGo(Y1_MOTOR, GO_DOWN, 10, 50);
+        Allow_Move = 0;
+    }
+    if (MotorGo(Y2_MOTOR, GO_UP, 500, 200) == ERR)
+    {
+        Allow_Move = 1;
+        MotorGo(Y2_MOTOR, GO_DOWN, 10, 50);
+        Allow_Move = 0;
+    }
+    if (MotorGo(X_MOTOR, GO_RIGHT, 5000, 200) == ERR)
+    {
+        Allow_Move = 1;
+        Allow_Catch = 0;
+        MotorGo(X_MOTOR, GO_LEFT, 200, 200);
+        
+        Allow_Move = 0;  //
     }
 }
 
@@ -66,35 +89,36 @@ void CalculateStepsAndDelay(float distance_cm, float speed_mm_per_s, int *steps,
     }
 }
 
-// 电机转动步数
-void MotorSteps(unsigned char num, int steps, int delay)
-{
-    switch (num)
-    {
-    case 1 /* constant-expression */:
-        /* code */
-        {
-            int i = 0;
-            // Uart1_SendString("x轴\r\n");
-            for (i = 0; i < steps; i++)
-            {
-                X_STEP = !X_STEP;
-                Delay10Us(delay);
-            }
-        }
-        break;
-
-    default:
-        break;
-    }
-}
-
 char OneStep(unsigned char num, int delay)
 {
     if ((X_R_LIMIT == LIMIT_RICHED) && (Allow_Move == 0))
     {
         return ERR;
     }
+    if ((Y1_LIMIT == LIMIT_RICHED) && (Allow_Move == 0))
+    {
+        return ERR;
+    }
+    if ((Y2_LIMIT == LIMIT_RICHED) && (Allow_Move == 0))
+    {
+        return ERR;
+    }
+    if ((Y1_OP == LIMIT_RICHED) )
+    {
+        target_steps = tmp_steps + 20 * (60 + end_face_distance);
+        //return Y1_GOT;
+        set_to_catch_steps = tmp_steps;
+        if(Allow_Catch == 1)
+        {
+
+        }
+        // if (tmp_steps >= target_steps)
+        // {
+        //     target_steps = 0;
+        //     return Y1_GOT;
+        // }
+    }
+    
 
     switch (num)
     {
@@ -118,6 +142,7 @@ char OneStep(unsigned char num, int delay)
     }
 }
 
+
 /**
  * @brief 控制电机运动
  * @param num 电机编号(X_MOTOR/Y1_MOTOR/Y2_MOTOR)
@@ -129,6 +154,7 @@ char OneStep(unsigned char num, int delay)
  */
 char MotorGo(unsigned char num, unsigned char dir, int distance_mm, int speed_mm_per_s)
 {
+    tmp_steps = 0;
     X_EN = X_EN_ON;
     X_DIR = dir;
     Y1_DIR = dir;
@@ -164,9 +190,11 @@ char MotorGo(unsigned char num, unsigned char dir, int distance_mm, int speed_mm
     {
         for (i = 0; i < steps / 2; i++)
         {
+            
             for (j = 0; j < 2; j++)
             {
-                if (OneStep(num, delay_array[i] * 2) == ERR)
+                tmp_steps++;
+                 if (OneStep(num, delay_array[i] * 2) == ERR)
                 {
                     return ERR;
                 }
@@ -176,6 +204,7 @@ char MotorGo(unsigned char num, unsigned char dir, int distance_mm, int speed_mm
         {
             for (j = 0; j < 2; j++)
             {
+                tmp_steps++;
                 if (OneStep(num, delay_array[i] * 2) == ERR)
                 {
                     return ERR;
@@ -189,6 +218,7 @@ char MotorGo(unsigned char num, unsigned char dir, int distance_mm, int speed_mm
         {
             for (j = 0; j < 2; j++)
             {
+                tmp_steps++;
                 if (OneStep(num, delay_array[i]) == ERR)
                 {
                     return ERR;
@@ -199,6 +229,7 @@ char MotorGo(unsigned char num, unsigned char dir, int distance_mm, int speed_mm
         {
             for (j = 0; j < 2; j++)
             {
+                tmp_steps++;
                 if (OneStep(num, delay_array[100]) == ERR)
                 {
                     return ERR;
@@ -209,6 +240,7 @@ char MotorGo(unsigned char num, unsigned char dir, int distance_mm, int speed_mm
         {
             for (j = 0; j < 2; j++)
             {
+                tmp_steps++;
                 if (OneStep(num, delay_array[i]) == ERR)
                 {
                     return ERR;

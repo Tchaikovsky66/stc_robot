@@ -1,17 +1,29 @@
 #include <isr.h>
 #include <delay.h>
-extern volatile __bit interruptButtonFlag = 0; //按键中断
+#include <../../include/stc15.h> 
+extern volatile __bit interruptButtonFlag = 0; //锟斤拷锟斤拷锟叫讹拷
 
-//中断0初始化 用作按键中断 INT0	P3^2
+//锟叫讹拷0锟斤拷始锟斤拷 锟斤拷锟斤拷锟斤拷锟斤拷锟叫讹拷 INT0	P3^2
 void Interrupt0_Init(void)
 {
-	IT0 = 0;  // 0下降沿触发中断 1都可
-    EX0 = 1;  // 使能外部中断 0
-    EA = 1;   // 使能全局中断
+	IT0 = 0;  // 0锟铰斤拷锟截达拷锟斤拷锟叫讹拷 1锟斤拷锟斤拷
+    EX0 = 1;  // 使锟斤拷锟解部锟叫讹拷 0
+    EA = 1;   // 使锟斤拷全锟斤拷锟叫讹拷
+}
+void int0_restart(void)
+{
+    if (P32 == 0) // Check if button is pressed (assuming active low)
+    {
+        DelayMs(2);   // Debounce delay
+        if (P32 == 0) // Check again to confirm
+        {
+            IAP_CONTR = 0x20; // 閲嶅惎
+        }
+    }
 }
 
-/*按键中断 INT0	P3^2*/
+/*INT0	P3^2*/
 void my_ISR(void) __interrupt (0) 
 {
-    interruptButtonFlag = 1;  // 设置标志，表示按键已按下
+    int0_restart();
 }
