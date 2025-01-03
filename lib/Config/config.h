@@ -24,12 +24,15 @@ extern volatile __bit up_flag;
 extern volatile __bit down_flag;
 extern volatile __bit init_pos_flag;
 extern volatile __bit init_pos_end_flag;
+extern volatile __bit go_flag;
 
-/**
- * @brief 上传单个参数到显示屏
- * @param address 参数地址
- * @param data 参数值
- */
-void UploadData(unsigned char address, unsigned int data);
+
+    /**
+     * @brief 上传单个参数到显示屏
+     * @param address 参数地址
+     * @param data 参数值
+     */
+    void
+    UploadData(unsigned char address, unsigned int data);
 
 #endif

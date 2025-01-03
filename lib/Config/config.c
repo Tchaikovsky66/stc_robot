@@ -23,6 +23,7 @@ volatile __bit up_flag = 0;
 volatile __bit down_flag = 0;
 volatile __bit init_pos_flag = 0;
 volatile __bit init_pos_end_flag = 0;
+volatile __bit go_flag = 0;
 /**
  * @brief 向指定地址写入16位数据
  * @param address 目标地址
@@ -101,6 +102,7 @@ void update_parameters(void)
 {
     init_pos_flag = CFGBUF[0x13 * 2 + 1] & 0x01;
     init_pos_end_flag = CFGBUF[0x13 * 2 + 1] & 0x02;
+    go_flag = CFGBUF[0x13 * 2 + 1] & 0x04;
     sign1_flag = CFGBUF[0x13 * 2] & 0x01;
     sign2_flag = CFGBUF[0x13 * 2] & 0x02;
     sign3_flag = CFGBUF[0x13 * 2] & 0x04;
