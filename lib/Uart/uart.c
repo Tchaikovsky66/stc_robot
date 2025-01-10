@@ -84,34 +84,46 @@ void Uart1_SendBuffer(const unsigned char *buffer, unsigned int length)
  */
 void SendAllData(void)
 {
-    Uart1_SendBuffer(CFGBUF, 0x2B * 2);
-    
+    Uart1_SendBuffer(CFGBUF, 0x2B * 2);   
 }
 
-void UartInit(void) // 9600bps@24.000MHz
+// void UartInit(void) // 9600bps@24.000MHz
+// {
+//     S2CON = 0x50; // 8位数据,可变波特率
+//     AUXR |= 0x04; // 定时器时钟1T模式
+//     T2L = 0x8F;   // 设置定时初始值
+//     T2H = 0xFD;   // 设置定时初始值
+//     AUXR |= 0x10; // 定时器2开始计时
+//     IE2 |= 0x04;  // 使能定时器2中断 ***
+// }
+
+void UartInit(void) // 57600bps@11.0592MHz
 {
-    S2CON = 0x50; // 8位数据,可变波特率
-    AUXR |= 0x04; // 定时器时钟1T模式
-    T2L = 0x8F;   // 设置定时初始值
-    T2H = 0xFD;   // 设置定时初始值
-    AUXR |= 0x10; // 定时器2开始计时
-    IE2 |= 0x04;  // 使能定时器2中断 ***
+    SCON = 0x50;  // 8位数据,可变波特率
+    AUXR |= 0x40; // 定时器时钟1T模式
+    AUXR &= 0xFE; // 串口1选择定时器1为波特率发生器
+    TMOD &= 0x0F; // 设置定时器模式
+    TL1 = 0xD0;   // 设置定时初始值
+    TH1 = 0xFF;   // 设置定时初始值
+    ET1 = 0;      // 禁止定时器中断
+    TR1 = 1;      // 定时器1开始计时
+
+
 }
 
-void Uart1_Init(void)
+void Uart1_Init(void) // 57600bps@11.0592MHz
 {
     SCON = 0x50;  // 8位数据,可变波特率
     AUXR |= 0x01; // 串口1选择定时器2为波特率发生器
     AUXR |= 0x04; // 定时器时钟1T模式
-    T2L = 0x98;   // 设置定时初始值
+    T2L = 0xD0;   // 设置定时初始值
     T2H = 0xFF;   // 设置定时初始值
     AUXR |= 0x10; // 定时器2开始计时
 
+    //IE2 |= 0x04; // 使能定时器2中断 ***
     EA = 1;
     ES = 1;
-
     REN = 1;
-
     IP = 0x10; // 串行口为高优先级中断
 }
 

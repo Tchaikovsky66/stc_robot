@@ -23,6 +23,7 @@
 #define X_MOTOR 1
 #define Y1_MOTOR 2
 #define Y2_MOTOR 3
+#define Y1Y2_MOTOR 4
 
 #define CORE_DIAMETER_ADDRESS 0x29*2
 #define END_FACE_DISTANCE_ADDRESS 0x2A*2

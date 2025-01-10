@@ -33,7 +33,7 @@ void put_core(void)
 // // 函数实现
 void wait_material(void)
 {
-    MoveToPosition(sign2_x, 0, 0, 100);
+    MoveToPosition(sign2_x, 0, 0, left_right_speed);
     Uart1_SendString("wait_material");
     DelayMs(10);
 }
@@ -41,9 +41,9 @@ void y1_get_material(void)
 {
     Uart1_SendString("y1_get_material");
     DelayMs(10);
-    MoveToPosition(sign1_x, 0, 0, 100);
+    MoveToPosition(sign1_x, 0, 0, left_right_speed);
     MoveToPosition(sign1_x, 60, 0, 100);
-    MoveToPosition(sign1_x, sign1_y, 0, 100);
+    MoveToPosition(sign1_x, sign1_y, 0, left_right_speed);
     catch_core();
     MoveToPosition(sign1_x, 0, 0, 100);
 }
@@ -51,35 +51,42 @@ void y2_wait_processing(void)
 {
     Uart1_SendString("y2_wait_processing");
     DelayMs(10);
-    MoveToPosition(sign2_x, 0, 0, 100);
+    MoveToPosition(sign2_x, 0, 0, left_right_speed);
 }
 void y2_get_processing(void)
-{   
+{
     Uart1_SendString("y2_get_processing");
     DelayMs(10);
-    MoveToPosition(sign2_x - 320, 0, sign2_y2, 100);
+    MoveToPosition(sign2_x - 320, 0, sign2_y2, up_down_speed);
     catch_core();
-    MoveToPosition(sign2_x - 320, 0, 0, 100);
+    MoveToPosition(sign2_x - 320, 0, 0, up_down_speed);
 }
 void y1_put_processing(void)
 {
     Uart1_SendString("y1_put_processing");
     DelayMs(10);
-    MoveToPosition(sign2_x, sign2_y, 0, 100);
+    MoveToPosition(sign2_x, sign2_y, 0, up_down_speed);
     put_core();
-    MoveToPosition(sign2_x, 0, 0, 100);
+    MoveToPosition(sign2_x, 0, 0, up_down_speed);
 }
 void y2_put_finish(void)
 {
     Uart1_SendString("y2_put_finish");
     DelayMs(10);
-    MoveToPosition(sign3_x, 0, sign3_y2, 100);
+    MoveToPosition(sign3_x, 0, sign3_y2, up_down_speed);
     put_core();
-    MoveToPosition(sign3_x, 0, 0, 100);
+    MoveToPosition(sign3_x, 0, 0, up_down_speed);
 }
 
 void go_test(void)
 {
+    if (RCVOK == 0xff)
+    {
+        update_parameters();
+        RCVOK = 0x00;
+        Uart1_SendString("update_parameters\r\n");
+        DelayMs(10);
+    }
     // core_diameter = (float)31.9;
     // tmp_distance = 0;
     // 等待来料
@@ -323,7 +330,7 @@ char set_sign3(void)
 void main(void)
 {
     // 初始化代码
-    DelayMs(500);
+    DelayMs(50);
     Uart1_Init();
     GoToPage(0x3A); // page58
     EN_485 = 0;
@@ -331,11 +338,11 @@ void main(void)
     EN_485 = 1;
     DelayMs(500);
     EN_485 = 0;
-    DelayMs(500);
+    DelayMs(50);
     EN_485 = 1; // 使能485发送
     Interrupt0_Init();
 
-    DelayMs(500);
+    DelayMs(50);
     Motor_init();
 
     DelayMs(10);
@@ -369,7 +376,8 @@ void main(void)
     */
     while (1)
     {
-        if(go_flag == 1)
+        DelayMs(10);
+        if (go_flag == 1)
         {
             Uart1_SendString("go_test\r\n");
             sign1_x = 200;
@@ -382,15 +390,27 @@ void main(void)
             sign3_y = 0;
             sign3_y2 = 0;
             go_flag = 0;
-            //UploadData();
-            while(1)
+            // UploadData();
+            left_right_speed = 200;
+            while (1)
             {
-                go_test();
+                if (RCVOK == 0xff)
+                {
+                    update_parameters();
+                    RCVOK = 0x00;
+                    Uart1_SendString("update_parameters\r\n");
+                    DelayMs(10);
+                }
+                MotorGo(X_MOTOR, GO_LEFT, 400, left_right_speed);
+                DelayMs(10);
+                MotorGo(X_MOTOR, GO_RIGHT, 400, left_right_speed);
+                DelayMs(10);
+                // Uart1_SendString("GO TEST!!!\r\n");
+                // go_test();
             }
-
         }
         // Uart1_SendString("go_test\r\n");
-        // go_test();
+        //go_test();
         if (all_data_flag)
         {
             WriteData(0x16, 0x00, 0x00);
@@ -405,7 +425,7 @@ void main(void)
 
             // #ifdef DEBUG
             Uart1_SendString("receive data\r\n");
-            DelayMs(3);
+            DelayMs(10);
             // sprintf(buf, "up_flag = %d \r,down_flag = %d \r",
             //         up_flag, down_flag);
             // Uart1_SendString(buf);
