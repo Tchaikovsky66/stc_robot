@@ -21,13 +21,13 @@ float tmp_distance = 0;
 void catch_core(void)
 {
     Uart1_SendString("catch_core");
-    DelayMs(100);
+    DelayMs(500);
 }
 
 void put_core(void)
 {
     Uart1_SendString("put_core");
-    DelayMs(100);
+    DelayMs(500);
 }
 
 // // 函数实现
@@ -35,27 +35,28 @@ void wait_material(void)
 {
     MoveToPosition(sign2_x, 0, 0, left_right_speed);
     Uart1_SendString("wait_material");
-    DelayMs(10);
+    DelayMs(1000);
 }
 void y1_get_material(void)
 {
-    Uart1_SendString("y1_get_material");
+    //Uart1_SendString("y1_get_material");
     DelayMs(10);
     MoveToPosition(sign1_x, 0, 0, left_right_speed);
-    MoveToPosition(sign1_x, 60, 0, 100);
-    MoveToPosition(sign1_x, sign1_y, 0, left_right_speed);
+    MoveToPosition(sign1_x, 60, 0, 200);
+    MoveToPosition(sign1_x, sign1_y, 0, up_down_speed);
     catch_core();
-    MoveToPosition(sign1_x, 0, 0, 100);
+    MoveToPosition(sign1_x, 0, 0, up_down_speed);
 }
 void y2_wait_processing(void)
 {
-    Uart1_SendString("y2_wait_processing");
+   // Uart1_SendString("y2_wait_processing");
     DelayMs(10);
-    MoveToPosition(sign2_x, 0, 0, left_right_speed);
+    MoveToPosition(sign2_x-320, 0, 0, left_right_speed);
+    DelayMs(1000);
 }
 void y2_get_processing(void)
 {
-    Uart1_SendString("y2_get_processing");
+    //Uart1_SendString("y2_get_processing");
     DelayMs(10);
     MoveToPosition(sign2_x - 320, 0, sign2_y2, up_down_speed);
     catch_core();
@@ -63,7 +64,7 @@ void y2_get_processing(void)
 }
 void y1_put_processing(void)
 {
-    Uart1_SendString("y1_put_processing");
+   // Uart1_SendString("y1_put_processing");
     DelayMs(10);
     MoveToPosition(sign2_x, sign2_y, 0, up_down_speed);
     put_core();
@@ -71,7 +72,7 @@ void y1_put_processing(void)
 }
 void y2_put_finish(void)
 {
-    Uart1_SendString("y2_put_finish");
+    //Uart1_SendString("y2_put_finish");
     DelayMs(10);
     MoveToPosition(sign3_x, 0, sign3_y2, up_down_speed);
     put_core();
@@ -391,7 +392,7 @@ void main(void)
             sign3_y2 = 0;
             go_flag = 0;
             // UploadData();
-            left_right_speed = 200;
+            left_right_speed = 300;
             while (1)
             {
                 if (RCVOK == 0xff)
@@ -401,12 +402,12 @@ void main(void)
                     Uart1_SendString("update_parameters\r\n");
                     DelayMs(10);
                 }
-                MotorGo(X_MOTOR, GO_LEFT, 400, left_right_speed);
-                DelayMs(10);
-                MotorGo(X_MOTOR, GO_RIGHT, 400, left_right_speed);
-                DelayMs(10);
+                // MotorGo(X_MOTOR, GO_LEFT, 400, left_right_speed);
+                // DelayMs(100);
+                // MotorGo(X_MOTOR, GO_RIGHT, 400, left_right_speed);
+                // DelayMs(100);
                 // Uart1_SendString("GO TEST!!!\r\n");
-                // go_test();
+                go_test();
             }
         }
         // Uart1_SendString("go_test\r\n");

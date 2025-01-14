@@ -1,35 +1,102 @@
 #include <stdio.h>
-int steps;
-float delay_10us;
-void CalculateStepsAndDelay(float distance_cm, float speed_cm_per_s, int *steps, float *delay_10us)
+/**
+ * @brief åˆå§‹åŒ–Så‹åŠ é€ŸæŸ¥æ‰¾è¡¨
+ * @param max_speed æœ€å¤§é€Ÿåº¦mm/s
+ * @note æ¯æ¬¡è¿åŠ¨å‰è°ƒç”¨ä»¥æ›´æ–°åŠ é€Ÿè¡¨
+ */
+#define ACC_TABLE_SIZE 600
+
+int s1_points, s2_points, s3_points;
+
+void InitSCurveTable(float max_speed)
 {
-    // Ã¿×ª2000²½£¬ÒÆ¶¯9cm
-    const float steps_per_revolution = 2000.0;
-    const float distance_per_revolution_cm = 10.0;
-    
-    // ¼ÆËã×Ü²½Êı
-    *steps = (int)((distance_cm / distance_per_revolution_cm) * steps_per_revolution);
-    
-    // ¼ÆËãÑÓÊ±Ê±¼ä£¬ËÙ¶Èµ¥Î»Îªcm/s£¬×ª»»Îª²½/s
-    float steps_per_second = (speed_cm_per_s * steps_per_revolution) / distance_per_revolution_cm;
-    
-    // Ã¿²½ĞèÒªµÄÑÓÊ±Ê±¼ä£¬µ¥Î»Îª10Î¢Ãë
-    *delay_10us = (int)(1000000.0 / steps_per_second/2);
-    
-    // È·±£ÑÓÊ±Ê±¼äÖÁÉÙÎª1£¨¼´10us£©
-    if (*delay_10us < 1)
+    // å¸¸é‡ä¿æŒä¸å˜
+    const float min_speed = 20.0;
+    const float jerk = 2000;
+    const float max_acc = 400;
+    // const float max_acc = max_speed;
+    // const float jerk = 0.1 * max_acc + 400;
+
+    // æ‰€æœ‰å±€éƒ¨å˜é‡éƒ½ä½¿ç”¨xdata
+    float t;
+    float v;
+    float v2;
+
+    int i;
+
+    float Time1, Time2, Time3;
+    float v1;
+    // è®¡ç®—æ—¶é—´å‚æ•°
+    Time1 = max_acc / jerk; // 0.5
+    v1 = min_speed + 0.5 * jerk * Time1 * Time1;
+    Time2 = (max_speed - (min_speed + jerk * Time1 * Time1)) / max_acc; // 300-(10+600*0.5*0.5)   140/300
+    Time3 = Time1;
+    printf("Time1 = %f\r\n", Time1);
+    printf("Time2 = %f\r\n", Time2);
+    printf("Time3 = %f\r\n", Time3);
+
+    s1_points = (int)(ACC_TABLE_SIZE * Time1 / (Time1 + Time2 + Time3)); //  0.5/ (44/30)
+    s2_points = ACC_TABLE_SIZE - 2 * s1_points;
+    s3_points = s1_points;
+
+    printf("s1_points = %d\r\n", s1_points);
+    printf("s2_points = %d\r\n", s2_points);
+    printf("s3_points = %d\r\n", s3_points);
+    // 1. åŠ åŠ é€Ÿæ®µ
+    for (i = 0; i < s1_points; i++)
     {
-        *delay_10us = 1;
+        t = (float)i * Time1 / s1_points;
+        v = min_speed + 0.5 * jerk * t * t;
+        //  s_curve_table[i] = CalculateDelay(v);
     }
 
-    // ±¸×¢£ºÖ§³ÖµÄ×î´óËÙ¶È
-    // ×î´óËÙ¶ÈÈ¡¾öÓÚ×îĞ¡ÑÓÊ±Ê±¼ä£¬¼´10us
-    // ×î´óËÙ¶È = (10cm / 2000²½) * (1000000us / 10us) cm/s
-    // ¼ÆËãµÃ×î´óËÙ¶ÈÎª500 cm/s
-}
+    // 2. åŒ€åŠ é€Ÿæ®µ
+    v2 = v1 + max_acc * Time2; // ç¬¬äºŒæ®µæœ«é€Ÿåº¦
+    for (i = 0; i < s2_points; i++)
+    {
+        t = (float)i * Time2 / s2_points;
+        v = v1 + max_acc * t;
+        //   s_curve_table[i + s1_points] = CalculateDelay(v);
+    }
 
+    // 3. å‡åŠ åŠ é€Ÿæ®µ
+    for (i = 0; i < s1_points; i++)
+    {
+        t = (float)i * Time3 / s1_points;
+        v = v2 + max_acc * t - 0.5 * jerk * t * t;
+        if (v > max_speed)
+            v = max_speed;
+        //   s_curve_table[i + s1_points + s2_points] = CalculateDelay(v);
+    }
+
+    // è®¡ç®—ä¸‰æ®µä½ç§»
+    float s1 = 0, s2 = 0, s3 = 0;
+    float total_distance = 0;
+
+    // 1. åŠ åŠ é€Ÿæ®µä½ç§»
+    // s1 = (1/6)*j*t^3
+    s1 = (1.0 / 6.0) * jerk * Time1 * Time1 * Time1;
+    printf("s1 = %f\r\n", s1);
+    // 2. åŒ€åŠ é€Ÿæ®µä½ç§»
+    // s2 = v1*t + (1/2)*a*t^2
+    s2 = v1 * Time2 + 0.5 * max_acc * Time2 * Time2;
+    printf("s2 = %f\r\n", s2);
+    // 3. å‡åŠ åŠ é€Ÿæ®µä½ç§»
+    // s3 = v2*t + a*t^2/2 - j*t^3/6
+    s3 = v2 * Time3 + max_acc * Time3 * Time3 / 2.0 - jerk * Time3 * Time3 * Time3 / 6.0;
+    printf("s1 = %f\r\n", s1);
+    // æ€»ä½ç§»
+    total_distance = s1 + s2 + s3;
+
+    printf("total_distance = %f\r\n", total_distance);
+}
 int main()
 {
-    CalculateStepsAndDelay(10,5,&steps,&delay_10us);
-    printf("steps = %d\r\ndelay_10us = %f\r\n",steps,delay_10us);
+    while (1)
+    {
+        int max_speed;
+        printf("è¯·è¾“å…¥æœ€å¤§é€Ÿåº¦mm/sï¼š");
+        scanf("%d", &max_speed);
+        InitSCurveTable(max_speed);
+    }
 }

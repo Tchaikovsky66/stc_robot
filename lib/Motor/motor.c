@@ -4,6 +4,7 @@
 #include <uart.h>
 #include "../../include/stc15.h"
 #include "../../include/main.h"
+#include "../../include/speed_table.h"
 #include <config.h>
 
 #define SPEED_ARRAY_SIZE 101 // 0-100共101个值
@@ -45,10 +46,10 @@ void Motor_init(void)
     X_STEP = 0; // x轴电机脉冲归零
     X_EN = X_EN_OFF;
 
-    P37 = 1;
+    P37 = 1; // 上下使能
 
     Allow_Move = 1;
-    //MotorGo(Y1Y2_MOTOR, GO_DOWN, 20, 200);
+    // MotorGo(Y1Y2_MOTOR, GO_DOWN, 20, 200);
     MotorGo(Y1_MOTOR, GO_DOWN, 20, 100);
     MotorGo(Y2_MOTOR, GO_DOWN, 20, 100);
 
@@ -278,10 +279,10 @@ void InitSCurveTable(float max_speed)
 {
     // 常量保持不变
     const float min_speed = 20.0;
-    const float jerk = 600.0;
-    //const float max_acc = 200.0;
-    const float max_acc = max_speed;
-    //const float jerk = 0.1 * max_acc + 400;
+    const float jerk = 2000.0;
+    // const float max_acc = 200.0;
+    const float max_acc = 400;
+    // const float jerk = 0.1 * max_acc + 400;
 
     // 所有局部变量都使用xdata
     __xdata float t;
@@ -296,7 +297,7 @@ void InitSCurveTable(float max_speed)
     Time2 = (max_speed - (min_speed + jerk * Time1 * Time1)) / max_acc; // 300-(10+600*0.5*0.5)   140/300
     Time3 = Time1;
 
-    s1_points = (int)(ACC_TABLE_SIZE * Time1 / (Time1 + Time2 + Time3));        //  0.5/ (44/30)
+    s1_points = (int)(ACC_TABLE_SIZE * Time1 / (Time1 + Time2 + Time3)); //  0.5/ (44/30)
     s2_points = ACC_TABLE_SIZE - 2 * s1_points;
     s3_points = s1_points;
 
@@ -329,24 +330,143 @@ void InitSCurveTable(float max_speed)
             v = max_speed;
         s_curve_table[i + s1_points + s2_points] = CalculateDelay(v);
     }
-}
 
+    // 计算三段位移
+    // __xdata float s1 = 0, s2 = 0, s3 = 0;
+    // __xdata float total_distance = 0;
+
+    // // 1. 加加速段位移
+    // // s1 = (1/6)*j*t^3
+    // s1 = (1.0/6.0) * jerk * Time1 * Time1 * Time1;
+
+    // // 2. 匀加速段位移
+    // // s2 = v1*t + (1/2)*a*t^2
+    // s2 = v1 * Time2 + 0.5 * max_acc * Time2 * Time2;
+
+    // // 3. 减加加速段位移
+    // // s3 = v2*t + a*t^2/2 - j*t^3/6
+    // s3 = v2 * Time3 + max_acc * Time3 * Time3 / 2.0 - jerk * Time3 * Time3 * Time3 / 6.0;
+
+    // // 总位移
+    // total_distance = s1 + s2 + s3;
+}
+char MotorGo(unsigned char num, unsigned char dir, int distance_mm, int speed_mm_per_s)
+{
+
+    // 计算速度比例
+    float speed_ratio = 200.0 / speed_mm_per_s; // 200是生成表时的基准速度
+    __xdata unsigned long total_steps = distance_mm * 20;
+    __xdata int const_steps = total_steps - 2 * SPEED_TABLE_SIZE;
+    __xdata unsigned int adjusted_delay;
+    // 初始化电机
+    tmp_steps = 0;
+    X_EN = X_EN_ON;
+    X_DIR = dir;
+    Y1_DIR = dir;
+    Y2_DIR = dir;
+    if (distance_mm < 200)
+    {
+        for (int i = 0; i < total_steps; i++)
+        {
+            if (OneStep(num, CalculateDelay(speed_mm_per_s)) == ERR)
+            {
+                return ERR;
+            }
+
+            if (OneStep(num, CalculateDelay(speed_mm_per_s)) == ERR)
+            {
+                return ERR;
+            }
+        }
+    }
+    else
+    {
+        // 使用查表方式获取延时值
+        //1.1 加速
+        for (int i = 0; i < SPEED_TABLE_SIZE; i++)
+        {
+            // 根据速度比例调整延时值
+            // adjusted_delay = (unsigned int)(delay_table[i] * speed_ratio);
+
+            // // 限制最小和最大延时值
+            // if (adjusted_delay < 1152) // 最大速度对应的延时（200mm/s）
+            //     adjusted_delay = 1152;
+            // if (adjusted_delay > 11520) // 最小速度对应的延时（20mm/s）
+            //     adjusted_delay = 11520;
+
+            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
+            {
+                return ERR;
+            }
+            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
+            {
+                return ERR;
+            }
+        }
+        //2. 匀速
+        for (int i = 0; i < const_steps; i++)
+        {
+            // 根据速度比例调整延时值
+            // adjusted_delay = (unsigned int)(delay_table[SPEED_TABLE_SIZE - 1] * speed_ratio);
+
+            // // 限制最小和最大延时值
+            // if (adjusted_delay < 1152) // 最大速度对应的延时（200mm/s）
+            //     adjusted_delay = 1152;
+            // if (adjusted_delay > 11520) // 最小速度对应的延时（20mm/s）
+            //     adjusted_delay = 11520;
+            if (OneStep(num, 65536UL - delay_table[SPEED_TABLE_SIZE - 1]) == ERR)
+            {
+                return ERR;
+            }
+            if (OneStep(num, 65536UL - delay_table[SPEED_TABLE_SIZE - 1]) == ERR)
+            {
+                return ERR;
+            }
+        }
+        //3.减速
+        for (int i = SPEED_TABLE_SIZE - 1; i >= 0; i--)
+        {
+            // 根据速度比例调整延时值
+            // adjusted_delay = (unsigned int)(delay_table[i] * speed_ratio);
+
+            // // 限制最小和最大延时值
+            // if (adjusted_delay < 1152) // 最大速度对应的延时（200mm/s）
+            //     adjusted_delay = 1152;
+            // if (adjusted_delay > 11520) // 最小速度对应的延时（20mm/s）
+            //     adjusted_delay = 11520;
+            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
+            {
+                return ERR;
+            }
+            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
+            {
+                return ERR;
+            }
+        }
+    }
+    X_EN = X_EN_OFF;
+    X_DIR = 0;
+    Y1_DIR = 0;
+    Y2_DIR = 0;
+
+    return OK;
+}
 /**
  * @brief S型加速电机运动控制(查表版)
  */
-char MotorGo(unsigned char num, unsigned char dir, int distance_mm, int speed_mm_per_s)
+char MotorGo1(unsigned char num, unsigned char dir, int distance_mm, int speed_mm_per_s)
 {
     // 所有局部变量都使用xdata
     __xdata unsigned long total_steps;
     __xdata int const_steps;
-    __xdata float ratio;
+    //;
     __xdata unsigned int const_delay;
 
     // 参数检查
     if (speed_mm_per_s > 500)
         speed_mm_per_s = 500;
-    if (speed_mm_per_s < 5)
-        speed_mm_per_s = 5;
+    if (speed_mm_per_s < 20)
+        speed_mm_per_s = 20;
 
     // 初始化电机
     tmp_steps = 0;

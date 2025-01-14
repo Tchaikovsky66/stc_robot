@@ -13,6 +13,15 @@
 #define UP_DOWN_DISTANCE 0x46
 #define LEFT_RIGHT_SPEED 0x48
 #define LEFT_RIGHT_DISTANCE 0x44
+#define SIGN1_X 0x18
+#define SIGN1_Y 0x19
+#define SIGN1_Y2 0x1A
+#define SIGN2_X 0x1B
+#define SIGN2_Y 0x1C
+#define SIGN2_Y2 0x1D
+#define SIGN3_X 0x1E
+#define SIGN3_Y 0x1F
+#define SIGN3_Y2 0x20
 
 #define LIMIT_RICHED 0
 #define GO_LEFT 1

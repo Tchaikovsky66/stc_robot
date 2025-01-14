@@ -44,9 +44,9 @@ void MoveToPosition(int target_x, int target_y, int target_y2, int speed)
     static int x_distance;
     static unsigned char x_direction;
     static int y_distance;
-    static int y_direction;
+    static unsigned char y_direction;
     static int y2_distance;
-    static int y2_direction;
+    static unsigned char y2_direction;
 
     // 计算X轴移动距离和方向
     x_distance = target_x - current_pos_x;

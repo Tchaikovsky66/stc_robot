@@ -50,8 +50,17 @@ void InitData(void)
     // 初始化基本参数
     InitValue(UP_DOWN_DISTANCE, 40);
     InitValue(UP_DOWN_SPEED, 200);
-    InitValue(LEFT_RIGHT_SPEED, 200);
+    InitValue(LEFT_RIGHT_SPEED, 300);
     InitValue(LEFT_RIGHT_DISTANCE, 1);
+    InitValue(SIGN1_X, 20);
+    InitValue(SIGN1_Y, 60);
+    InitValue(SIGN1_Y2, 0);
+    InitValue(SIGN2_X, 500);
+    InitValue(SIGN2_Y, 20);
+    InitValue(SIGN2_Y2, 0);
+    InitValue(SIGN3_X, 750);
+    InitValue(SIGN3_Y, 0);
+    InitValue(SIGN3_Y2, 60);
     InitValue(MODEL, 1);
     CFGBUF[0] = 1;
 
@@ -115,9 +124,9 @@ void update_parameters(void)
     sign3_x = (CFGBUF[0x1E * 2] << 8) | CFGBUF[0x1E * 2 + 1];
     sign3_y = (CFGBUF[0x1F * 2] << 8) | CFGBUF[0x1F * 2 + 1];
     sign3_y2 = (CFGBUF[0x20 * 2] << 8) | CFGBUF[0x20 * 2 + 1];
-    distance_X2 = (CFGBUF[0x21 * 2] << 8) | CFGBUF[0x21 * 2 + 1];
-    left_right_distance = (CFGBUF[0x22 * 2] << 8) | CFGBUF[0x22 * 2 + 1];
-    up_down_distance = (CFGBUF[0x23 * 2] << 8) | CFGBUF[0x23 * 2 + 1];
+    sign0_x = (CFGBUF[0x21 * 2] << 8) | CFGBUF[0x21 * 2 + 1];
+    sign0_y = (CFGBUF[0x22 * 2] << 8) | CFGBUF[0x22 * 2 + 1];
+    sign0_y2 = (CFGBUF[0x23 * 2] << 8) | CFGBUF[0x23 * 2 + 1];
     left_right_speed = (CFGBUF[0x24 * 2] << 8) | CFGBUF[0x24 * 2 + 1];
     up_down_speed = (CFGBUF[0x25 * 2] << 8) | CFGBUF[0x25 * 2 + 1];
     model = (CFGBUF[0x28 * 2] << 8) | CFGBUF[0x28 * 2 + 1];
