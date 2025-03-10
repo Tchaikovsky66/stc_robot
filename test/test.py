@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import CubicSpline
 
-def calculate_s_curve(max_speed=200, min_speed=20, step_distance=0.05):
-    max_acc = 400
-    jerk = 1200
+def calculate_s_curve(max_speed=100, min_speed=5, step_distance=0.05):
+    max_acc = 200
+    jerk = 800
     
     # 计算时间参数
     T1 = max_acc / jerk  # 加加速时间
@@ -92,11 +92,11 @@ def calculate_s_curve(max_speed=200, min_speed=20, step_distance=0.05):
             f.write(f"{int(speed)}, ")
         f.write("\n};\n")
     
-    # 修改图表布局为2x2
+    # 修改图表布局为2x3
     fig = plt.figure(figsize=(15, 12))
     
     # 绘制速度-时间曲线 (左上)
-    ax1 = plt.subplot(221)
+    ax1 = plt.subplot(231)
     ax1.plot(t, v, 'b-', label='Speed')
     ax1.set_ylabel('Speed (mm/s)')
     ax1.set_xlabel('Time (s)')
@@ -104,8 +104,8 @@ def calculate_s_curve(max_speed=200, min_speed=20, step_distance=0.05):
     ax1.grid(True)
     ax1.legend()
     
-    # 绘制加速度-时间曲线 (右上)
-    ax2 = plt.subplot(222)
+    # 绘制加速度-时间曲线 (中上)
+    ax2 = plt.subplot(232)
     ax2.plot(t, acc, 'r-', label='Acceleration')
     ax2.set_xlabel('Time (s)')
     ax2.set_ylabel('Acceleration (mm/s²)')
@@ -113,8 +113,8 @@ def calculate_s_curve(max_speed=200, min_speed=20, step_distance=0.05):
     ax2.grid(True)
     ax2.legend()
     
-    # 绘制加加速度-时间曲线 (左下)
-    ax3 = plt.subplot(223)
+    # 绘制加加速度-时间曲线 (右上)
+    ax3 = plt.subplot(233)
     ax3.plot(t, jerk_array, 'g-', label='Jerk')
     ax3.set_xlabel('Time (s)')
     ax3.set_ylabel('Jerk (mm/s³)')
@@ -122,14 +122,32 @@ def calculate_s_curve(max_speed=200, min_speed=20, step_distance=0.05):
     ax3.grid(True)
     ax3.legend()
     
-    # 绘制延时-距离关系曲线 (右下)
-    ax4 = plt.subplot(224)
+    # 绘制延时-距离关系曲线 (左下)
+    ax4 = plt.subplot(234)
     ax4.plot(s_uniform, delay_array, 'm-', label='Step Delay')
     ax4.set_xlabel('Distance (mm)')
     ax4.set_ylabel('Delay (us)')
-    ax4.set_title('Step Delay Profile')
+    ax4.set_title('Step Delay-Distance Profile')
     ax4.grid(True)
     ax4.legend()
+    
+    # 绘制速度-距离关系曲线 (中下)
+    ax5 = plt.subplot(235)
+    ax5.plot(s, v, 'c-', label='Speed')
+    ax5.set_xlabel('Distance (mm)')
+    ax5.set_ylabel('Speed (mm/s)')
+    ax5.set_title('Speed-Distance Profile')
+    ax5.grid(True)
+    ax5.legend()
+    
+    # 绘制加速度-距离关系曲线 (右下)
+    ax6 = plt.subplot(236)
+    ax6.plot(s, acc, 'y-', label='Acceleration')
+    ax6.set_xlabel('Distance (mm)')
+    ax6.set_ylabel('Acceleration (mm/s²)')
+    ax6.set_title('Acceleration-Distance Profile')
+    ax6.grid(True)
+    ax6.legend()
     
     plt.tight_layout()
     plt.show()
@@ -144,6 +162,41 @@ def calculate_s_curve(max_speed=200, min_speed=20, step_distance=0.05):
     print(f"Min delay: {min(delay_array):.1f}us")
     print(f"Max delay: {max(delay_array):.1f}us")
     print(f"Total steps: {len(s_uniform)}")
+    
+    # 生成speed_profile.h文件
+    num_samples = 100
+    sample_indices = np.linspace(0, len(v_uniform)-1, num_samples, dtype=int)
+    sampled_speeds = v_uniform[sample_indices]
+    
+    with open('speed_profile.h', 'w') as f:
+        f.write("// 自动生成的速度-距离采样数据\n")
+        f.write(f"// 最大速度: {max_speed}mm/s\n")
+        f.write(f"// 最小速度: {min_speed}mm/s\n")
+        f.write(f"// 采样点数: {num_samples}\n\n")
+        
+        f.write(f"#define SPEED_PROFILE_SIZE {num_samples}\n\n")
+        
+        # 原始速度值数组（浮点数）
+        f.write("// 原始速度值（浮点数）\n")
+        f.write("const float speed_profile_float[SPEED_PROFILE_SIZE] = {\n    ")
+        for i, speed in enumerate(sampled_speeds):
+            if i > 0 and i % 5 == 0:  # 每5个数换一行
+                f.write("\n    ")
+            f.write(f"{speed:.2f}f, ")
+        f.write("\n};\n\n")
+        
+        # 四舍五入后的速度值数组（整数）
+        f.write("// 四舍五入后的速度值（整数）\n")
+        f.write("const unsigned int speed_profile_int[SPEED_PROFILE_SIZE] = {\n    ")
+        rounded_speeds = np.round(sampled_speeds).astype(int)  # 四舍五入并转换为整数
+        for i, speed in enumerate(rounded_speeds):
+            if i > 0 and i % 5 == 0:  # 每5个数换一行
+                f.write("\n    ")
+            f.write(f"{speed}, ")
+        f.write("\n};\n")
+    
+    print(f"\n已生成speed_profile.h文件，包含{num_samples}个速度采样点")
+    print("包括原始浮点数值和四舍五入后的整数值")
     
     return t, v, s_uniform, delay_array
 

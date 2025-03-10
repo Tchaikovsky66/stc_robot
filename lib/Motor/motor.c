@@ -47,34 +47,6 @@ void Motor_init(void)
     X_EN = X_EN_OFF;
 
     P37 = 1; // 上下使能
-
-    Allow_Move = 1;
-    // MotorGo(Y1Y2_MOTOR, GO_DOWN, 20, 200);
-    MotorGo(Y1_MOTOR, GO_DOWN, 20, 100);
-    MotorGo(Y2_MOTOR, GO_DOWN, 20, 100);
-
-    Allow_Move = 0;
-
-    if (MotorGo(Y1_MOTOR, GO_UP, 500, 100) == ERR)
-    {
-        Allow_Move = 1;
-        MotorGo(Y1_MOTOR, GO_DOWN, 10, 50);
-        Allow_Move = 0;
-    }
-    if (MotorGo(Y2_MOTOR, GO_UP, 500, 100) == ERR)
-    {
-        Allow_Move = 1;
-        MotorGo(Y2_MOTOR, GO_DOWN, 10, 50);
-        Allow_Move = 0;
-    }
-    if (MotorGo(X_MOTOR, GO_RIGHT, 1000, 100) == ERR)
-    {
-        Allow_Move = 1;
-        Allow_Catch = 0;
-        MotorGo(X_MOTOR, GO_LEFT, 200, 200);
-
-        Allow_Move = 0; //
-    }
 }
 
 // /**
@@ -352,28 +324,55 @@ void InitSCurveTable(float max_speed)
 }
 char MotorGo(unsigned char num, unsigned char dir, int distance_mm, int speed_mm_per_s)
 {
-
     // 计算速度比例
     float speed_ratio = 200.0 / speed_mm_per_s; // 200是生成表时的基准速度
+    speed_ratio = 1;
     __xdata unsigned long total_steps = distance_mm * 20;
     __xdata int const_steps = total_steps - 2 * SPEED_TABLE_SIZE;
-    __xdata unsigned int adjusted_delay;
+    //__xdata unsigned int adjusted_delay;
+    static int acc_steps = 0;
+    static int dec_steps = 0;
+    static int delta_speed = 0;
     // 初始化电机
     tmp_steps = 0;
     X_EN = X_EN_ON;
     X_DIR = dir;
     Y1_DIR = dir;
     Y2_DIR = dir;
-    if (distance_mm < 200)
+    delta_speed = speed_mm_per_s - 200;
+    if (delta_speed >= 0)
     {
-        for (int i = 0; i < total_steps; i++)
+        delta_speed = CalculateDelay(delta_speed);
+    }
+    else
+    {
+        //delta_speed = -CalculateDelay(-delta_speed);      //delay_table[0]会出错
+    }
+    if (total_steps <= SPEED_TABLE_SIZE)    //不需要匀速
+    {
+       acc_steps = total_steps / 2;
+        dec_steps = total_steps - acc_steps;
+        //加速
+        for (int i = 0; i < acc_steps; i++)
         {
-            if (OneStep(num, CalculateDelay(speed_mm_per_s)) == ERR)
+            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
             {
                 return ERR;
             }
 
-            if (OneStep(num, CalculateDelay(speed_mm_per_s)) == ERR)
+            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
+            {
+                return ERR;
+            }
+        }
+        //减速
+        for (int i = dec_steps-1; i >= 0; i--)
+        {
+            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
+            {
+                return ERR;
+            }
+            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
             {
                 return ERR;
             }
@@ -414,11 +413,11 @@ char MotorGo(unsigned char num, unsigned char dir, int distance_mm, int speed_mm
             //     adjusted_delay = 1152;
             // if (adjusted_delay > 11520) // 最小速度对应的延时（20mm/s）
             //     adjusted_delay = 11520;
-            if (OneStep(num, 65536UL - delay_table[SPEED_TABLE_SIZE - 1]) == ERR)
+            if (OneStep(num, 65536UL - delay_table[SPEED_TABLE_SIZE]) == ERR)
             {
                 return ERR;
             }
-            if (OneStep(num, 65536UL - delay_table[SPEED_TABLE_SIZE - 1]) == ERR)
+            if (OneStep(num, 65536UL - delay_table[SPEED_TABLE_SIZE - 100]) == ERR)
             {
                 return ERR;
             }

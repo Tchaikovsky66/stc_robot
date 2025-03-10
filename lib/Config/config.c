@@ -48,16 +48,14 @@ void InitData(void)
         0x5A, 0xA5, 0x59, 0x82, 0x00, 0x00};
 
     // 初始化基本参数
-    InitValue(UP_DOWN_DISTANCE, 40);
     InitValue(UP_DOWN_SPEED, 200);
-    InitValue(LEFT_RIGHT_SPEED, 300);
-    InitValue(LEFT_RIGHT_DISTANCE, 1);
+    InitValue(LEFT_RIGHT_SPEED, 200);
     InitValue(SIGN1_X, 20);
     InitValue(SIGN1_Y, 60);
     InitValue(SIGN1_Y2, 0);
     InitValue(SIGN2_X, 500);
-    InitValue(SIGN2_Y, 20);
-    InitValue(SIGN2_Y2, 0);
+    InitValue(SIGN2_Y, 200);
+    InitValue(SIGN2_Y2, 200);
     InitValue(SIGN3_X, 750);
     InitValue(SIGN3_Y, 0);
     InitValue(SIGN3_Y2, 60);
@@ -111,10 +109,11 @@ void update_parameters(void)
 {
     init_pos_flag = CFGBUF[0x13 * 2 + 1] & 0x01;
     init_pos_end_flag = CFGBUF[0x13 * 2 + 1] & 0x02;
-    go_flag = CFGBUF[0x13 * 2 + 1] & 0x04;
+    
     sign1_flag = CFGBUF[0x13 * 2] & 0x01;
     sign2_flag = CFGBUF[0x13 * 2] & 0x02;
     sign3_flag = CFGBUF[0x13 * 2] & 0x04;
+    go_flag = CFGBUF[0x17 * 2 + 1] & 0x01;
     sign1_x = (CFGBUF[0x18 * 2] << 8) | CFGBUF[0x18 * 2 + 1];
     sign1_y = (CFGBUF[0x19 * 2] << 8) | CFGBUF[0x19 * 2 + 1];
     sign1_y2 = (CFGBUF[0x1A * 2] << 8) | CFGBUF[0x1A * 2 + 1];

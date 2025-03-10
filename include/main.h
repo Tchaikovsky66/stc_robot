@@ -13,15 +13,15 @@
 #define UP_DOWN_DISTANCE 0x46
 #define LEFT_RIGHT_SPEED 0x48
 #define LEFT_RIGHT_DISTANCE 0x44
-#define SIGN1_X 0x18
-#define SIGN1_Y 0x19
-#define SIGN1_Y2 0x1A
-#define SIGN2_X 0x1B
-#define SIGN2_Y 0x1C
-#define SIGN2_Y2 0x1D
-#define SIGN3_X 0x1E
-#define SIGN3_Y 0x1F
-#define SIGN3_Y2 0x20
+#define SIGN1_X 0x30
+#define SIGN1_Y 0x32
+#define SIGN1_Y2 0x34
+#define SIGN2_X 0x36
+#define SIGN2_Y 0x38
+#define SIGN2_Y2 0x3A
+#define SIGN3_X 0x3C
+#define SIGN3_Y 0x3E
+#define SIGN3_Y2 0x40
 
 #define LIMIT_RICHED 0
 #define GO_LEFT 1
@@ -34,15 +34,15 @@
 #define Y2_MOTOR 3
 #define Y1Y2_MOTOR 4
 
-#define CORE_DIAMETER_ADDRESS 0x29*2
-#define END_FACE_DISTANCE_ADDRESS 0x2A*2
+#define CORE_DIAMETER_ADDRESS 0x29 * 2
+#define END_FACE_DISTANCE_ADDRESS 0x2A * 2
 
 __sbit __at(0x93) X_R_LIMIT; // 0到达限位 ，1未到达 P13
 __sbit __at(0x94) X_L_LIMIT; // 0到达限位 ，1未到达 P14
 __sbit __at(0xB4) Y1_LIMIT;  // 0到达限位 ，1未到达 P34
-__sbit __at(0xB3) Y1_OP;  // y1工件检测 P33
+__sbit __at(0xB3) Y1_OP;     // y1工件检测 P33
 __sbit __at(0xB5) Y2_LIMIT;  // 0到达限位 ，1未到达 P35
-__sbit __at(0xB6) Y2_OP;  // y2工件检测 P36
+__sbit __at(0xB6) Y2_OP;     // y2工件检测 P36
 __sbit __at(0x80) X_DIR;     // 1向左，0向右  P00
 __sbit __at(0x81) X_STEP;    // 脉冲输出  P01
 __sbit __at(0x82) X_EN;      // 0使能，1不使能  P02
@@ -64,5 +64,9 @@ uart
 /*
 delay
 */
+
+void sifu_increase_speed(void);
+
+extern const unsigned int speed_profile_int_test[101];
 
 #endif // !_MAIN_H

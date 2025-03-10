@@ -8,7 +8,9 @@
         "unity.h": "c",
         "position.h": "c",
         "main.h": "c",
-        "stc15.h": "c"
+        "stc15.h": "c",
+        "speed_table.h": "c",
+        "isr.h": "c"
     },
     "C_Cpp.intelliSenseEngineFallback": "disabled", //需要添加的
     "C_Cpp.intelliSenseEngine": "Tag Parser", //  需要添加的
