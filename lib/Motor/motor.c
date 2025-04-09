@@ -1,568 +1,520 @@
-#include <motor.h>
-#include <8051.h>
-#include <delay.h>
-#include <uart.h>
+#include "motor.h"
 #include "../../include/stc15.h"
 #include "../../include/main.h"
-#include "../../include/speed_table.h"
-#include <config.h>
+#include "uart.h"
+#include "dwin.h"
+#include "common.h"
+#include "delay.h"
+// 在源文件中定义变量 - SDCC 方式
+__data int 中断次数 = 0;
+__data int 当前总步数 = 0;
+__data int 当前y1轴最大脉冲数 = 0;
+__data int 当前y2轴最大脉冲数 = 0;
 
-#define SPEED_ARRAY_SIZE 101 // 0-100共101个值
-#define ACC_TABLE_SIZE 600   // 加速段点数
+__data unsigned int x轴脉冲总值 = 0;
+__data unsigned int y1轴脉冲总值 = 0;
+__data unsigned int y2轴脉冲总值 = 0;
 
-// 声明延迟值数组
-__xdata volatile unsigned int delay_array[SPEED_ARRAY_SIZE];
-char Allow_Move = 0;
-char Allow_Catch = 0;
-volatile int tmp_steps = 0;
-volatile int target_steps = 0;
-volatile int set_to_catch_steps = 0;
-// 定义加速表大小
-__xdata unsigned int s_curve_table[ACC_TABLE_SIZE]; // S型加速查找表
+__data volatile unsigned int 当前y1轴脉冲数 = 0;
+__data volatile unsigned int 当前y2轴脉冲数 = 0;
 
-// 在文件开头添加函数声明
-static unsigned int CalculateDelay(float speed_mm_per_s); // 函数声明
-void InitSCurveTable(float max_speed);                    // 添加最大速度参数
+__bit 电机总开关 = 0;
+__bit 限位开关标志位 = 0;
+__bit 计数10ms发送标志位 = 0;
+__data char 电机标志位 = 0;
+__bit 正在归位标志位 = 0;
+__bit 电机运行结束标志位 = 0;
 
-// 在文件开头定义
-__xdata float Time1, Time2, Time3;
-__xdata float v1, v2;
-__xdata int s1_points, s2_points, s3_points, total_points;
-/**
- * @brief 电机初始化
- * @note 设置端口模式，初始化电机状态，执行回零操作
- */
-void Motor_init(void)
+// 常量数组放在代码区
+__code const unsigned int delay_table1[101] = {
+    46080, 41714, 35483, 29932, 25613, 22324, 19791, 17226, 15293, 13788,
+    12583, 11596, 10773, 10074, 9474, 8952, 8493, 8087, 7724, 7366,
+    7022, 6723, 6459, 6223, 6012, 5821, 5646, 5487, 5340, 5205,
+    5079, 4962, 4853, 4750, 4654, 4564, 4478, 4397, 4320, 4248,
+    4178, 4112, 4050, 3989, 3932, 3877, 3824, 3773, 3724, 3677,
+    3632, 3589, 3546, 3506, 3467, 3429, 3392, 3356, 3322, 3288,
+    3256, 3224, 3194, 3164, 3135, 3107, 3072, 3040, 3010, 2981,
+    2953, 2926, 2901, 2876, 2853, 2830, 2809, 2788, 2768, 2749,
+    2730, 2712, 2695, 2679, 2663, 2647, 2632, 2618, 2604, 2591,
+    2578, 2566, 2554, 2542, 2531, 2520, 2510, 2500, 2490, 2481, 2481};
+__code const unsigned int 速度表[101] = {
+    5,
+    6,
+    8,
+    10,
+    13,
+    17,
+    19,
+    23,
+    25,
+    28,
+    30,
+    33,
+    35,
+    37,
+    39,
+    41,
+    43,
+    44,
+    46,
+    48,
+    49,
+    51,
+    52,
+    54,
+    55,
+    57,
+    58,
+    59,
+    61,
+    62,
+    63,
+    64,
+    65,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    80,
+    81,
+    82,
+    83,
+    84,
+    84,
+    85,
+    86,
+    87,
+    87,
+    88,
+    88,
+    89,
+    90,
+    90,
+    91,
+    91,
+    92,
+    92,
+    93,
+    93,
+    93,
+    94,
+    94,
+    95,
+    95,
+    95,
+    96,
+    96,
+    96,
+    97,
+    97,
+    97,
+    98,
+    98,
+    98,
+    98,
+    98,
+    99,
+    99,
+    99,
+    99,
+    99,
+    99,
+    99,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+};
+
+void motor_init(void)
 {
-    P0M0 = 0xff;
-    P0M1 = 0x00; // P00-P07 推挽输出
+    /***使用定时器0****/
+    P0M0 = 0xff; // 设置 P0 为推挽输出
+    P0M1 = 0x00;
     P1M0 &= ~0xf8;
     P1M1 &= ~0xf8; // P13-P17 准双向口
 
     P3M0 |= 0x80;
     P3M1 &= ~0x80;
-    // P37 推挽输出 P30-P36 准双向口
 
-    X_STEP = 0; // x轴电机脉冲归零
-    X_EN = X_EN_OFF;
+    AUXR |= 0x80; // 定时器时钟1T模式
+    TMOD &= 0xF0; // 设置定时器模式为模式0
+    TL0 = 0;      // 清零定时器初值
+    TH0 = 0;
+    TF0 = 0; // 清除TF0标志
+    ET0 = 1; // 使能定时器0中断
+    EA = 1;  // 开启总中断
 
-    P37 = 1; // 上下使能
+    X_STEP = 0;
+    Y1_STEP = 0;
+    Y2_STEP = 0;
+    P37 = 1;
 }
 
-// /**
-//  * @brief 计算电机运动的步数和延时
-//  * @param distance_cm 移动距离(厘米)
-//  * @param speed_mm_per_s 移动速度(毫米/秒)
-//  * @param steps 计算得到的步数
-//  * @param delay_10us 计算得到的延时值(10微秒)
-//  * @note 根据距离和速度计算电机运动参数
-//  */
-// void CalculateStepsAndDelay(float distance_cm, float speed_mm_per_s, int *steps, int *delay_10us)
-// {
-
-//     const float steps_per_revolution = 2000.0;
-//     const float distance_per_revolution_cm = 100.0;
-
-//     *steps = (int)((distance_cm / distance_per_revolution_cm) * steps_per_revolution);
-//     *steps = *steps * 2;
-
-//     float steps_per_second = (speed_mm_per_s * steps_per_revolution) / (distance_per_revolution_cm / 10);
-
-//     *delay_10us = (int)(1000000.0 / steps_per_second / 2);
-
-//     if (*delay_10us < 1)
-//     {
-//         *delay_10us = 1;
-//     }
-// }
-
-char OneStep(unsigned char num, int delay)
+void Timer1_10ms_Init(void) // 10毫秒@11.0592MHz
 {
-    if ((X_R_LIMIT == LIMIT_RICHED) && (Allow_Move == 0))
-    {
-        return ERR;
-    }
-    if ((Y1_LIMIT == LIMIT_RICHED) && (Allow_Move == 0))
-    {
-        return ERR;
-    }
-    if ((Y2_LIMIT == LIMIT_RICHED) && (Allow_Move == 0))
-    {
-        return ERR;
-    }
-    if ((Y1_OP == LIMIT_RICHED))
-    {
-        target_steps = tmp_steps + 20 * (60 + end_face_distance);
-        // return Y1_GOT;
-        set_to_catch_steps = tmp_steps;
-        if (Allow_Catch == 1)
-        {
-        }
-        // if (tmp_steps >= target_steps)
-        // {
-        //     target_steps = 0;
-        //     return Y1_GOT;
-        // }
-    }
-
-    switch (num)
-    {
-    case X_MOTOR:
-        X_STEP = !X_STEP;
-        SetPulseInterval(delay);
-        return OK;
-
-    case Y1_MOTOR:
-        Y1_STEP = !Y1_STEP;
-        SetPulseInterval(delay);
-        return OK;
-
-    case Y2_MOTOR:
-        Y2_STEP = !Y2_STEP;
-        SetPulseInterval(delay);
-        return OK;
-
-    case Y1Y2_MOTOR:
-        Y1_STEP = !Y1_STEP;
-        Y2_STEP = !Y2_STEP;
-        SetPulseInterval(delay);
-
-    default:
-        return ERR; // 对于未知的电机编号，返回错误
-    }
+    AUXR &= 0xBF; // 定时器时钟12T模式
+    TMOD &= 0x0F; // 设置定时器模式
+    TL1 = 0x00;   // 设置定时初始值
+    TH1 = 0xDC;   // 设置定时初始值
+    TF1 = 0;      // 清除TF1标志
+    // TR1 = 1;      // 定时器1开始计时
+    ET1 = 1; // 使能定时器1中断
 }
 
-// /**
-//  * @brief 控制电机运动
-//  * @param num 电机编号(X_MOTOR/Y1_MOTOR/Y2_MOTOR)
-//  * @param dir 运动方向(GO_LEFT/GO_RIGHT/GO_UP/GO_DOWN)
-//  * @param distance_mm 运动距离(毫米)
-//  * @param speed_mm_per_s 运动速度(毫米/秒)
-//  * @return char 运动状态(OK/ERR)
-//  * @note 根据参数控制指定电机运动
-//  */
-// char MotorGo(unsigned char num, unsigned char dir, int distance_mm, int speed_mm_per_s)
-// {
-//     tmp_steps = 0;
-//     X_EN = X_EN_ON;
-//     X_DIR = dir;
-//     Y1_DIR = dir;
-//     Y2_DIR = dir;
-//     // 计算所需步数
-//     const float steps_per_revolution = 2000.0;
-//     const float distance_per_revolution_mm = 100.0;
-//     float min_speed = 5;
-
-//     int steps = (int)((distance_mm / distance_per_revolution_mm) * steps_per_revolution);
-//     // 计算延时数组
-//     float speed_step = (speed_mm_per_s - min_speed) / (SPEED_ARRAY_SIZE - 1);
-//     for (int i = 0; i < SPEED_ARRAY_SIZE; i++)
-//     {
-//         float current_speed = min_speed + (speed_step * i);
-//         unsigned long temp = 276320UL / current_speed;
-//         if (temp > 65535UL)
-//         {
-//             temp = 65535UL; // 限制最大值
-//         }
-//         delay_array[i] = 65536UL - temp;
-//     }
-
-//     X_STEP = 0;
-//     int i = 0;
-//     int j = 0;
-//     // Uart1_SendString("x轴\r\n");
-//     int acc_steps = 100;
-//     if (steps < 200) // 如果距离小于200步，无匀速 ，脉冲时间*2
-//     {
-//         for (i = 0; i < steps / 2; i++)
-//         {
-
-//             for (j = 0; j < 2; j++)
-//             {
-//                 tmp_steps++;
-//                 if (OneStep(num, delay_array[i] * 2) == ERR)
-//                 {
-//                     return ERR;
-//                 }
-//             }
-//         }
-//         for (i = steps / 2; i >= 0; i--)
-//         {
-//             for (j = 0; j < 2; j++)
-//             {
-//                 tmp_steps++;
-//                 if (OneStep(num, delay_array[i] * 2) == ERR)
-//                 {
-//                     return ERR;
-//                 }
-//             }
-//         }
-//     }
-//     else // 如果距离大于200步，先加速再匀速，最后减速
-//     {
-//         for (i = 0; i < 100; i++) // 加速
-//         {
-//             for (j = 0; j < 2; j++)
-//             {
-//                 tmp_steps++;
-//                 if (OneStep(num, delay_array[i]) == ERR)
-//                 {
-//                     return ERR;
-//                 }
-//             }
-//         }
-//         for (i = 0; i < steps - 2 * acc_steps; i++) // 匀速
-//         {
-//             for (j = 0; j < 2; j++)
-//             {
-//                 tmp_steps++;
-//                 if (OneStep(num, delay_array[100]) == ERR)
-//                 {
-//                     return ERR;
-//                 }
-//             }
-//         }
-//         for (i = 100; i >= 0; i--) // 减速
-//         {
-//             for (j = 0; j < 2; j++)
-//             {
-//                 tmp_steps++;
-//                 if (OneStep(num, delay_array[i]) == ERR)
-//                 {
-//                     return ERR;
-//                 }
-//             }
-//         }
-//     }
-
-//     X_EN = X_EN_OFF;
-//     X_DIR = 0;
-//     Y1_DIR = 0;
-//     Y2_DIR = 0;
-//     return OK;
-// }
-
-/**
- * @brief 初始化S型加速查找表
- * @param max_speed 最大速度mm/s
- * @note 每次运动前调用以更新加速表
- */
-void InitSCurveTable(float max_speed)
+void timer1_isr(void) __interrupt(3)
 {
-    // 常量保持不变
-    const float min_speed = 20.0;
-    const float jerk = 2000.0;
-    // const float max_acc = 200.0;
-    const float max_acc = 400;
-    // const float jerk = 0.1 * max_acc + 400;
+    // TF1 = 0; // 清除TF1标志
 
-    // 所有局部变量都使用xdata
-    __xdata float t;
-    __xdata float v;
-    __xdata float v2;
-
-    int i;
-
-    // 计算时间参数
-    Time1 = max_acc / jerk; // 0.5
-    v1 = min_speed + 0.5 * jerk * Time1 * Time1;
-    Time2 = (max_speed - (min_speed + jerk * Time1 * Time1)) / max_acc; // 300-(10+600*0.5*0.5)   140/300
-    Time3 = Time1;
-
-    s1_points = (int)(ACC_TABLE_SIZE * Time1 / (Time1 + Time2 + Time3)); //  0.5/ (44/30)
-    s2_points = ACC_TABLE_SIZE - 2 * s1_points;
-    s3_points = s1_points;
-
-    // s1_points = 210;
-    // s2_points = 180;
-    // s3_points = 210;
-    // 1. 加加速段
-    for (i = 0; i < s1_points; i++)
+    if (电机总开关)
     {
-        t = (float)i * Time1 / s1_points;
-        v = min_speed + 0.5 * jerk * t * t;
-        s_curve_table[i] = CalculateDelay(v);
+        每10ms计数++;
+        // Uart1_SendByte(每10ms计数);
+        // Uart1_SendString("time1");
+        计数10ms发送标志位 = 1;
     }
-
-    // 2. 匀加速段
-    v2 = v1 + max_acc * Time2; // 第二段末速度
-    for (i = 0; i < s2_points; i++)
-    {
-        t = (float)i * Time2 / s2_points;
-        v = v1 + max_acc * t;
-        s_curve_table[i + s1_points] = CalculateDelay(v);
-    }
-
-    // 3. 减加加速段
-    for (i = 0; i < s1_points; i++)
-    {
-        t = (float)i * Time3 / s1_points;
-        v = v2 + max_acc * t - 0.5 * jerk * t * t;
-        if (v > max_speed)
-            v = max_speed;
-        s_curve_table[i + s1_points + s2_points] = CalculateDelay(v);
-    }
-
-    // 计算三段位移
-    // __xdata float s1 = 0, s2 = 0, s3 = 0;
-    // __xdata float total_distance = 0;
-
-    // // 1. 加加速段位移
-    // // s1 = (1/6)*j*t^3
-    // s1 = (1.0/6.0) * jerk * Time1 * Time1 * Time1;
-
-    // // 2. 匀加速段位移
-    // // s2 = v1*t + (1/2)*a*t^2
-    // s2 = v1 * Time2 + 0.5 * max_acc * Time2 * Time2;
-
-    // // 3. 减加加速段位移
-    // // s3 = v2*t + a*t^2/2 - j*t^3/6
-    // s3 = v2 * Time3 + max_acc * Time3 * Time3 / 2.0 - jerk * Time3 * Time3 * Time3 / 6.0;
-
-    // // 总位移
-    // total_distance = s1 + s2 + s3;
-}
-char MotorGo(unsigned char num, unsigned char dir, int distance_mm, int speed_mm_per_s)
-{
-    // 计算速度比例
-    float speed_ratio = 200.0 / speed_mm_per_s; // 200是生成表时的基准速度
-    speed_ratio = 1;
-    __xdata unsigned long total_steps = distance_mm * 20;
-    __xdata int const_steps = total_steps - 2 * SPEED_TABLE_SIZE;
-    //__xdata unsigned int adjusted_delay;
-    static int acc_steps = 0;
-    static int dec_steps = 0;
-    static int delta_speed = 0;
-    // 初始化电机
-    tmp_steps = 0;
-    X_EN = X_EN_ON;
-    X_DIR = dir;
-    Y1_DIR = dir;
-    Y2_DIR = dir;
-    delta_speed = speed_mm_per_s - 200;
-    if (delta_speed >= 0)
-    {
-        delta_speed = CalculateDelay(delta_speed);
-    }
-    else
-    {
-        //delta_speed = -CalculateDelay(-delta_speed);      //delay_table[0]会出错
-    }
-    if (total_steps <= SPEED_TABLE_SIZE)    //不需要匀速
-    {
-       acc_steps = total_steps / 2;
-        dec_steps = total_steps - acc_steps;
-        //加速
-        for (int i = 0; i < acc_steps; i++)
-        {
-            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
-            {
-                return ERR;
-            }
-
-            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
-            {
-                return ERR;
-            }
-        }
-        //减速
-        for (int i = dec_steps-1; i >= 0; i--)
-        {
-            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
-            {
-                return ERR;
-            }
-            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
-            {
-                return ERR;
-            }
-        }
-    }
-    else
-    {
-        // 使用查表方式获取延时值
-        //1.1 加速
-        for (int i = 0; i < SPEED_TABLE_SIZE; i++)
-        {
-            // 根据速度比例调整延时值
-            // adjusted_delay = (unsigned int)(delay_table[i] * speed_ratio);
-
-            // // 限制最小和最大延时值
-            // if (adjusted_delay < 1152) // 最大速度对应的延时（200mm/s）
-            //     adjusted_delay = 1152;
-            // if (adjusted_delay > 11520) // 最小速度对应的延时（20mm/s）
-            //     adjusted_delay = 11520;
-
-            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
-            {
-                return ERR;
-            }
-            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
-            {
-                return ERR;
-            }
-        }
-        //2. 匀速
-        for (int i = 0; i < const_steps; i++)
-        {
-            // 根据速度比例调整延时值
-            // adjusted_delay = (unsigned int)(delay_table[SPEED_TABLE_SIZE - 1] * speed_ratio);
-
-            // // 限制最小和最大延时值
-            // if (adjusted_delay < 1152) // 最大速度对应的延时（200mm/s）
-            //     adjusted_delay = 1152;
-            // if (adjusted_delay > 11520) // 最小速度对应的延时（20mm/s）
-            //     adjusted_delay = 11520;
-            if (OneStep(num, 65536UL - delay_table[SPEED_TABLE_SIZE]) == ERR)
-            {
-                return ERR;
-            }
-            if (OneStep(num, 65536UL - delay_table[SPEED_TABLE_SIZE - 100]) == ERR)
-            {
-                return ERR;
-            }
-        }
-        //3.减速
-        for (int i = SPEED_TABLE_SIZE - 1; i >= 0; i--)
-        {
-            // 根据速度比例调整延时值
-            // adjusted_delay = (unsigned int)(delay_table[i] * speed_ratio);
-
-            // // 限制最小和最大延时值
-            // if (adjusted_delay < 1152) // 最大速度对应的延时（200mm/s）
-            //     adjusted_delay = 1152;
-            // if (adjusted_delay > 11520) // 最小速度对应的延时（20mm/s）
-            //     adjusted_delay = 11520;
-            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
-            {
-                return ERR;
-            }
-            if (OneStep(num, 65536UL - delay_table[i]) == ERR)
-            {
-                return ERR;
-            }
-        }
-    }
-    X_EN = X_EN_OFF;
-    X_DIR = 0;
-    Y1_DIR = 0;
-    Y2_DIR = 0;
-
-    return OK;
-}
-/**
- * @brief S型加速电机运动控制(查表版)
- */
-char MotorGo1(unsigned char num, unsigned char dir, int distance_mm, int speed_mm_per_s)
-{
-    // 所有局部变量都使用xdata
-    __xdata unsigned long total_steps;
-    __xdata int const_steps;
-    //;
-    __xdata unsigned int const_delay;
-
-    // 参数检查
-    if (speed_mm_per_s > 500)
-        speed_mm_per_s = 500;
-    if (speed_mm_per_s < 20)
-        speed_mm_per_s = 20;
-
-    // 初始化电机
-    tmp_steps = 0;
-    X_EN = X_EN_ON;
-    X_DIR = dir;
-    Y1_DIR = dir;
-    Y2_DIR = dir;
-
-    // 计算步数(上升沿个数)
-    total_steps = distance_mm * 20;
-    total_points = s1_points + s2_points + s3_points;
-
-    // 计算加速表
-    InitSCurveTable((float)speed_mm_per_s);
-
-    // 计算匀速段步数
-    const_steps = total_steps - (total_points) * 4;
-    const_delay = s_curve_table[total_points - 1];
-    // if (const_steps < 0)
+    // else
     // {
-    //     ratio = (float)total_steps / ((total_points) * 2);
-    //     s1_points *= ratio;
-    //     s2_points *= ratio;
-    //     s3_points *= ratio;
-    //     const_steps = 0;
+    //     TR1 = 0;
     // }
-
-    if (total_steps <= 600)
-    {
-        for (int i = 0; i < total_steps; i++)
-        {
-            if (OneStep(num, const_delay) == ERR)
-                return ERR;
-            if (OneStep(num, const_delay) == ERR)
-                return ERR;
-        }
-    }
-    else
-    {
-        // 1. 加速段 (加加速 + 匀加速 + 减加加速)
-        for (int i = 0; i < total_points; i++)
-        {
-            if (OneStep(num, s_curve_table[i]) == ERR)
-                return ERR;
-            if (OneStep(num, s_curve_table[i]) == ERR)
-                return ERR;
-            if (OneStep(num, s_curve_table[i]) == ERR)
-                return ERR;
-            if (OneStep(num, s_curve_table[i]) == ERR)
-                return ERR;
-        }
-
-        // 2. 匀速段
-        for (int i = 0; i < const_steps; i++)
-        {
-            if (OneStep(num, const_delay) == ERR)
-                return ERR;
-            if (OneStep(num, const_delay) == ERR)
-                return ERR;
-        }
-
-        // 3. 减速段 (与加速段对称)
-        for (int i = total_points - 1; i >= 0; i--)
-        {
-            if (OneStep(num, s_curve_table[i]) == ERR)
-                return ERR;
-            if (OneStep(num, s_curve_table[i]) == ERR)
-                return ERR;
-            if (OneStep(num, s_curve_table[i]) == ERR)
-                return ERR;
-            if (OneStep(num, s_curve_table[i]) == ERR)
-                return ERR;
-        }
-    }
-
-    X_EN = X_EN_OFF;
-    X_DIR = 0;
-    Y1_DIR = 0;
-    Y2_DIR = 0;
-    return OK;
 }
-/**
- * @brief 计算延时值
- * @param speed_mm_per_s 当前速度(毫米/秒)
- * @param steps_per_revolution 每转步数
- * @param distance_per_revolution_mm 每转距离(毫米)
- * @return unsigned int 定时器重装值
- */
-static unsigned int CalculateDelay(float v)
+void timer0_isr(void) __interrupt(1)
 {
-    // float steps_per_second = (speed_mm_per_s * steps_per_revolution) / distance_per_revolution_mm;
-    // unsigned long count = 11059UL * 1000UL / (steps_per_second );
+    // 判断是否到达限位
+    if ((X_R_LIMIT == 0 | X_L_LIMIT == 0 | Y1_LIMIT == 0 | Y2_LIMIT == 0) && 正在归位标志位)
+    {
+        TR0 = 0; // 停止定时器
 
-    // if (count > 65535UL)
-    //     count = 65535UL;
-    // unsigned long count = (276320UL / v) / 2;
-    unsigned long count = (230400UL / v);
+        // 电机总开关 = 0;
+        限位开关标志位 = 1;
+    }
+    if (电机总开关)
+    {
+        if (当前脉冲数 >= 当前总步数)
+        {
+            TR0 = 0; // 停止定时器
+            电机总开关 = 0;
+            电机标志位 = 0;
+            电机运行结束标志位 = 1;
 
-    return 65536UL - count;
+            X_STEP = 0;
+            Y1_STEP = 0;
+            Y2_STEP = 0;
+        }
+        中断次数++;
+        switch (电机标志位)
+        {
+        case 1:
+            /* code */
+            X_EN = 0;         // x轴脉冲使能
+            X_STEP = !X_STEP; // x轴脉冲输出
+            if (中断次数 == 4)
+            {
+                中断次数 = 0;
+                当前脉冲数++;
+                if (X_DIR == 0)
+                {
+                    x轴脉冲总值--;
+                }
+                else
+                {
+                    x轴脉冲总值++;
+                }
+            }
+            break;
+        case 2:
+            Y1_STEP = !Y1_STEP; // y1轴脉冲输出
+            if (中断次数 == 4)
+            {
+                中断次数 = 0;
+                当前脉冲数++;
+                if (Y1_DIR == 0)
+                {
+                    y1轴脉冲总值--;
+                }
+                else
+                {
+                    y1轴脉冲总值++;
+                }
+            }
+            break;
+        case 3:
+            Y2_STEP = !Y2_STEP; // y1轴脉冲输出
+            if (中断次数 == 4)
+            {
+                中断次数 = 0;
+                当前脉冲数++;
+                if (Y2_DIR == 0)
+                {
+                    y2轴脉冲总值--;
+                }
+                else
+                {
+                    y2轴脉冲总值++;
+                }
+            }
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
+char motor_go(char num, char 方向, int 距离, int 速度)
+{
+    中断次数 = 0;
+    电机运行结束标志位 = 0;
+    电机标志位 = num;
+    X_STEP = 0;
+    Y1_STEP = 0;
+    Y2_STEP = 0;
+    X_DIR = 方向;
+    Y1_DIR = 方向;
+    Y2_DIR = 方向;
+    unsigned int reload;
+    int 速度系数 = 速度 / 10;                  // 50    25
+    int 加速系数 = 加减速系数;                 // 15    15
+    int 加速总步数 = 加速系数 * 速度系数;      // 15*50 = 750   25*15 = 375
+    int 总放大系数 = 加速系数 * 速度系数 / 10; // 75        37.5
+    加速总步数 = (unsigned int)总放大系数 * 10;
+    int 匀速阶段步数 = 0;
+    当前总步数 = 距离 * 1;
+    匀速阶段步数 = 当前总步数 - 2 * 加速总步数;
+    if (匀速阶段步数 <= 0)
+    {
+        加速总步数 = 当前总步数 * 10 / 加速系数;    /// 50mm*10 *10 / 20 = 250
+        速度系数 = 加速总步数 / 加速系数;           // 250/20 = 12  12.5
+        总放大系数 = 加速系数 * 速度系数 / 10;      // 20*12/10 = 24    25
+        匀速阶段步数 = 当前总步数 - 2 * 加速总步数; // 0
+        计算速度 = 速度系数 * 10;
+    }
+    当前脉冲数 = 0;
+    电机总开关 = 1;
+    int pulse_num_tmp = 0;
+    每10ms计数 = 0;
+    unsigned long temp = 2763200UL / ((unsigned long)速度表[100] * 速度系数);
+    temp = 2763200UL / ((unsigned int)速度表[100] * 速度系数);
+    unsigned int max_reload = (temp > 65535UL) ? 60000U : (65535U - (unsigned int)temp);
+    while (1)
+    {
+        if (当前脉冲数 % 50 == 0)
+        {
+            计数10ms发送标志位 = 0;
+            // if (num = 1)
+            // {
+            //     给迪文上传数据(Addr当前脉冲数, x轴脉冲总值);
+            // }
+            // if (num = 2)
+            // {
+            //     给迪文上传数据(Addr当前脉冲数, y1轴脉冲总值);
+            // }
+            // if (num = 3)
+            // {
+            //     给迪文上传数据(Addr当前脉冲数, y2轴脉冲总值);
+            // }
+            给迪文上传数据(Addr当前脉冲数, 当前脉冲数);
+            给迪文上传数据(Addr每10ms计数, 每10ms计数);
+            // 给迪文上传数据(Addr当前X位置, 当前X位置);
+            // 给迪文上传数据(Addr当前Y位置, 当前Y位置);
+        }
+        if (电机运行结束标志位)
+        {
+            // if (num = 1)
+            // {
+            //     给迪文上传数据(Addr当前脉冲数, x轴脉冲总值);
+            // }
+            // if (num = 2)
+            // {
+            //     给迪文上传数据(Addr当前脉冲数, y1轴脉冲总值);
+            // }
+            // if (num = 3)
+            // {
+            //     给迪文上传数据(Addr当前脉冲数, y2轴脉冲总值);
+            // }
+            给迪文上传数据(Addr当前脉冲数, 当前脉冲数);
+
+            给迪文上传数据(Addr每10ms计数, 每10ms计数);
+            // 给迪文上传数据(Addr当前X位置, 当前X位置);
+            // 给迪文上传数据(Addr当前Y位置, 当前Y位置);
+
+            break;
+        }
+        if (限位开关标志位)
+        {
+            X_STEP = 0;
+            Y1_STEP = 0;
+            Y2_STEP = 0;
+            TR0 = 0; // 定时器0计时
+            TR1 = 0; // 定时器1计时
+            TL0 = 0; // 清零定时器初值
+            TH0 = 0;
+            TF0 = 0; // 清除TF0标志
+            return ERR;
+        }
+        // if (计数10ms发送标志位)
+        // {
+        //     计数10ms发送标志位 = 0;
+        //     if (num = 1)
+        //     {
+        //         给迪文上传数据(Addr当前脉冲数, x轴脉冲总值);
+        //     }
+        //     if (num = 2)
+        //     {
+        //         给迪文上传数据(Addr当前脉冲数, y1轴脉冲总值);
+        //     }
+        //     if (num = 3)
+        //     {
+        //         给迪文上传数据(Addr当前脉冲数, y2轴脉冲总值);
+        //     }
+        //     给迪文上传数据(Addr每10ms计数, 每10ms计数);
+        //     给迪文上传数据(Addr当前X位置, 当前X位置);
+        //     给迪文上传数据(Addr当前Y位置, 当前Y位置);
+        //     //  InitValue(0, 当前脉冲数);
+        //     //  Uart1_SendBuffer(CFGBUF, 2);
+        // }
+        if (匀速阶段步数 <= 0)
+        {
+            if (当前脉冲数 < 0.5 * 当前总步数) // 加速阶段
+            {
+                pulse_num_tmp = 当前脉冲数 * 10 / 总放大系数;
+                if (pulse_num_tmp > 100)
+                    pulse_num_tmp = 100; // 防止数组越界
+                temp = 2763200UL / ((unsigned long)速度表[pulse_num_tmp] * 速度系数);
+                // temp = delay_table1[pulse_num_tmp];
+                reload = (temp > 65535UL) ? 2481U : (65535U - (unsigned int)temp);
+                TL0 = reload; // 设置新的定时值
+                TH0 = reload >> 8;
+            }
+            else // 减速阶段
+            {
+                pulse_num_tmp = (当前总步数 - 当前脉冲数) * 10 / 总放大系数;
+                if (pulse_num_tmp > 100)
+                    pulse_num_tmp = 100; // 防止数组越界
+                temp = 2763200UL / ((unsigned long)速度表[pulse_num_tmp] * 速度系数);
+                reload = (temp > 65535UL) ? 2481U : (65535U - (unsigned int)temp);
+                TL0 = reload;
+                TH0 = reload >> 8;
+            }
+        }
+        else
+        {
+            if (当前脉冲数 < 加速总步数) // 加速阶段
+            {
+                pulse_num_tmp = 当前脉冲数 * 10 / 总放大系数;
+                temp = 2763200UL / ((unsigned long)速度表[pulse_num_tmp] * 速度系数);
+                // temp = delay_table1[pulse_num_tmp];
+                reload = (temp > 65535UL) ? 2481U : (65535U - (unsigned int)temp);
+                TL0 = reload; // 设置新的定时值
+                TH0 = reload >> 8;
+            }
+            else if (当前脉冲数 <= 匀速阶段步数) // 匀速阶段
+            // else if ((当前脉冲数 <= 匀速阶段步数) && (匀速阶段步数 > 0)) // 匀速阶段
+
+            {
+                TL0 = max_reload;
+                TH0 = max_reload >> 8;
+            }
+            else // 减速阶段
+            {
+                pulse_num_tmp = (当前总步数 - 当前脉冲数) * 10 / 总放大系数;
+                if (pulse_num_tmp >= 100)
+                    pulse_num_tmp = 99; // 防止数组越界
+                temp = 2763200UL / ((unsigned long)速度表[pulse_num_tmp] * 速度系数);
+                reload = (temp > 65535UL) ? 2481U : (65535U - (unsigned int)temp);
+                TL0 = reload;
+                TH0 = reload >> 8;
+            }
+            // else
+            // {
+            //     pulse_num_tmp = 当前脉冲数 / 总放大系数;
+            //     reload = 65535 - (unsigned int)(2763200 / ((速度表[101 - (当前脉冲数 - 当前总步数 + 加速总步数) / 总放大系数]) * 速度系数));
+            //     TL0 = reload;
+            //     TH0 = reload >> 8;
+            // }
+        }
+        TR0 = 1; // 定时器0计时
+        TR1 = 1; // 定时器1计时
+    }
+
+    TR0 = 0; // 定时器0计时
+    TR1 = 0; // 定时器1计时
+    TL0 = 0; // 清零定时器初值
+    TH0 = 0;
+    TF0 = 0; // 清除TF0标志
+
+    return FINISH;
+}
+
+void 电机复位(void)
+{
+    GoToPage(58); // 开机初始化
+    DelayMs(20);
+    给迪文上传数据(Addr开机初始化bar, 0);
+    正在归位标志位 = 1;
+    if (motor_go(Y1_MOTOR, GO_UP, 5000, 300) == ERR)
+    {
+        给迪文上传数据(Addr开机初始化bar, 1);
+
+        正在归位标志位 = 0;
+        y1轴脉冲总值 = 0;
+        限位开关标志位 = 0;
+        DelayMs(100);
+        给迪文上传数据(Addr开机初始化bar, 2);
+
+        motor_go(Y1_MOTOR, GO_DOWN, 100, 100);
+        y1轴脉冲总值 = 0;
+        给迪文上传数据(Addr开机初始化bar, 3);
+    }
+    正在归位标志位 = 1;
+    DelayMs(10);
+
+    if (motor_go(Y2_MOTOR, GO_UP, 5000, 300) == ERR)
+    {
+        给迪文上传数据(Addr开机初始化bar, 4);
+
+        正在归位标志位 = 0;
+        y2轴脉冲总值 = 0;
+        限位开关标志位 = 0;
+        DelayMs(100);
+        给迪文上传数据(Addr开机初始化bar, 5);
+
+        motor_go(Y2_MOTOR, GO_DOWN, 100, 100);
+        y2轴脉冲总值 = 0;
+        给迪文上传数据(Addr开机初始化bar, 6);
+    }
+    正在归位标志位 = 1;
+    DelayMs(10);
+    if (motor_go(X_MOTOR, GO_RIGHT, 8000, 250) == ERR)
+    {
+        给迪文上传数据(Addr开机初始化bar, 7);
+
+        正在归位标志位 = 0;
+        x轴脉冲总值 = 0;
+        限位开关标志位 = 0;
+        DelayMs(100);
+        给迪文上传数据(Addr开机初始化bar, 8);
+
+        motor_go(X_MOTOR, GO_LEFT, 100, 100);
+        x轴脉冲总值 = 0;
+        给迪文上传数据(Addr开机初始化bar, 9);
+    }
+    x轴脉冲总值 = 0;
+    y1轴脉冲总值 = 0;
+    y2轴脉冲总值 = 0;
 }

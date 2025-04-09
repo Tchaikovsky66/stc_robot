@@ -15,5 +15,6 @@ void Uart1_SendByte(char byte);
 void Uart1_SendString(const char *str); // 串口1发送不限长度字符串
 void Uart1_Isr(void) __interrupt(4);    // 串口1中断
 void Uart1_SendBuffer(const unsigned char *buffer, unsigned int length);
+void Uart1_SendIntBuffer(const unsigned int *buffer, unsigned int length);
 
 #endif // !_UART_H

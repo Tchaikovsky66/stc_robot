@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"8051.h": "c",
+			"delay.h": "c",
+			"motor.h": "c",
+			"uart.h": "c",
+			"button.h": "c",
+			"unity.h": "c",
+			"position.h": "c",
+			"main.h": "c",
+			"stc15.h": "c",
+			"speed_table.h": "c",
+			"isr.h": "c",
+			"8052.h": "c",
+			"config.h": "c",
+			"dwin.h": "c",
+			"common.h": "c"
+		}
+	}
+}

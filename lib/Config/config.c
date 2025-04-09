@@ -1,6 +1,6 @@
 #include <config.h>
 #include <uart.h>
-#include <position.h>
+//#include <position.h>
 #include <delay.h>
 #include "../../include/main.h"
 #include "../../include/stc15.h"

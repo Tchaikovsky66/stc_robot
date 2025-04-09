@@ -1,9 +1,9 @@
 #ifndef _MAIN_H
 #define _MAIN_H
 
-#define ERR 0
+#define ERR 1
 #define FINISH 0
-#define OK 1
+#define OK 0
 
 #define Y1_GOT 0
 #define Y2_GOT 3
@@ -64,8 +64,6 @@ uart
 /*
 delay
 */
-
-void sifu_increase_speed(void);
 
 extern const unsigned int speed_profile_int_test[101];
 
