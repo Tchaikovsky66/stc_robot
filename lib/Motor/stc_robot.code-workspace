@@ -20,7 +20,10 @@
 			"8052.h": "c",
 			"config.h": "c",
 			"dwin.h": "c",
-			"common.h": "c"
+			"common.h": "c",
+			"eeprom.h": "c",
+			"low_v.h": "c",
+			"gbk.h": "c"
 		}
 	}
 }

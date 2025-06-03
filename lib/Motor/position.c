@@ -96,8 +96,9 @@ char MoveToPosition(int target_x, int target_y, int target_y2, int speed)
         当前y2坐标 = target_y2;
         DelayMs(10);
     }
-    给迪文上传数据(Addr当前X位置, 当前x坐标);
-    给迪文上传数据(Addr当前Y位置, 当前y1坐标);
+    //DelayMs(10);
+   给迪文上传数据(Addr当前X位置, 当前x坐标);
+   给迪文上传数据(Addr当前Y位置, 当前y1坐标);
     // UploadData(0x21 * 2, 当前x坐标);
     // UploadData(0x22 * 2, 当前y1坐标);
     // UploadData(0x23 * 2, 当前y2坐标);
@@ -194,7 +195,7 @@ void 调试(void)
             从接收缓冲区更新数据();
             接收到数据 = 0;
 
-            MoveToPosition(当前X位置, 当前Y位置, 0, 200);
+            MoveToPosition(当前X位置, 0, 当前Y位置, 200);
         }
         if (开始调试)
         {
@@ -220,87 +221,110 @@ void 运行(void)
 {
     MoveToPosition(未加工到右限位距离, 0, 0, 左右速度);
     当前x坐标 = 0;
+    等待处位置 = 未加工到加工距离 - 3200;
+    H170 = E80 + F20 + 夹取位置;
     while (1)
     {
         // 等待来料
         GoToPage(20);
         /*等待来料*/
         DelayMs(2000);
-        MoveToPosition(未加工到加工距离 - 3200, 0, 0, 左右速度);
-        DelayMs(1000);
+        MoveToPosition(等待处位置, 0, 0, 左右速度);
         // 向右快进E80
         GoToPage(21);
-        MoveToPosition(未加工到加工距离 - 4000, 0, 0, 左右速度);
+        MoveToPosition(等待处位置 - E80, 0, 0, 左右速度);
         // 向右监测F20
         GoToPage(22); // 检测结束
 
-        MoveToPosition(未加工到加工距离 - 4000 - F20, 0, 0, 200);
+        MoveToPosition(等待处位置 - E80 - F20, 0, 0, 200);
         // 向右快进G70
         GoToPage(23); // 工件夹取中
-        DelayMs(20);
+        给迪文上传数据(Addr当前脉冲数, 0);
+
+        DelayMs(100);
+
         GoToPage(24); // 工件夹取中
-        DelayMs(20);
-        MoveToPosition(未加工到加工距离 - 4000 - F20 - 夹取位置, 0, 0, 左右速度);
+        MoveToPosition(等待处位置 - H170, 0, 0, 左右速度);
 
         GoToPage(25);
-        MoveToPosition(未加工到加工距离 - 4000 - F20 - 夹取位置, 两端上下距离, 0, 左右速度);
+        MoveToPosition(等待处位置 - H170, 两端上下距离, 0, 左右速度);
         夹取();
         GoToPage(26);
-        DelayMs(20);
+        给迪文上传数据(Addr当前脉冲数, 0);
+
+        DelayMs(100);
 
         GoToPage(27);
-        MoveToPosition(未加工到加工距离 - 4000 - F20 - 夹取位置, 0, 0, 左右速度);
+        MoveToPosition(等待处位置 - H170, 0, 0, 左右速度);
         GoToPage(28);
-        DelayMs(20);
+        给迪文上传数据(Addr当前脉冲数, 0);
+
+        DelayMs(100);
 
         GoToPage(29);
-
-        MoveToPosition(未加工到加工距离 - 3200, 0, 0, 左右速度);
+        MoveToPosition(等待处位置, 0, 0, 左右速度);
         GoToPage(30);
+        给迪文上传数据(Addr当前脉冲数, 0);
+
         // 等待加工完成
         DelayMs(2000);
         GoToPage(31); // 加工位置工件夹取
-        MoveToPosition(未加工到加工距离 - 3200, 0, 加工位置上下距离, 左右速度);
+        MoveToPosition(等待处位置, 0, 加工位置上下距离, 左右速度);
         GoToPage(32);
+        给迪文上传数据(Addr当前脉冲数, 0);
+
         夹取();
         GoToPage(33);
-        MoveToPosition(未加工到加工距离 - 3200, 0, 0, 左右速度);
+        MoveToPosition(等待处位置, 0, 0, 左右速度);
         GoToPage(34);
-        DelayMs(20);
+        给迪文上传数据(Addr当前脉冲数, 0);
+
+        DelayMs(100);
 
         GoToPage(35); // y1去 放 加工位置
         MoveToPosition(未加工到加工距离, 0, 0, 左右速度);
         GoToPage(36);
-        DelayMs(20);
+        给迪文上传数据(Addr当前脉冲数, 0);
+
+        DelayMs(100);
 
         GoToPage(37);
         MoveToPosition(未加工到加工距离, 加工位置上下距离, 0, 左右速度);
         GoToPage(38);
+        给迪文上传数据(Addr当前脉冲数, 0);
+
         放工件();
         GoToPage(39);
         MoveToPosition(未加工到加工距离, 0, 0, 左右速度);
-        GoToPage(40); // 等待工件取走
         /*等待工件取走*/
+        GoToPage(40);
+        给迪文上传数据(Addr当前脉冲数, 0);
+
         DelayMs(2000);
         GoToPage(41);
         MoveToPosition(未加工到结束距离, 0, 0, 左右速度);
         GoToPage(42);
-        DelayMs(20);
+        给迪文上传数据(Addr当前脉冲数, 0);
+
+        DelayMs(100);
+
         // 放加工工件
         GoToPage(43);
         MoveToPosition(未加工到结束距离, 0, 两端上下距离, 左右速度);
         GoToPage(44);
-        DelayMs(20);
+        给迪文上传数据(Addr当前脉冲数, 0);
+
         放工件();
         GoToPage(45);
         MoveToPosition(未加工到结束距离, 0, 0, 左右速度);
         GoToPage(46);
-        DelayMs(20);
+        给迪文上传数据(Addr当前脉冲数, 0);
+
+        DelayMs(100);
 
         GoToPage(47); // 回到零位 !!!!!!!!!!!表达有问题
-        MoveToPosition(未加工到加工距离 - 3200, 0, 0, 左右速度);
-        DelayMs(20);
+        MoveToPosition(等待处位置, 0, 0, 左右速度);
         GoToPage(48);
-        DelayMs(20);
+        给迪文上传数据(Addr当前脉冲数, 0);
     }
 }

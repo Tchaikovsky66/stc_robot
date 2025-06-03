@@ -7,13 +7,13 @@
 // 将所有变量定义为片外RAM
 __bit 接收到数据 = 0;
 __xdata unsigned char RCVDATA = 0x00;
-__xdata unsigned char RX5A, RXA5, RXLEN, RXCMD, RXADRH, RXADRL, RXDLEN, TXTIME, RXDATA1, RXDATA2;
-__xdata unsigned char TX_P = 0x00;
-__xdata unsigned char RX_P = 0x00;
+__xdata unsigned char RX5A, RXA5, RXLEN, RXCMD, RXADRH, RXADRL, RXDLEN;
+__xdata unsigned int RX_P = 0x00;
+volatile char mode = 0;
 
 // CFGBUF已经在片外RAM
-volatile unsigned char __xdata CFGBUF[100];
-
+volatile unsigned char __xdata CFGBUF[96];  // 0x2F * 2 = 94
+volatile unsigned char __xdata 型号数组[0x88];
 /**
  * @brief 向显示屏写入数据
  * @param address 数据地址
@@ -41,6 +41,7 @@ void WriteData(unsigned char address, unsigned char data1, unsigned char data2)
  */
 void GoToPage(unsigned char page)
 {
+    DelayMs(20);
     EN_485 = 1;
     Uart1_SendByte(0x5A);
     Uart1_SendByte(0xA5);
@@ -50,6 +51,7 @@ void GoToPage(unsigned char page)
     Uart1_SendByte(0x00);
     Uart1_SendByte(page);
     EN_485 = 0;
+    DelayMs(20);
 }
 
 /**
@@ -84,7 +86,7 @@ void Uart1_SendBuffer(const unsigned char *buffer, unsigned int length)
  */
 void SendAllData(void)
 {
-    Uart1_SendBuffer(CFGBUF, 0x2B * 2);
+    Uart1_SendBuffer(CFGBUF, sizeof(CFGBUF));
 }
 
 void Uart1_Init(void) // 57600bps@11.0592MHz
@@ -103,14 +105,14 @@ void Uart1_Init(void) // 57600bps@11.0592MHz
     // IP = 0x10; // 串行口为高优先级中断
 }
 
-void Uart1_SendByte(char byte)
+char Uart1_SendByte(char byte)
 {
     SBUF = byte;
     while (!TI)
         ;   // 等待发送完成
     TI = 0; // 清除发送中断标志
+    return byte;
 }
-
 void Uart1_SendString(const char *str) // 串口1发送不限长度字符串
 {
     EN_485 = 1;
@@ -123,7 +125,7 @@ void Uart1_SendString(const char *str) // 串口1发送不限长度字符串
 
 void Uart1_Isr(void) __interrupt(4) // 串口1中
 {
-    static unsigned char i;
+    static unsigned int i;
     if (RI) // 接收中断
     {
         i = SBUF;
@@ -138,21 +140,44 @@ void Uart1_Isr(void) __interrupt(4) // 串口1中
             RXADRL = RXDLEN;
             RXDLEN = i;
             // 检查帧同步数据 5A A5 24 83 00 10 10 +32B DATA
-            if ((RX5A == 0x5A) && (RXA5 == 0xA5) && (RXLEN) && (RXCMD == 0x83) && (RXADRH == 0x00) && (RXADRL) && (RXDLEN))
+            if ((RX5A == 0x5A) && (RXA5 == 0xA5) && (RXLEN) && (RXCMD == 0x83) && (RXADRH == 0x01) && (RXADRL == 0x00) && (RXDLEN))
             {
+                mode = 2;
+                RCVDATA = 0xff;
+                RX_P = RXADRL * 2;
+                RXDLEN = RXDLEN * 2;
+            }
+            else if ((RX5A == 0x5A) && (RXA5 == 0xA5) && (RXLEN) && (RXCMD == 0x83) && (RXADRH == 0x00) && (RXADRL) && (RXDLEN))
+            {
+                mode = 1;
                 RCVDATA = 0xff;
                 RX_P = RXADRL * 2;
                 RXDLEN = RXDLEN * 2 + RX_P;
             }
-        }
+                }
         else // 保存所有数据
         {
-            CFGBUF[RX_P] = i;
-            RX_P++;
-            if (RX_P == RXDLEN)
+            if (mode == 1)
             {
-                RCVDATA = 0x00;
-                接收到数据 = 1;
+                CFGBUF[RX_P] = i;
+                RX_P++;
+                if (RX_P == RXDLEN)
+                {
+                    mode = 0;
+                    RCVDATA = 0x00;
+                    接收到数据 = 1;
+                }
+            }
+            else if (mode == 2)
+            {
+                型号数组[RX_P] = i;
+                RX_P++;
+                if (RX_P == RXDLEN)
+                {
+                    mode = 0;
+                    RCVDATA = 0x00;
+                    接收到数据 = 1;
+                }
             }
         }
     }

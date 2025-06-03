@@ -1,483 +1,570 @@
 
-//*******æœºæ¢°æ‰‹2025-010Cç‰ˆ*10-C1*************************************************   
-// 202503æ•°æ®é‡æ–°è§„åˆ’åˆ†é…
-//*****è§¦æ‘¸å±æ•°æ®åˆ†é…****************
-//1.10	å‘é€æç¤ºå­—ç¬¦,æŸ¥è¡¨å‘é€å¹¶åˆ¤æ–­00Håœæ­¢å‘é€ ,æ‰€ä»¥åœ°å€ä¹Ÿä¸èƒ½æœ‰00H.
-//1.1.1	è§¦æ‘¸å±ç‰ˆæœ¬å·æ˜¾ç¤º0201H-0210H,(32ä¸ªå­—èŠ‚) 
-//1.1.2	è§¦æ‘¸å±æŠ¥è­¦&æç¤º0211-0230H  (64ä¸ªå­—èŠ‚,32ä¸ªä¸­æ–‡å­—)
-//1.1.3		è§¦æ‘¸å±åž‹å·æ³¨è§£ä¸­æ–‡æ˜¾ç¤º0100-014FH(9*16ä¸ªå­—èŠ‚)   >> 
-//*****STC	EEPROMæ•°æ®åˆ†é…***************
-//2.10	STC15W4K48S4<EEPROM(10K)åœ°å€IAP/0000H-27FFH(MOVC/C000H-E7FFH) 
-//					20(512ä¸ªå­—èŠ‚)ä¸ªæ‰‡åŒº 1-0000H-01FFH	2-0200H-03FFH   3-0400H-05FFH  	
-//2.1.1 ç¬¬1æ‰‡åŒº å­˜å‚¨å½“å‰ä½¿ç”¨å‚æ•°ï¼Œç¬¬2æ‰‡åŒº å­˜å‚¨åž‹å·1ä½¿ç”¨å‚æ•°,3-2,4-3 .....ã€‚  
-//*****STC	SRAMæ•°æ®åˆ†é…***************
-//3.20	15W4K48S2<SRAMåœ°å€å¸¸è§„00H-FFHæ‰©å±•OOOOH-0EFFHæ€»å…±4K,è¯»æŒ‡ä»¤MOVX	@DOTR, MOVX		@Ri
-//3.2.1	æŽ¥æ”¶ç¼“å†²SRAMé¦–å€	 0000H -009FH(160ä¸ªå­—èŠ‚ï¼‰
-//3.2.2	å‘é€ç¼“å†²SRAMé¦–å€	 00A0H -00BF( 32ä¸ªå­—èŠ‚ï¼‰
-//3.2.3	ä¸²å£2æŽ¥æ”¶ç¼“å†²SRAMé¦–å€		00C0H - 00DFH(32ä¸ªå­—èŠ‚ï¼‰
-//3.2.4	ä¸²å£2å‘é€ç¼“å†²SRAMé¦–å€		00E0H - 00FFH(32ä¸ªå­—èŠ‚ï¼‰
-//3.3.1	åž‹å·æ³¨è§£SRAMé¦–å€	0100H-018FH(9*8*2ä¸ªå­—èŠ‚    
-//3.3.2	åž‹å·0:0100H-010FH(16ä¸ªå­—èŠ‚)è§¦æ‘¸å±0100H-0108H(8*2=16ä¸ªå­—èŠ‚)	  
-//3.3.4	åž‹å·1:0110H-011FH(16ä¸ªå­—èŠ‚)è§¦æ‘¸å±0108H-0110H(8*2=16ä¸ªå­—èŠ‚)  
-//3.3.5	åž‹å·0	å½“å‰åž‹å·ç”¨	0100H-018F  ç»Ÿä¸€å‘é€ï¼Œå‘é€æ—¶STCæ•°æ®é¦–å€Hä¸é™¤2éœ€æ³¨æ„
-//***********æ³¨æ„äº‹é¡¹******************* 
-//1.0å› é€Ÿåº¦655*100=FFFFä½¿ç”¨å‡½æ•°ä¸‰åäºŒé™¤åå…­é™¤æ•°ä¸èƒ½å¤§äºŽ16ä½,æ‰€ä»¥é€Ÿåº¦ä¸èƒ½å¤§äºŽ655
-// 	P_SW1é»˜è®¤0ï¼ŒMOV	P_SW1	,#00H	é€‰æ‹©DPTR0 MOV	P_SW1	,#01H	é€‰æ‹©DPTR1 
+//*******»úÐµÊÖ2025-010C°æ*10-C1*************************************************   
+// 202503Êý¾ÝÖØÐÂ¹æ»®·ÖÅä
+//*****´¥ÃþÆÁÊý¾Ý·ÖÅä****************
+//1.10	·¢ËÍÌáÊ¾×Ö·û,²é±í·¢ËÍ²¢ÅÐ¶Ï00HÍ£Ö¹·¢ËÍ ,ËùÒÔµØÖ·Ò²²»ÄÜÓÐ00H.
+//1.1.1	´¥ÃþÆÁ°æ±¾ºÅÏÔÊ¾0201H-0210H,(32¸ö×Ö½Ú) 
+//1.1.2	´¥ÃþÆÁ±¨¾¯&ÌáÊ¾0211-0230H  (64¸ö×Ö½Ú,32¸öÖÐÎÄ×Ö)
+//1.1.3		´¥ÃþÆÁÐÍºÅ×¢½âÖÐÎÄÏÔÊ¾0100-014FH(9*16¸ö×Ö½Ú)   >> 
+//*****STC	EEPROMÊý¾Ý·ÖÅä***************
+//2.10	STC15W4K48S4<EEPROM(10K)µØÖ·IAP/0000H-27FFH(MOVC/C000H-E7FFH) 
+//					20(512¸ö×Ö½Ú)¸öÉÈÇø 1-0000H-01FFH	2-0200H-03FFH   3-0400H-05FFH  	
+//2.1.1 µÚ1ÉÈÇø ´æ´¢µ±Ç°Ê¹ÓÃ²ÎÊý£¬µÚ2ÉÈÇø ´æ´¢ÐÍºÅ1Ê¹ÓÃ²ÎÊý,3-2,4-3 .....¡£  
+//*****STC	SRAMÊý¾Ý·ÖÅä***************
+//3.20	15W4K48S2<SRAMµØÖ·³£¹æ00H-FFHÀ©Õ¹OOOOH-0EFFH×Ü¹²4K,¶ÁÖ¸ÁîMOVX	@DOTR, MOVX		@Ri
+//3.2.1	½ÓÊÕ»º³åSRAMÊ×Ö·	 0000H -009FH(160¸ö×Ö½Ú£©
+//3.2.2	·¢ËÍ»º³åSRAMÊ×Ö·	 00A0H -00BF( 32¸ö×Ö½Ú£©
+//3.2.3	´®¿Ú2½ÓÊÕ»º³åSRAMÊ×Ö·		00C0H - 00DFH(32¸ö×Ö½Ú£©
+//3.2.4	´®¿Ú2·¢ËÍ»º³åSRAMÊ×Ö·		00E0H - 00FFH(32¸ö×Ö½Ú£©
+//3.3.1	ÐÍºÅ×¢½âSRAMÊ×Ö·	0100H-018FH(9*8*2¸ö×Ö½Ú    
+//3.3.2	ÐÍºÅ0:0100H-010FH(16¸ö×Ö½Ú)´¥ÃþÆÁ0100H-0108H(8*2=16¸ö×Ö½Ú)	  
+//3.3.4	ÐÍºÅ1:0110H-011FH(16¸ö×Ö½Ú)´¥ÃþÆÁ0108H-0110H(8*2=16¸ö×Ö½Ú)  
+//3.3.5	ÐÍºÅ0	µ±Ç°ÐÍºÅÓÃ	0100H-018F  Í³Ò»·¢ËÍ£¬·¢ËÍÊ±STCÊý¾ÝÊ×Ö·H²»³ý2Ðè×¢Òâ
+//***********×¢ÒâÊÂÏî******************* 
+//1.ÒòËÙ¶È655*100=FFFFÏÂÃæÊ¹ÓÃº¯ÊýÈýÊ®¶þ³ýÊ®Áù³ýÊýR7,R6²»ÄÜ´óÓÚ16Î»
+//		>>>ËùÒÔËÙ¶È²»ÄÜ´óÓÚ655
+//2.Òò276320*100/X=FFFFÏÂÃæÊ¹ÓÃº¯ÊýÈýÊ®¶þ³ýÊ®ÁùÉÌR3,R2²»ÄÜ´óÓÚ16Î»       
+//		>>>ËùÒÔX=276320*100/FFFF=421=ËÙ¶È*6£¨ÕýÏÒÖµ×îÐ¡Öµ£©				ËÙ¶È²»ÄÜÐ¡ÓÚ421/6=70
+// ¼ÆËãSÐÍµ±Ç°ËÙ¶È²¢¸³Öµ  ËÙ¶È²»ÄÜÐ¡ÓÚ421/6=70  	>>>ËùÒÔ×îÐ¡×Ü²½Êý²»ÄÜÐ¡ÓÚ240 
+//3.	P_SW1Ä¬ÈÏ0£¬MOV	P_SW1	,#00H	Ñ¡ÔñDPTR0 MOV	P_SW1	,#01H	Ñ¡ÔñDPTR1 
+   /*
+//************IO¿Ú¶¨Òå*************
 
-//************IOå£å®šä¹‰*************
+	XÖá·½Ïò	BIT	P0.0	                                          //DRV
+	XÖáÂö³å	BIT	P0.1	                                          //PUL
+	XÖáÊ¹ÄÜ	BIT	P0.2	                                          //ENB
+	Y1ÖáÓÒ·½Ïò	BIT	P0.3	                                       //DRV
+	Y1ÖáÓÒÂö³å	BIT	P0.4	                                       //PUL
+	Y2Öá×ó·½Ïò	BIT	P0.5	                                       //DRV
+	Y2Öá×óÂö³å	BIT	P0.6	                                       //PUL
+	Y1Y2ÖáÊ¹ÄÜ	BIT	P0.7
+ ;*********P1¿Ú		±¾µØ·ÅV¹¤¼þÓÐÎÞP1.6ÐèÒªµ¥¶ÀÓÐ´«¸ÐÆ÷¶Ë×Ó£¬	*******
+		***IO¿Ú¹²+24V,µÍµçÆ½ÓÐÐ§ Óë±¾µØ¸ôÀë
+´®¿Ú2½ÓÊÕ¿Ú	BIT	P1.0	                                      //RXD2
+	´®¿Ú2·¢ËÍ¿Ú	BIT	P1.1	                                      //TXD2
+	Í¨Ñ¶ÏÂÒ»Ì¨Êä³ö´®¿ÚÐÅºÅ							BIT	P1.2
+	Í¨Ñ¶ÉÏÒ»Ì¨ÊäÈë´®¿ÚÐÅºÅ							BIT	P1.3
+	Í¨Ñ¶ÏÂÒ»Ì¨Êä³ö¿ÉÈ¡ÐÅºÅ	BIT	P1.4	                                    //DE
+	Í¨Ñ¶ÉÏÒ»Ì¨ÊäÈë¿ÉÈ¡ÐÅºÅ		BIT	P1.5
+	±¾µØ·ÅV¹¤¼þÓÐÎÞ	BIT	P1.6	   ;Í¨Ñ¶ÏÂÒ»Ì¨Êä³öÈ¡V¹¤¼þÓÐÎÞÐÅºÅ                                  //	×ó±ß´æ·ÅVÐÍ¿éÉÏ¹¤¼þÊÇ·ñÈ¡×ß
+	È¡V¹¤¼þÓÐÎÞ£¨ÉÏÒ»Ì¨ÐÅºÅ£©	BIT	P1.7	   ;Í¨Ñ¶ÉÏÒ»Ì¨ÊäÈëÈ¡V¹¤¼þÓÐÎÞÐÅºÅ                                  //ÓÒ±ßÉÏÒ»Ì¨	´æ·ÅVÐÍ¿éÉÏÓÐÎÞ¹¤¼þ
+							
 
-	Xè½´æ–¹å‘	BIT	P0.0	                                          //DRV
-	Xè½´è„‰å†²	BIT	P0.1	                                          //PUL
-	Xè½´ä½¿èƒ½	BIT	P0.2	                                          //ENB
-	Y1è½´å³æ–¹å‘	BIT	P0.3	                                       //DRV
-	Y1è½´å³è„‰å†²	BIT	P0.4	                                       //PUL
-	Y2è½´å·¦æ–¹å‘	BIT	P0.5	                                       //DRV
-	Y2è½´å·¦è„‰å†²	BIT	P0.6	                                       //PUL
-	å¤‡ç”¨OUT3	BIT	P0.7
 
-	ä¸²å£2æŽ¥æ”¶å£	BIT	P1.0	                                      //RXD2
-	ä¸²å£2å‘é€å£	BIT	P1.1	                                      //TXD2
-	ä¸²å£2å‘é€ä½¿èƒ½	BIT	P1.2	                                    //DE
-	Xå³é™ä½ä¿¡å·	BIT	P1.3
-	Xå·¦é™ä½ä¿¡å·	BIT	P1.4
-	Xä¸­é—´ä¼ æ„Ÿå™¨	BIT	P1.5
-	æ”¾Vå·¥ä»¶æœ‰æ— 	BIT	P1.6	                                      //	å·¦è¾¹å­˜æ”¾Våž‹å—ä¸Šå·¥ä»¶æ˜¯å¦å–èµ°
-	å–Vå·¥ä»¶æœ‰æ— 	BIT	P1.7	                                      //å³è¾¹ä¸Šä¸€å°	å­˜æ”¾Våž‹å—ä¸Šæœ‰æ— å·¥ä»¶
+ X×óÓÒÏÞÎ»ÐÅºÅ  BIT	P2.0
+	XÖÐ¼ä´«¸ÐÆ÷  		BIT	P2.1
 
-	åŠ å·¥è®¾å¤‡æœ‰æ— å·¥ä»¶	BIT	P2.0	                                 //åŠ å·¥è®¾å¤‡Y3
-	åŠ å·¥è®¾å¤‡å¼‚å¸¸	BIT	P2.1	                                     //åŠ å·¥è®¾å¤‡Y2
-	åŠ å·¥è®¾å¤‡åŽŸä½ç½®	BIT	P2.2	                                   //åŠ å·¥è®¾å¤‡Y1
-	åŠ å·¥è®¾å¤‡å¤ä½	BIT	P2.3	                                     //åŠ å·¥è®¾å¤‡X1
-	åŠ å·¥è®¾å¤‡è¿è¡Œ	BIT	P2.4	                                     //åŠ å·¥è®¾å¤‡X2
-	å¤‡ç”¨OUT1	BIT	P2.5
-	æŒ‡ç¤ºç¯	BIT	P2.5
-	å¤‡ç”¨OUT2	BIT	P2.6
-	å¤‡ç”¨INC2	BIT	P2.7
+	¼Ó¹¤Éè±¸ÓÐÎÞ¹¤¼þ	BIT	P2.3                                 //¼Ó¹¤Éè±¸Y3
+	¼Ó¹¤Éè±¸Òì³£	BIT	P2.4	                                     //¼Ó¹¤Éè±¸Y2
+	¼Ó¹¤Éè±¸Ô­Î»ÖÃ	BIT	P2.5	                                   //¼Ó¹¤Éè±¸Y1
+	¼Ó¹¤Éè±¸¸´Î»	BIT	P2.6	                                     //¼Ó¹¤Éè±¸X1
+	¼Ó¹¤Éè±¸ÔËÐÐ	BIT	P2.7	  //¼Ó¹¤Éè±¸X2
+   
 
-	ä¸²å£1æŽ¥æ”¶å£	BIT	P3.0	                                      //RXD1
-	ä¸²å£1å‘é€å£	BIT	P3.1	                                      //TXD1
-	//ä¸²å£1å‘é€ä½¿èƒ½			BIT		0C1H	//P4.1	//DE
-	æ€¥åœå¼€å…³	BIT	P3.2	                                         //ä¸­æ–­INT0
-	Y1å³å·¥ä»¶æ£€æµ‹	BIT	P3.3	                                     //A2
-	Y1å³é›¶ä½ä¿¡å·	BIT	P3.4	                                         //A1
-	Y2å·¦é›¶ä½ä¿¡å·	BIT	P3.5	                                         //A3
-	Y2å·¦å·¥ä»¶æ£€æµ‹	BIT	P3.6	                                     //A4
-	Xå·¦é˜²æ’žä¿¡å·		BIT	P3.7	                                          //A5
-	Yåˆ¹è½¦	BIT	P3.7	                                            //A5
-	ä¸²å£1å‘é€ä½¿èƒ½	BIT	0C1H	                                    //P4.1	//DE
-	Y2è½´å·¦å¸çˆª	BIT	0C2H	                                       //P4.2
-	Y1è½´å³å¸çˆª	BIT	0C4H	                                       //P4.4
-	å¤‡ç”¨C1IN	BIT	0C5H	                                         //P4.5
-	ä¸‹ä¸€å°é€šè®¯å£1	BIT	0CCH	                                    //P5.4
-;ä¸‹ä¸€å°é€šè®¯å£2è¾“å‡º	P1.6		æ”¾Vå·¥ä»¶æœ‰æ— ä¼ æ„Ÿå™¨ç›´æŽ¥ä¿¡å·è¾“å‡º
-	ä¸Šä¸€å°é€šè®¯å£1	BIT	0CDH	                                    //P5.5
-;ä¸Šä¸€å°é€šè®¯å£2//å–Vå·¥ä»¶æœ‰æ— 	BIT	P1.7
-
-//*******IOå£å®šä¹‰ç»“æŸ**************
-
-;*****************æ ‡è®°å®šä¹‰å¼€å§‹***************************************
-
-//ä»˜æ¿ä¸»æ¿é€šè®¯æ ‡è®°0010H	EQU	20H****ä»˜æ¿å‘é€ç»™ä¸»æ¿æŽ§åˆ¶ç”¨
-	//æ ‡è®°	BIT	07H																																												//F15
-	//	BIT	06H																																																//E14
-	//	BIT	05H																																																//D13
-	//	BIT	04H																																																//C12
-	//	BIT	03H																																																//B11
-	//	BIT	02H																																																//A10
-	//	BIT	01H																																																//9
-	//ä»˜æ¿æ›´æ–°æ ‡è®°	BIT	00H																																				//8
-
-	//ä»˜æ¿ä¸»æ¿é€šè®¯0010L	EQU	21H	***	ä»˜æ¿å‘é€ç»™ä¸»æ¿æŽ§åˆ¶ç”¨
-	//Xå·¦é˜²æ’žæ ‡è®°	BIT	0FH	                                       //7
-	//Y2å·¦å·¥ä»¶æ£€æµ‹æ ‡è®°	BIT	0EH	                                  //6
-	//Y2å·¦é›¶ä½æ ‡è®°	BIT	0DH	                                      //5
-	//Y1å³é›¶ä½æ ‡è®°	BIT	0CH	                                      //4
-	//Y1å³å·¥ä»¶æ£€æµ‹æ ‡è®°	BIT	0BH	                                  //3
-	//æ ‡è®°		BIT	0AH																																														//2
-	//æ ‡è®°		BIT	09H																																														//1
-	//	BIT	08H																																																			//0
-
-//*ä¼ æ„Ÿå™¨ä¿¡å·æ ‡è®°0011H	EQU	22H**********************
-	Xå³Vå·¥ä»¶æ£€æµ‹æ ‡è®°	BIT	17H	                                  //P1.7																	//F15
-	Xå·¦Vå·¥ä»¶æ£€æµ‹æ ‡è®°	BIT	16H	                                  //P1.6																	//E14
-	//Xä¸­é—´ä¼ æ„Ÿå™¨æ ‡è®°	BIT	15H	                                   //P1.5																	//D13
-	Xå·¦é™ä½æ ‡è®°	BIT	14H	                                       //P1.4																	//C12
-	Xå³é™ä½æ ‡è®°	BIT	13H	                                       //B11
-	åŠ å·¥è®¾å¤‡åŽŸä½ç½®æ ‡è®°	BIT	12H	                                //P2.3																	//A10
-	åŠ å·¥è®¾å¤‡å¼‚å¸¸æ ‡è®°	BIT	11H	                                  //P2.1																//9
-	åŠ å·¥è®¾å¤‡Væœ‰æ— å·¥ä»¶æ ‡è®°	BIT	10H	                             //P2.0																	//8
-
-//*ä¼ æ„Ÿå™¨ä¿¡å·æ ‡è®°0011L	EQU	23H	***	 
-	Xå·¦é˜²æ’žæ ‡è®°	BIT	1FH	                                       //7
-	Y2å·¦å·¥ä»¶æ£€æµ‹æ ‡è®°	BIT	1EH	                                  //6
-	Y2å·¦é›¶ä½æ ‡è®°	BIT	1DH	                                      //5
-	Y1å³é›¶ä½æ ‡è®°	BIT	1CH	                                      //4
-	Y1å³å·¥ä»¶æ£€æµ‹æ ‡è®°	BIT	1BH	                                  //3
-	å·¦å³ç”µæœºåˆ¹è½¦æ ‡è®°	BIT	1AH	                                  //2
-	Y2è½´å·¦å¸çˆªæ ‡è®°	BIT	19H	                                    //1
-	Y1è½´å³å¸çˆªæ ‡è®°	BIT	18H	                                    //0
-
-	//å½“å‰æ•°å€¼12H	EQU	24H
-
-	//å½“å‰æ•°å€¼12L	EQU	25H
-	//****è°ƒè¯•Hæ ‡è®°13H	EQU	26H****************** 
-	//æ ‡è®°	BIT	37H																																									//F15
-	//æ ‡è®°	BIT	36H																																									//E14
-	//	BIT	35H																																													//D13
-	//	BIT		34H																																												//C12
-	//	BIT		33H																																												//B11
-	//	æ ‡è®°	BIT	32H																																								//A10
-	//	æ ‡è®°	BIT	31H																																								//9
-	//	BIT	30H	                                    //8
-//****è„‰å†²Lè¾“å‡ºæ ‡è®°13L	EQU	27H	***
-	//é”™è¯¯Xæ ‡è®°	BIT	3FH																																								//7
-	//é”™è¯¯Yæ ‡è®°	BIT3EH																																								//6
-	//æ ‡è®°	BIT	3DH																																													//5
-	//æ ‡è®°	BIT	3CH																																													//4
-	Y2è„‰å†²è¾“å‡ºæ ‡è®°	BIT	3BH	                                    //3
-	Y1è„‰å†²è¾“å‡ºæ ‡è®°	BIT	3AH	                                    //2
-	Xè„‰å†²è¾“å‡ºæ ‡è®°	BIT	39H	                                     //1
-	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°	BIT	38H	                                //0
-
-//***ä¸´æ—¶æ ‡è®°14H	EQU	28H***********************
-	æ•°å€¼æ­£è´Ÿæ ‡è®°	BIT	47H	                                      //F15
-	æ•°å€¼ä¸ºé›¶æ ‡è®°	BIT	46H	                                      //E14
-	æ•°å€¼å°äºŽæžé™å€¼æ ‡è®°	BIT	45H	                                //D13
-	ä¸²å£æœ‰æœªè¯»æ•°æ®æ ‡è®°	BIT	44H	                                //C12
-	ä¸²å£1å‘é€ç¼“å†²å‡½æ•°æ ‡è®°	BIT	43H	                             //B11
-	ç¼“å­˜æ•°æ®ä¸è‡ªåŠ¨è¯»å‡ºæ ‡è®°	BIT	42H	                            //A10
-	T1è®¡æ—¶1Sæ ‡è®°	BIT	41H	                                      //9
-	T0ä¸­æ–­4æ¬¡æ ‡è®°	BIT	40H	                                     //8
-//****ä¸´æ—¶æ ‡è®°13L	EQU	29H	****
-	å‘é€å¿™æ ‡å¿—	BIT	4FH	                                        //7
-	ä¸²å£æŽ¥æ”¶ä¸­æ–­æ ‡è®°	BIT	4EH	                                  //6
-	æŽ¥æ”¶æ•°æ®è¯»å®Œæ ‡è®°	BIT	4DH	                                  //5
-	ä¸²å£2TIå‘é€å¿™æ ‡è®°	BIT	4CH	                                 //4
-	ä¸²å£2RIæŽ¥æ”¶å¿™æ ‡è®°	BIT	4BH	                                 //3
-	ä¸²å£2æŽ¥æ”¶ä¸­æ–­æ ‡è®°	BIT	4AH	                                 //2
-	é•¿åº¦å‡ä¸€æ ‡è®°	BIT	49H	                                      //1
-	å½“å‰é€Ÿåº¦ä¸ºé›¶æ ‡è®°	BIT	48H	                                  //0
-	å½“å‰æ­¥æ•°ä¸ºé›¶æ ‡è®°	BIT	48H
-
-//*****æŒ‰æ‰­æ ‡è®°	15H	EQU	2AH************************
-	å‚æ•°ä¿å­˜æ ‡è®°	BIT	57H	                                      //F15
-	å‚æ•°åˆå§‹åŒ–æ ‡è®°	BIT	56H	                                    //E14
-	è°ƒè¯•æŒ‰é’®æ ‡è®°	BIT	55H	                                      //D13
-	å¤ä½è¿è¡ŒæŒ‰é’®æ ‡è®°	BIT	54H	                                  //C12
-	å•ç‹¬åž‹å·æ”¹å˜æ ‡è®°	BIT	53H	                                  //B11
-	è°ƒè¯•ä¸‹ä¸€é¡¹æ ‡è®°	BIT	52H	                                    //A10
-	åž‹å·æ³¨è§£ä¿å­˜æ ‡è®°	BIT	51H	                                      //9
-	æµ‹è¯•æŒ‰é’®æ ‡è®°	BIT	50H	                                      //8
-//*****æŒ‰æ‰­æ ‡è®°	15L	EQU	2BH*******
-	è°ƒè¯•1æ ‡è®°	BIT	6FH	                                         //7
-	è°ƒè¯•2æ ‡è®°	BIT	5EH	                                         //6
-	è°ƒè¯•3æ ‡è®°	BIT	5DH	                                         //5
-	è°ƒè¯•4æ ‡è®°	BIT	5CH	                                         //4
-	;ä¿¡å·æ ‡è®°	BIT	5BH																																							//3
-	;ä¿¡å·æ ‡è®°	BIT	5AH																																							//2
-	æ€¥åœå¼€å…³æ ‡è®°	BIT	59H	                                      //1
-	å¯åŠ¨æŒ‰é’®æ ‡è®°	BIT	58H	                                      //0
-	//***ä¿å­˜æ ‡è®°16H	EQU	2CH	**å¼€æœºä¸å¤ä½************************
-	;ä½¿èƒ½1æ ‡è®°	BIT	67H																																					//F15
-	;ä½¿èƒ½2æ ‡è®°	BIT	66H																																	//E14
-	;ä½¿èƒ½3æ ‡è®°	BIT	65H																																							//D13
-	;ä½¿èƒ½4æ ‡è®°	BIT	64H																																										//C12
-	;æ ‡è®°	BIT	63H																																							//B11
-	;æ ‡è®°	BIT	62H																																							//A10
-	;æ ‡è®°	BIT	61H																																							//9
-	;ä½¿èƒ½2æ ‡è®°	BIT	60H																																							//8
-;ä¿å­˜æ ‡è®°16L	EQU	2DH	**å¼€æœºä¸å¤ä½ ***
-	//æ ‡è®°	BIT	6FH																																			//7
-	//æ ‡è®°	BIT	6EH																																							//6
-	//æ ‡è®°	BIT	6DH																																									//5
-	//æ ‡è®°	BIT	6CH																																							//4
-	//æ ‡è®°	BIT	6BH																																						//3
-	//æ ‡è®°	BIT	6AH																																						//2
-	//æ ‡è®°	BIT	69H																																						//1
-	ä½ç½®æ£€æµ‹ä½¿èƒ½æ ‡è®°	BIT	68H	                                  //0
-//****ä»¥ä¸Šæ˜¯é€šè®¯æ ‡è®°***********æ ‡è®°å®šä¹‰END******************** 
+	´®¿Ú1½ÓÊÕ¿Ú	BIT	P3.0	                                      //RXD1
+	´®¿Ú1·¢ËÍ¿Ú	BIT	P3.1	                                      //TXD1
+				
+	¼±Í£¿ª¹Ø					BIT	P3.2	                                         //ÖÐ¶ÏINT0
+	Y1ÓÒ¹¤¼þ¼ì²â	BIT	P3.3	                                     //A2
+	Y1ÓÒÁãÎ»ÐÅºÅ	BIT	P3.4	                                     //A1
+	Y2×óÁãÎ»ÐÅºÅ	BIT	P3.5	                                     //A3
+	Y2×ó¹¤¼þ¼ì²â		BIT	P3.6	                                     //A4
+				 	BIT	P3.7	                                      //A5
  
-//**å¼€å§‹***è§¦æ‘¸å±0010Håœ°å€=å•ç‰‡æœºé«˜ä½20Hä½Žä½21H***    
 
 
-   å‘é€ç¼“å†²SRAMé¦–å€ ,
-;å‘é€ç¼“å†²æ•°æ®ä¸ªæ•° ,
-;STCæ•°æ®é¦–å€L ,
-;å‘é€ç¼“å†²æ•°æ®æ€»ä¸ªæ•°, UART1ä¸²å£ä¸­æ–­,UART1å‘é€è®¡æ•°ç”¨
+	YÉ²³µ				BIT	0C1H	                                    						//P4.1	
+	Y2Öá×óÎü×¦	BIT	0C2H	                                       //P4.2
+	Y1ÖáÓÒÎü×¦	BIT	0C4H	                                       //P4.4
+	Æô¶¯¿ª¹Ø	Ö¸Ê¾µÆ			BIT	0C5H	                                         //P4.5
+	Ñ¡Ôñ¿ª¹Ø1					BIT	0CCH	                                    //P5.4
+	Ñ¡Ôñ¿ª¹Ø2					BIT	0CDH	                                    //P5.5
 
+
+//*******IO¿Ú¶¨Òå½áÊø**************
+     */
+//************IO¿Ú¶¨Òå*************
+
+	XÖá·½Ïò	BIT	P0.0	                                          //DRV
+	XÖáÂö³å	BIT	P0.1	                                          //PUL
+	XÖáÊ¹ÄÜ	BIT	P0.2	                                          //ENB
+	Y1ÖáÓÒ·½Ïò	BIT	P0.3	                                       //DRV
+	Y1ÖáÓÒÂö³å	BIT	P0.4	                                       //PUL
+	Y2Öá×ó·½Ïò	BIT	P0.5	                                       //DRV
+	Y2Öá×óÂö³å	BIT	P0.6	                                       //PUL
+	Y1Y2ÖáÊ¹ÄÜ	BIT	P0.7
+
+	´®¿Ú2½ÓÊÕ¿Ú	BIT	P1.0	                                      //RXD2
+	´®¿Ú2·¢ËÍ¿Ú	BIT	P1.1	                                      //TXD2
+	X×ó·À×²ÐÅºÅ	BIT	P1.2	                                    //DE
+	XÓÒÏÞÎ»ÐÅºÅ	BIT	P1.3
+	X×óÏÞÎ»ÐÅºÅ	BIT	P1.4
+	XÖÐ¼ä´«¸ÐÆ÷	BIT	P1.5
+	±¾µØ·ÅV¹¤¼þÓÐÎÞ	BIT	P1.6	   ;Í¨Ñ¶ÏÂÒ»Ì¨Êä³öÈ¡V¹¤¼þÓÐÎÞÐÅºÅ                                  //	×ó±ß´æ·ÅVÐÍ¿éÉÏ¹¤¼þÊÇ·ñÈ¡×ß
+	È¡V¹¤¼þÓÐÎÞ£¨ÉÏÒ»Ì¨ÐÅºÅ£©	BIT	P1.7	   ;Í¨Ñ¶ÉÏÒ»Ì¨ÊäÈëÈ¡V¹¤¼þÓÐÎÞÐÅºÅ                                  //ÓÒ±ßÉÏÒ»Ì¨	´æ·ÅVÐÍ¿éÉÏÓÐÎÞ¹¤¼þ
+
+	¼Ó¹¤Éè±¸ÓÐÎÞ¹¤¼þ	BIT	P2.0	                                 //¼Ó¹¤Éè±¸Y3
+	¼Ó¹¤Éè±¸Òì³£	BIT	P2.1	                                     //¼Ó¹¤Éè±¸Y2
+	¼Ó¹¤Éè±¸Ô­Î»ÖÃ	BIT	P2.2	                                   //¼Ó¹¤Éè±¸Y1
+	¼Ó¹¤Éè±¸¸´Î»	BIT	P2.3	                                     //¼Ó¹¤Éè±¸X1
+	¼Ó¹¤Éè±¸ÔËÐÐ	BIT	P2.4	  
+	//¼Ó¹¤Éè±¸X2
+	Í¨Ñ¶ÏÂÒ»Ì¨Êä³ö¿ÉÈ¡ÐÅºÅ	BIT	P2.5    
+ Í¨Ñ¶ÉÏÒ»Ì¨ÊäÈë¿ÉÈ¡ÐÅºÅ	BIT	P2.6
+  
+	´®¿Ú1½ÓÊÕ¿Ú	BIT	P3.0	                                      //RXD1
+	´®¿Ú1·¢ËÍ¿Ú	BIT	P3.1	                                      //TXD1
+				
+	¼±Í£¿ª¹Ø					BIT	P3.2	                                         //ÖÐ¶ÏINT0
+	Y1ÓÒ¹¤¼þ¼ì²â	BIT	P3.3	                                     //A2
+	Y1ÓÒÁãÎ»ÐÅºÅ	BIT	P3.4	                                     //A1
+	Y2×óÁãÎ»ÐÅºÅ	BIT	P3.5	                                     //A3
+	Y2×ó¹¤¼þ¼ì²â		BIT	P3.6	                                     //A4
+	Æô¶¯¿ª¹Ø				 	BIT	P3.7	                                      //A5
+  
+	YÉ²³µ				BIT	0C1H	                                    						//P4.1	
+	Y2Öá×óÎü×¦	BIT	0C2H	                                       //P4.2
+	Y1ÖáÓÒÎü×¦	BIT	0C4H	                                       //P4.4
+		Ö¸Ê¾µÆ			BIT	0C5H	                                         //P4.5
+	Ñ¡Ôñ¿ª¹Ø1					BIT	0CCH	                                    //P5.4
+	Ñ¡Ôñ¿ª¹Ø2					BIT	0CDH	                                    //P5.5
+
+
+//*******IO¿Ú¶¨Òå½áÊø**************
+
+;*****************±ê¼Ç¶¨Òå¿ªÊ¼***************************************
+
+//*´«¸ÐÆ÷ÐÅºÅ±ê¼Ç0011H	EQU	22H*(10-1fh)*********************
+	XÓÒV¹¤¼þ¼ì²â±ê¼Ç	BIT	17H	                                  //P1.7																	//F15
+	X×óV¹¤¼þ¼ì²â±ê¼Ç	BIT	16H	                                  //P1.6																	//E14
+	//XÖÐ¼ä´«¸ÐÆ÷±ê¼Ç	BIT	15H	                                   //P1.5																	//D13
+	X×óÏÞÎ»±ê¼Ç	BIT	14H	                                       //P1.4																	//C12
+	XÓÒÏÞÎ»±ê¼Ç	BIT	13H	                                       //B11
+	¼Ó¹¤Éè±¸Ô­Î»ÖÃ±ê¼Ç	BIT	12H	                                //P2.3																	//A10
+	¼Ó¹¤Éè±¸Òì³£±ê¼Ç	BIT	11H	                                  //P2.1																//9
+	¼Ó¹¤Éè±¸VÓÐÎÞ¹¤¼þ±ê¼Ç	BIT	10H	                             //P2.0																	//8
+
+//*´«¸ÐÆ÷ÐÅºÅ±ê¼Ç0011L	EQU	23H	***	 
+	X×ó·À×²±ê¼Ç	BIT	1FH	                                       //7
+	Y2×ó¹¤¼þ¼ì²â±ê¼Ç	BIT	1EH	                                  //6
+	Y2×óÁãÎ»±ê¼Ç	BIT	1DH	                                      //5
+	Y1ÓÒÁãÎ»±ê¼Ç	BIT	1CH	                                      //4
+	Y1ÓÒ¹¤¼þ¼ì²â±ê¼Ç	BIT	1BH	                                  //3
+	×óÓÒµç»úÉ²³µ±ê¼Ç	BIT	1AH	                                  //2
+	Y2Öá×óÎü×¦±ê¼Ç	BIT	19H	                                    //1
+	Y1ÖáÓÒÎü×¦±ê¼Ç	BIT	18H	   																						 //0
+
+//***ÁÙÊ±±ê¼Ç12H	EQU	24H(20-2fh)***********************
+	;±ê¼ÇBIT	27H	                                      //F15
+	;±ê¼Ç	BIT	26H	                                      //E14
+;±ê¼Ç	BIT	25H	                                //D13
+	;±ê¼Ç	BIT	24H	                                //C12
+	Y2Âö³åÊä³ö±ê¼Ç	BIT	23H	                             //B11
+	Y1Âö³åÊä³ö±ê¼Ç	BIT	22H	                            //A10
+	XÂö³åÊä³ö±ê¼Ç	BIT	21H	                                      //9
+	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç	BIT	20H	                                     //8
+//****ÁÙÊ±±ê¼Ç14L	EQU	25H	****
+	;±êÖ¾	BIT	2FH	                                        //7
+	;±ê¼Ç	BIT	2EH	                                  //6
+	;±ê¼Ç	BIT	2DH	                                  //5
+	;±ê¼Ç	BIT	2CH	                                 //4
+;±ê¼Ç	BIT	2BH	                                 //3
+	;±ê¼Ç	BIT	2AH	                                 //2
+	;±ê¼Ç	BIT	29H	                                      //1
+	;±ê¼Ç	BIT	28H	                                  //0
+
+//*****ÁÙÊ±±ê¼Ç13H	EQU	26H27H(30-3fh)************************
+	ÊýÖµÕý¸º±ê¼Ç	BIT	37H	                                      //F15
+	ÊýÖµÎªÁã±ê¼Ç	BIT	36H	                                      //E14
+	ÊýÖµÐ¡ÓÚ¼«ÏÞÖµ±ê¼Ç	BIT	35H	                                //D13
+	´®¿ÚÓÐÎ´¶ÁÊý¾Ý±ê¼Ç	BIT	34H	                                //C12
+	´®¿Ú1·¢ËÍ»º³åº¯Êý±ê¼Ç	BIT	33H	                             //B11
+	»º´æÊý¾Ý²»×Ô¶¯¶Á³ö±ê¼Ç	BIT	32H	                            //A10
+	T1¼ÆÊ±1S±ê¼Ç	BIT	31H	                                      //9
+	T0ÖÐ¶Ï4´Î±ê¼Ç	BIT	30H	                                     //8
+//****ÁÙÊ±±ê¼Ç14L	EQU	25H	****
+	·¢ËÍÃ¦±êÖ¾	BIT	3FH	                                        //7
+	´®¿Ú½ÓÊÕÖÐ¶Ï±ê¼Ç	BIT	3EH	                                  //6
+	½ÓÊÕÊý¾Ý¶ÁÍê±ê¼Ç	BIT	3DH	                                  //5
+	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç	BIT	3CH	                                 //4
+	´®¿Ú2RI½ÓÊÕÃ¦±ê¼Ç	BIT	3BH	                                 //3
+	´®¿Ú2½ÓÊÕÖÐ¶Ï±ê¼Ç	BIT	3AH	                                 //2
+	³¤¶È¼õÒ»±ê¼Ç	BIT	39H	                                      //1
+	µ±Ç°ËÙ¶ÈÎªÁã±ê¼Ç	BIT	38H	                                  //0
+	µ±Ç°²½ÊýÎªÁã±ê¼Ç	BIT	38H
+
+//*****°´Å¤±ê¼Ç	14H	EQU	28H29H(40-4FH)************************
+	²ÎÊý±£´æ±ê¼Ç	BIT	47H	                                      //F15
+	²ÎÊý³õÊ¼»¯±ê¼Ç	BIT	46H	                                    //E14
+	µ÷ÊÔ°´Å¥±ê¼Ç	BIT	45H	                                      //D13
+	¸´Î»ÔËÐÐ°´Å¥±ê¼Ç	BIT	44H	                                  //C12
+	µ¥¶ÀÐÍºÅ¸Ä±ä±ê¼Ç	BIT	43H	                                  //B11
+	µ÷ÊÔÏÂÒ»Ïî±ê¼Ç	BIT	42H	                                    //A10
+	ÐÍºÅ×¢½â±£´æ±ê¼Ç	BIT	41H	                                  //9
+	²âÊÔ°´Å¥±ê¼Ç	BIT	40H	                                      //8
+//*****°´Å¤±ê¼Ç	14L	EQU	29H*******
+	;µ÷ÊÔ1±ê¼Ç	BIT	4FH	                                         //7
+	;µ÷ÊÔ2±ê¼Ç	BIT	4EH	                                         //6
+	;µ÷ÊÔ3±ê¼Ç	BIT	4DH	                                         //5
+	;µ÷ÊÔ4±ê¼Ç	BIT	4CH	                                         //4
+	;ÐÅºÅ±ê¼Ç	BIT	4BH																																							//3
+	;ÐÅºÅ±ê¼Ç	BIT	4AH																																							//2
+	¼±Í£¿ª¹Ø±ê¼Ç	BIT	49H	                                      //1
+	Æô¶¯°´Å¥±ê¼Ç	BIT	48H	                                      //0
+
+//*****±£´æ±ê¼Ç15H	EQU	2AH2BH(50-5F)	**¿ª»ú²»¸´Î»***************************
+	;±ê¼Ç	BIT	57H	                                      //F15
+	;±ê¼Ç	BIT	56H	                                    //E14
+	;±ê¼Ç	BIT	55H	                                      //D13
+	;±ê¼Ç	BIT	54H	                                  //C12
+	;±ê¼Ç	BIT	53H	                                  //B11
+	;±ê¼Ç	BIT	52H	                                    //A10
+	;±ê¼Ç	BIT	51H	                                  //9
+	;±ê¼Ç	BIT	50H	                                      //8
+//*****°´Å¤±ê¼Ç	14L	EQU	2BH*******
+	;±ê¼Ç	BIT	5FH	                                         //7
+	;±ê¼Ç	BIT	5EH	                                         //6
+	;±ê¼Ç	BIT	5DH	                                         //5
+	;±ê¼Ç	BIT	5CH	                                         //4
+	;±ê¼Ç	BIT	5BH																																							//3
+	;ºÅ±ê¼Ç	BIT	5AH																																							//2
+	;±ê¼Ç	BIT	59H	                                      //1
+	Î»ÖÃ¼ì²âÊ¹ÄÜ±ê¼Ç	BIT	58H	                                      //0
+
+
+
+
+//****ÒÔÉÏÊÇÍ¨Ñ¶±ê¼Ç***********±ê¼Ç¶¨ÒåEND******************** 
+ 
+//**¿ªÊ¼***´¥ÃþÆÁ0010HµØÖ·=µ¥Æ¬»ú¸ßÎ»20HµÍÎ»21H***    
+
+   
+;*********·¢ËÍ»º³åRAMÇø10h-1FH**Êý¾Ý10¸ö*************
+;·¢ËÍ»º³åSRAMÊ×Ö· ,
+;·¢ËÍ»º³åÊý¾Ý¸öÊý ,
+;STCÊý¾ÝÊ×Ö·L ,
+;·¢ËÍ»º³åÊý¾Ý×Ü¸öÊý, UART1´®¿ÚÖÐ¶Ï,UART1·¢ËÍ¼ÆÊýÓÃ
 
 ;5A	A5	15(#3+X)	82	00	00	0001 0203 0405 0607	
 
-	; 	EQU	14H
-	; 	EQU	15H
- 	;	EQU	16H   
-  	;	EQU   	17
-  	;	EQU  	 18
-  5A 	;	EQU   19
-  A5 	;	EQU   1A
- æ•°æ®ä¸ªæ•° 	;	EQU    1B
- æŒ‡ä»¤82	;	EQU    1C
-  ;0008	
-	STCæ•°æ®é¦–å€H			;	EQU    1D
- STCæ•°æ®é¦–å€L  	;	EQU  	 1E
-	;0009
-	å½“å‰æ—¶é—´H	EQU	1EH
-	å½“å‰æ—¶é—´L	EQU	1FH
+	·¢ËÍÖ¡Í·5A	EQU	10H
+	·¢ËÍÖ¡Í·A5	EQU	11H
+	·¢ËÍÊý¾Ý¸öÊý	EQU	12H
+	·¢ËÍÖ¸Áî82	EQU	13H
+	·¢ËÍÊý¾ÝÊ×Ö·H	EQU	14H
+	·¢ËÍÊý¾ÝÊ×Ö·L	EQU	15H
+   ;  000BH
+	T0Âö³åÊý05H	EQU	16H
+	T0Âö³åÊý05L	EQU	17H
+     ;000C          
+	µ±Ç°Ê±¼äH	EQU	18H
+	µ±Ç°Ê±¼äL	EQU	19H
+		    ;000D   
+	ÔËÐÐËÙ¶ÈH	EQU	1AH
+	ÔËÐÐËÙ¶ÈL	EQU	1BH
+  ;000E	                 		
+	ÔËÐÐ³¤¶ÈH	EQU    1CH
+ ÔËÐÐ³¤¶ÈL	EQU  	 1DH
+	;000F    
+	;	EQU	1EH
+	;	EQU	1FH 
+;	*************************************88
 ;0010
-	é€šè®¯è„‰å†²æ•°H	EQU	20H
-	é€šè®¯è„‰å†²æ•°HL	EQU	21H	                            
+	;	EQU	20H
+			;HL	EQU	21H
 ;0011
-	ä¼ æ„Ÿå™¨ä¿¡å·æ ‡è®°H	EQU	22H
-	ä¼ æ„Ÿå™¨ä¿¡å·æ ‡è®°L	EQU	23H	                                 
+	´«¸ÐÆ÷±ê¼Ç11H	EQU	22H
+	´«¸ÐÆ÷±ê¼Ç11L	EQU	23H
+
+
+
 ;0012
-	å½“å‰æ•°å€¼H	EQU	24H
-	å½“å‰æ•°å€¼L	EQU	25H
+	ÁÙÊ±±ê¼Ç12H	EQU	24H
+	ÁÙÊ±±ê¼Ç12L	EQU	25H
  ;**************************************
 ;0013
-	è°ƒè¯•Hæ ‡è®°13H	EQU	26H
-	è„‰å†²Lè¾“å‡ºæ ‡è®°13L	EQU	27H
+	ÁÙÊ±±ê¼Ç13H		EQU	26H
+	ÁÙÊ±±ê¼Ç13L		EQU	27H
 ;0014
-	ä¸´æ—¶æ ‡è®°14H	EQU	28H
-	ä¸´æ—¶æ ‡è®°14L	EQU	29H
+	°´Å¤±ê¼Ç14H	EQU	28H
+	°´Å¤±ê¼Ç14L	EQU	29H      
+	//	ÒÔÏÂ±£´æ²ÎÊý     
 ;0015
-	æŒ‰æ‰­æ ‡è®°15H	EQU	2AH
-	æŒ‰æ‰­æ ‡è®°15L	EQU	2BH
-	//	ä»¥ä¸‹ä¿å­˜å‚æ•°
-;0016
-	ä¿å­˜æ ‡è®°H	EQU	2CH	                                         //			å¼€æœºä¸ç½®1
-	ä¿å­˜æ ‡è®°L	EQU	2DH
+	±£´æ±ê¼Ç15H	EQU	2AH
+	±£´æ±ê¼Ç15L	EQU	2BH      
+	/*	----C260-<--------B320------<.....A180........,	/---
+------------D580------- ----E80-->--F20-->...G70...> 
+------C260-<--------B320--------<------H170--------<  */   
 
-/*	----C260-(--------B320------<.....A180........
-------------D580------- -------E100-->...F70...>   */
 //	X1=A+B			X2=A+B+C		 
 
+;0016
+	XÏòÓÒÁãÎ»H	EQU	2CH	                                        //			¿ª»ú²»ÖÃ1
+	XÏòÓÒÁãÎ»L	EQU	2DH
 ;0017
-	Xå‘å³é›¶ä½H	EQU	2EH
-	Xå‘å³é›¶ä½L	EQU	2FH
+	YÏòÈ¡ÎïÁÏ³¤¾àÀëH	EQU	2EH
+	YÏòÈ¡ÎïÁÏ³¤¾àÀëL	EQU	2FH
 ;0018     Y3
-	Yå‘ä¸¤å¤´å–æ”¾è·ç¦»H	EQU	30H
-	Yå‘ä¸¤å¤´å–æ”¾è·ç¦»L	EQU	31H
+	YÏòÁ½Í·È¡·Å¾àÀëH	EQU	30H
+	YÏòÁ½Í·È¡·Å¾àÀëL	EQU	31H
 ;0019     Y4	
-	Yå‘ä¸­é—´æŠ“Vè·ç¦»H	EQU	32H
-	Yå‘ä¸­é—´æŠ“Vè·ç¦»L	EQU	33H
+	YÏòÖÐ¼ä×¥V¾àÀëH	EQU	32H
+	YÏòÖÐ¼ä×¥V¾àÀëL	EQU	33H
 ;001A     X1   	
-	Xå‘å³é›¶ä½è‡³ä¸­å¿ƒè·ç¦»H	EQU	34H	                              //	å›ºå®šA180MM	(å¯è¾“å…¥å¾®è°ƒï¼‰                                       
-	Xå‘å³é›¶ä½è‡³ä¸­å¿ƒè·ç¦»L	EQU	35H
+	XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëH	EQU	34H	                              //	¹Ì¶¨A180MM	(¿ÉÊäÈëÎ¢µ÷£©                                       
+	XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëL	EQU	35H
 ;001B     X2 	
-	Xå‘å³é›¶ä½è‡³å·¦é›¶ä½è·ç¦»H	EQU	36H	                            //	å›ºå®š1A80+C260MM	(å¯è¾“å…¥å¾®è°ƒï¼‰	
-	Xå‘å³é›¶ä½è‡³å·¦é›¶ä½è·ç¦»L	EQU	37H
+	XÏòÓÒÁãÎ»ÖÁ×óÁãÎ»¾àÀëH	EQU	36H	                            //	¹Ì¶¨1A80+C260MM	(¿ÉÊäÈëÎ¢µ÷£©	
+	XÏòÓÒÁãÎ»ÖÁ×óÁãÎ»¾àÀëL	EQU	37H
 ;001C
-	å·¦å³è¿è¡Œé€Ÿåº¦H	EQU	38H
-	å·¦å³è¿è¡Œé€Ÿåº¦L	EQU	39H
+	×óÓÒÔËÐÐËÙ¶ÈH	EQU	38H
+	×óÓÒÔËÐÐËÙ¶ÈL	EQU	39H
 ;001D
-	ä¸Šä¸‹è¿è¡Œé€Ÿåº¦H	EQU	3AH
-	ä¸Šä¸‹è¿è¡Œé€Ÿåº¦L	EQU	3BH
+	ÉÏÏÂÔËÐÐËÙ¶ÈH	EQU	3AH
+	ÉÏÏÂÔËÐÐËÙ¶ÈL	EQU	3BH
 ;001E
 	;	EQU	3CH
-	æ­¥æ•°åå€æ”¾å¤§ç³»æ•°	EQU	3DH
+	²½ÊýÊ®±¶·Å´óÏµÊý	EQU	3DH
 ;001F
-	æ£€æµ‹é€Ÿåº¦H	EQU	3EH
-	æ£€æµ‹é€Ÿåº¦L	EQU	3FH
+	¼ì²âËÙ¶ÈH	EQU	3EH
+	¼ì²âËÙ¶ÈL	EQU	3FH
 ;0020
-	å·¥ä»¶ç«¯é¢è‡³ä¸­å¿ƒè·ç¦»H	EQU	40H
-	å·¥ä»¶ç«¯é¢è‡³ä¸­å¿ƒè·ç¦»L	EQU	41H
+	¹¤¼þ¶ËÃæÖÁÖÐÐÄ¾àÀëH	EQU	40H
+	¹¤¼þ¶ËÃæÖÁÖÐÐÄ¾àÀëL	EQU	41H
 ;0021
-	å·¥ä»¶é“èŠ¯ç›´å¾„H	EQU	42H
-	å·¥ä»¶é“èŠ¯ç›´å¾„L	EQU	43H
+	¹¤¼þÌúÐ¾Ö±¾¶H	EQU	42H
+	¹¤¼þÌúÐ¾Ö±¾¶L	EQU	43H
 ;0022
-	åž‹å·æ›´æ”¹å€¼	EQU	44H
-	åž‹å·å½“å‰å€¼	EQU	45H
+	ÐÍºÅ¸ü¸ÄÖµ	EQU	44H
+	ÐÍºÅµ±Ç°Öµ	EQU	45H
 	;0023
-	å¤‡ç”¨23H	EQU	46H
-	å¤‡ç”¨23L	EQU	47H
+	±¸ÓÃ23H	EQU	46H
+	±¸ÓÃ23L	EQU	47H
 ;0024
-	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H	EQU	48H
-	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L	EQU	49H
+	×óÓÒX·½Ïò½ÓÊÕÊýÖµH	EQU	48H
+	×óÓÒX·½Ïò½ÓÊÕÊýÖµL	EQU	49H
 ;0025
-	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H	EQU	4AH
-	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L	EQU	4BH
+	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH	EQU	4AH
+	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL	EQU	4BH
 ;0026
-	å·¦å³Xæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H	EQU	4CH
-	å·¦å³Xæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L	EQU	4DH
+	×óÓÒX·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµH	EQU	4CH
+	×óÓÒX·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµL	EQU	4DH
 ;0027
-	ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H	EQU	4EH
-	ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L	EQU	4FH
+	ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµH	EQU	4EH
+	ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµL	EQU	4FH
 
 ;0028
-	A180é•¿åº¦H	EQU	50H
-	A180é•¿åº¦L	EQU	51H
+	A180³¤¶ÈH	EQU	50H
+	A180³¤¶ÈL	EQU	51H
 ;0029
-	B320é•¿åº¦H	EQU	52H
-	B320é•¿åº¦L	EQU	53H
+	B320³¤¶ÈH	EQU	52H
+	B320³¤¶ÈL	EQU	53H
 ;002A
-	C260é•¿åº¦H	EQU	54H
-	C260é•¿åº¦L	EQU	55H
+	C260³¤¶ÈH	EQU	54H
+	C260³¤¶ÈL	EQU	55H
 ;002B
-	D580é•¿åº¦H	EQU	56H
-	D580é•¿åº¦L	EQU	57H
+	D580³¤¶ÈH	EQU	56H
+	D580³¤¶ÈL	EQU	57H
 ;002C
-	E80é•¿åº¦H	EQU	58H
-	E80é•¿åº¦L	EQU	59H
+	E80³¤¶ÈH	EQU	58H
+	E80³¤¶ÈL	EQU	59H
 ;002D
 	F20H	EQU	5AH
 	F20L	EQU	5BH
 ;002E
-	H180é•¿åº¦H	EQU	5CH
-	H180é•¿åº¦L	EQU	5DH
+	H180³¤¶ÈH	EQU	5CH
+	H180³¤¶ÈL	EQU	5DH
 ;002F
-	ç«¯é¢æ£€æµ‹è·ç¦»H	EQU	5EH
-	ç«¯é¢æ£€æµ‹è·ç¦»L	EQU	5FH
+	¶ËÃæ¼ì²â¾àÀëH	EQU	5EH
+	¶ËÃæ¼ì²â¾àÀëL	EQU	5FH
 ;0040
 	        
 
 
-//è§¦æ‘¸å±0000Håœ°å€=å•ç‰‡æœºé«˜ä½00Hä½Žä½01H
+//´¥ÃþÆÁ0000HµØÖ·=µ¥Æ¬»ú¸ßÎ»00HµÍÎ»01H
+	;ÔËÐÐ³¤¶ÈH	EQU	60H
+;	ÔËÐÐ³¤¶ÈL	EQU	61H
+	·¢ËÍ»º³åÊý¾Ý¸öÊý	EQU	62H
+	·¢ËÍ»º³åÊý¾Ý×Ü¸öÊý	EQU	63H
+	·¢ËÍ»º³å¼ÆÊý	EQU	64H
+	²½ÊýËÙ¶È×ÜÏµÊý	EQU	65H
+	¼Ó¼õËÙ×Ü²½ÊýH	EQU	66H
+	¼Ó¼õËÙ×Ü²½ÊýL	EQU	67H
+	ÔÈËÙÔËÐÐ³¤¶ÈH	EQU	68H
+	ÔÈËÙÔËÐÐ³¤¶ÈL	EQU	69H
+	µ±Ç°³¤¶ÈH	EQU	6AH
+	µ±Ç°³¤¶ÈL	EQU	6BH
+	µ±Ç°ËÙ¶ÈH	EQU	6CH
+	µ±Ç°ËÙ¶ÈL	EQU	6DH
+	µ±Ç°²½ÊýH	EQU	6EH
+	µ±Ç°²½ÊýL	EQU	6FH
 
-	å‘é€ç¼“å†²æ•°æ®æ€»ä¸ªæ•°	EQU	60H
-	å‘é€ç¼“å†²æ•°æ®ä¸ªæ•°	EQU	61H
-	å‘é€ç¼“å†²è®¡æ•°	EQU	62H
-	æ­¥æ•°é€Ÿåº¦æ€»ç³»æ•°	EQU	63H
-	è¿è¡Œé•¿åº¦H	EQU	64H
-	è¿è¡Œé•¿åº¦L	EQU	65H
-	åŠ å‡é€Ÿæ€»æ­¥æ•°H	EQU	66H
-	åŠ å‡é€Ÿæ€»æ­¥æ•°L	EQU	67H
-	åŒ€é€Ÿè¿è¡Œé•¿åº¦H	EQU	68H
-	åŒ€é€Ÿè¿è¡Œé•¿åº¦L	EQU	69H
-	å½“å‰é•¿åº¦H	EQU	6AH
-	å½“å‰é•¿åº¦L	EQU	6BH
-	å½“å‰é€Ÿåº¦H	EQU	6CH
-	å½“å‰é€Ÿåº¦L	EQU	6DH
-	å½“å‰æ­¥æ•°H	EQU	6EH
-	å½“å‰æ­¥æ•°L	EQU	6FH
 
-
-	è¿è¡Œé€Ÿåº¦H	EQU	70H
-	è¿è¡Œé€Ÿåº¦L	EQU	71H
+;	ÔËÐÐËÙ¶ÈH	EQU	70H
+;	ÔËÐÐËÙ¶ÈL	EQU	71H
 	DY1	EQU	72H
 	DY2	EQU	73H
 	DY3	EQU	74H
-	DGUSå˜é‡é¦–å€H	EQU	75H
-	DGUSå˜é‡é¦–å€L	EQU	76H
-	DGUSå˜é‡ä¸ªæ•°	EQU	77H
-	STCæ•°æ®é¦–å€H	EQU	78H
-	STCæ•°æ®é¦–å€L	EQU	79H
-	STCæ•°æ®ä¸ªæ•°	EQU	7AH
-	æŽ¥æ”¶è®¡æ•°	EQU	7BH
-	å‘é€ä¸ªæ•°	EQU	7CH
-	ä¸²å£2æŽ¥æ”¶è®¡æ•°	EQU	7DH 
-	è„‰å†²100ä¸ªè®¡æ•°	EQU	7DH 
-	T0ä¸­æ–­4æ¬¡è®¡æ•°	EQU	7EH
-	æ˜¾ç¤ºç”»é¢	EQU	7FH
-	å®šæ—¶1ç§’è®¡æ—¶	EQU	12H
+	DGUS±äÁ¿Ê×Ö·H	EQU	75H
+	DGUS±äÁ¿Ê×Ö·L	EQU	76H
+	DGUS±äÁ¿¸öÊý	EQU	77H
+	STCÊý¾ÝÊ×Ö·H	EQU	78H
+	STCÊý¾ÝÊ×Ö·L	EQU	79H
+	STCÊý¾Ý¸öÊý	EQU	7AH
+	½ÓÊÕ¼ÆÊý	EQU	7BH
+	·¢ËÍ¸öÊý	EQU	7CH
+	´®¿Ú2½ÓÊÕ¼ÆÊý	EQU	7DH
+	Âö³å100¸ö¼ÆÊý	EQU	7DH
+	T0ÖÐ¶Ï4´Î¼ÆÊý	EQU	7EH
+	ÏÔÊ¾»­Ãæ	EQU	7FH
+	¶¨Ê±1Ãë¼ÆÊ±	EQU	12H
  
 	
 
 
 
 
-//**å¼€å§‹****æ•°å€¼èµ‹å€¼*********
-	æŽ‰ç”µä¿å­˜åœ°å€	DATA	030H
-	æŽ‰ç”µä¿å­˜ä¸ªæ•°	DATA	02
-	å¾…å­˜é¦–å€	DATA	2CH	                                         //028H	//	020H
-	ä¿å­˜ä¸ªæ•°	DATA	64	                                          //		48	                                          //	56		//64      
-//3.10	5W4K48S2<EEPROMåœ°å€IAP/0000H-27FFH(MOVC/C000H-E7FFH) 20ä¸ªæ‰‡åŒº 1-0000H-01FFH	2-0200H-03FFH....
-//3.11 ç¬¬1æ‰‡åŒº å­˜å‚¨å½“å‰ä½¿ç”¨å‚æ•°ï¼Œç¬¬2æ‰‡åŒº å­˜å‚¨åž‹å·1ä½¿ç”¨å‚æ•°,2-2,3-3 .....ã€‚
-	;åž‹å·0  	ç¬¬1æ‰‡åŒº   	 IAP/0000H      		MOVC 0C000H
-	;åž‹å·1 	 ç¬¬2æ‰‡åŒº     IAP/0200H 	      MOVC 0C200H		
-	;åž‹å·2   ç¬¬3æ‰‡åŒº     IAP/0400H        MOVC 0C400H 		
-	;åž‹å·3   ç¬¬4æ‰‡åŒº     IAP/0600H        MOVC 0C600H 	
-//  åž‹å·IAPåœ°å€ =   (åž‹å·*2)H ,00L
-// åž‹å·MOVCåœ°å€ =   <(åž‹å·*2)+C0>H ,00L
-	MOVCä¿å­˜é¦–å€	DATA	0C000H
-	IAPä¿å­˜é¦–å€	DATA	0000H
-	IAPåž‹å·æ³¨è§£ä¿å­˜é¦–å€	DATA	0100H
-//3.20	15W4K48S2<SRAMåœ°å€å¸¸è§„00H-FFHæ‰©å±•OOOOH-0EFFHå…±4K, è¯»æŒ‡ä»¤MOVX	@DOTR, MOVX		@Ri
-//3.21	æŽ¥æ”¶ç¼“å†²SRAMé¦–å€	 0000H -009FH(160ä¸ªå­—èŠ‚ï¼‰
-//3.21		å‘é€ç¼“å†²SRAMé¦–å€	 00A0H -00BF( 32ä¸ªå­—èŠ‚ï¼‰
-//3.22		ä¸²å£2æŽ¥æ”¶ç¼“å†²SRAMé¦–å€		00C0H - 00DFH(32ä¸ªå­—èŠ‚ï¼‰
-//3.22		ä¸²å£2å‘é€ç¼“å†²SRAMé¦–å€		00E0H - 00FFH(32ä¸ªå­—èŠ‚ï¼‰
-//3.23  åž‹å·æ³¨è§£SRAMé¦–å€  	0100H-01FF    åž‹å·0:0100H-010FH(16ä¸ªå­—èŠ‚)	
-	æŽ¥æ”¶ç¼“å†²SRAMé¦–å€	DATA	0000H
-	å‘é€ç¼“å†²SRAMé¦–å€	DATA	00A0H
-	ä¸²å£2æŽ¥æ”¶ç¼“å†²SRAMé¦–å€	DATA	00C0H
-	ä¸²å£2å‘é€ç¼“å†²SRAMé¦–å€	DATA	00E0H
+//**¿ªÊ¼****ÊýÖµ¸³Öµ*********
+	µôµç±£´æµØÖ·	DATA	030H
+	µôµç±£´æ¸öÊý	DATA	02
+	´ý´æÊ×Ö·	DATA	2AH	                                         //028H	//	020H
+	±£´æ¸öÊý	DATA	64	                                          //		48	                                          //	56		//64      
+//3.10	5W4K48S2<EEPROMµØÖ·IAP/0000H-27FFH(MOVC/C000H-E7FFH) 20¸öÉÈÇø 1-0000H-01FFH	2-0200H-03FFH....
+//3.11 µÚ1ÉÈÇø ´æ´¢µ±Ç°Ê¹ÓÃ²ÎÊý£¬µÚ2ÉÈÇø ´æ´¢ÐÍºÅ1Ê¹ÓÃ²ÎÊý,2-2,3-3 .....¡£
+	;ÐÍºÅ0  	µÚ1ÉÈÇø   	 IAP/0000H      		MOVC 0C000H
+	;ÐÍºÅ1 	 µÚ2ÉÈÇø     IAP/0200H 	      MOVC 0C200H		
+	;ÐÍºÅ2   µÚ3ÉÈÇø     IAP/0400H        MOVC 0C400H 		
+	;ÐÍºÅ3   µÚ4ÉÈÇø     IAP/0600H        MOVC 0C600H 	
+//  ÐÍºÅIAPµØÖ· =   (ÐÍºÅ*2)H ,00L
+// ÐÍºÅMOVCµØÖ· =   <(ÐÍºÅ*2)+C0>H ,00L
+	MOVC±£´æÊ×Ö·	DATA	0C000H
+	IAP±£´æÊ×Ö·	DATA	0000H
+	IAPÐÍºÅ×¢½â±£´æÊ×Ö·	DATA	0100H
+//3.20	15W4K48S2<SRAMµØÖ·³£¹æ00H-FFHÀ©Õ¹OOOOH-0EFFH¹²4K, ¶ÁÖ¸ÁîMOVX	@DOTR, MOVX		@Ri
+//3.21	½ÓÊÕ»º³åSRAMÊ×Ö·	 0000H -009FH(160¸ö×Ö½Ú£©
+//3.21		·¢ËÍ»º³åSRAMÊ×Ö·	 00A0H -00BF( 32¸ö×Ö½Ú£©
+//3.22		´®¿Ú2½ÓÊÕ»º³åSRAMÊ×Ö·		00C0H - 00DFH(32¸ö×Ö½Ú£©
+//3.22		´®¿Ú2·¢ËÍ»º³åSRAMÊ×Ö·		00E0H - 00FFH(32¸ö×Ö½Ú£©
+//3.23  ÐÍºÅ×¢½âSRAMÊ×Ö·  	0100H-01FF    ÐÍºÅ0:0100H-010FH(16¸ö×Ö½Ú)	
+	½ÓÊÕ»º³åSRAMÊ×Ö·	DATA	0000H
+	·¢ËÍ»º³åSRAMÊ×Ö·	DATA	00A0H
+	·¢ËÍ»º³åRAMÊ×Ö·	DATA	10H
+
+	´®¿Ú2½ÓÊÕ»º³åSRAMÊ×Ö·	DATA	00C0H
+	´®¿Ú2·¢ËÍ»º³åSRAMÊ×Ö·	DATA	00E0H
 	
-	åž‹å·è§¦æ‘¸å±æ³¨è§£SRAMé¦–å€	DATA	0100H
+	ÐÍºÅ´¥ÃþÆÁ×¢½âSRAMÊ×Ö·	DATA	0100H
 
 
 
-	Y1Y2ä¸­å¿ƒè·ç¦»	DATA	3200	                                    //#3200	  //å›ºå®š320MM//	Xé›¶ä½è‡³Våž‹å—è·ç¦»H
-	æ£€æµ‹æå‰è·ç¦»	DATA	200	                                     //200/20MM
-	ç²¾ç»†å½’é›¶é€Ÿåº¦	DATA	040
-	å¿«é€Ÿå½’é›¶é€Ÿåº¦	DATA	080
+	Y1Y2ÖÐÐÄ320¾àÀë	DATA	3200	                                    //#3200	  //¹Ì¶¨320MM//	XÁãÎ»ÖÁVÐÍ¿é¾àÀëH
+	¼ì²âÌáÇ°20¾àÀë	DATA	200	                                     //200/20MM
+	¾«Ï¸¹éÁãËÙ¶È	DATA	040
+	¿ìËÙ¹éÁãËÙ¶È	DATA	080
 	
-	è°ƒè¯•æ…¢é€Ÿåº¦	DATA	0030
-	è°ƒè¯•å¿«é€Ÿåº¦	DATA	0300
-;æ£€æµ‹é€Ÿåº¦     DATA			50	
-	è°ƒè¯•é€Ÿåº¦T0å®šæ—¶å€¼	DATA	60009	                               //50MM/S
-	æ­£å¼¦å€¼ç­‰åˆ†æ•°	DATA	100
-	T0ä¸­æ–­è„‰å†²æ¬¡æ•°	DATA	4	                                     ;4å¯¹åº”2000ç»†åˆ†æ•°ï¼Œ8/4000 
-	è„‰å†²è®¡æ•°ä¸ªæ•°	DATA	50
-	æœ€å°æ­¥æ•°è®¡ç®—æžé™å€¼	DATA	10
-	æœ€å¤§æ­¥æ•°è®¡ç®—æžé™å€¼	DATA	65535	                             ;FFFFH
-	//**ç»“æŸ****åœ°å€æ•°å€¼èµ‹å€¼*********
+	ÎÞ¼Ó¼õËÙ¸³ÖµËÙ¶È	DATA	0040
+	µ÷ÊÔµã¶¯ËÙ¶È	DATA	006
+	µ÷ÊÔÓÐ¼Ó¼õËÙËÙ¶È	DATA	0500
+;¼ì²âËÙ¶È     DATA			50	
+	µ÷ÊÔËÙ¶ÈT0¶¨Ê±Öµ	DATA	60009	                               //50MM/S
+	ÕýÏÒÖµµÈ·ÖÊý	DATA	100
+	T0ÖÐ¶ÏÂö³å´ÎÊý	DATA	4	                                     ;4¶ÔÓ¦2000Ï¸·ÖÊý£¬8/4000 
+	Âö³å¼ÆÊý¸öÊý	DATA	100
+
+//2.Òò276320*100/X=FFFFÏÂÃæÊ¹ÓÃº¯ÊýÈýÊ®¶þ³ýÊ®ÁùÉÌR3,R2²»ÄÜ´óÓÚ16Î»       
+//		>>>ËùÒÔX=276320*100/FFFF=421=ËÙ¶È*6£¨ÕýÏÒÖµ×îÐ¡Öµ£©				ËÙ¶È²»ÄÜÐ¡ÓÚ421/6=70
+// ¼ÆËãSÐÍµ±Ç°ËÙ¶È²¢¸³Öµ  ËÙ¶È²»ÄÜÐ¡ÓÚ421/6=70  	>>>ËùÒÔ×îÐ¡²½Êý²»ÄÜÐ¡ÓÚ240 
+	×îÐ¡²½Êý¼ÆËã¼«ÏÞÖµ	DATA	240	                               ;²»ÄÜÐ¡ÓÚ240  		
+	×î´ó²½Êý¼ÆËã¼«ÏÞÖµ	DATA	65535	                             ;FFFFH
+	//**½áÊø****µØÖ·ÊýÖµ¸³Öµ*********
 
 //*****************************************************
-	å…¬å¸åç§°	DATA	00
-	é€šè®¯ç”»é¢	DATA	01
-	ç­‰å¾…ç”»é¢	DATA	02
-	å‚æ•°ä¿®æ”¹1	DATA	03
-	å‚æ•°ä¿®æ”¹2	DATA	04
-	å‚æ•°ä¿®æ”¹3	DATA	05
-	å‚æ•°ä¿®æ”¹4	DATA	06
-	å‚æ•°ä¿®æ”¹5	DATA	07
-	å†…éƒ¨å‚æ•°ä¿®æ”¹ç”»é¢	DATA	08
-	å·¥ä»¶åž‹å·è¡¨	DATA	09 
-	å·¥ä»¶åž‹å·è¡¨2	DATA	10
-	è°ƒè¯•ç”»é¢1K	DATA	010
-	è°ƒè¯•ç”»é¢2K	DATA	011
-	è°ƒè¯•ç”»é¢3K	DATA	012
-	è°ƒè¯•å‡†å¤‡åž‹å·ç”»é¢	DATA	013
-	è°ƒè¯•å‡†å¤‡å‚æ•°ç”»é¢	DATA	014
-	è°ƒè¯•å‡†å¤‡åŠ¨ä½œç”»é¢	DATA	015
-	è°ƒè¯•ç‰©æ–™å–ç”»é¢	DATA	016
-	è°ƒè¯•é€æ”¾å·¥ä»¶ç”»é¢	DATA	017
-	è°ƒè¯•å–æ”¾å·¥ä»¶ç”»é¢	DATA	018
-//å·¥ä½œå•æ­¥ç”»é¢
-	ç­‰å¾…æ¥æ–™ç”»é¢	DATA	020
-	å·¥ä»¶æ£€æµ‹ä¸­ç”»é¢	DATA	021
-	æœªåŠ å·¥å·¥ä»¶æŠ“å–ç”»é¢	DATA	022
-	ç­‰å¾…åŠ å·¥å®Œæˆç”»é¢	DATA	023
-	åŠ å·¥å·¥ä»¶æŠ“å–ç”»é¢	DATA	024
-	æœªåŠ å·¥å·¥ä»¶æ”¾ç”»é¢	DATA	025
-	ç­‰å¾…åŠ å·¥å·¥ä»¶å–èµ°ç”»é¢	DATA	026
-	æ”¾åŠ å·¥å·¥ä»¶ç”»é¢	DATA	027
-	å›žåˆ°é›¶ä½ç”»é¢	DATA	028
-	æµ‹è¯•ç”»é¢1	DATA	030
-	æµ‹è¯•ç”»é¢2	DATA	031
-//æŠ¥è­¦ç”»é¢ 40-49
-	æŠ¥è­¦K1ç”»é¢	DATA	040
-	ä¼ æ„Ÿå™¨å›¾ç”»é¢	DATA	041
-	ä¼ æ„Ÿå™¨è¡¨æ ¼1ç”»é¢	DATA	042
-	ä¼ æ„Ÿå™¨è¡¨æ ¼2ç”»é¢	DATA	043
-	ä¼ æ„Ÿå™¨è¡¨æ ¼3ç”»é¢	DATA	044
+	¹«Ë¾Ãû³Æ	DATA	00
+	Í¨Ñ¶»­Ãæ	DATA	01
+	µÈ´ý»­Ãæ	DATA	02
+	²ÎÊýÐÞ¸Ä1	DATA	03
+	²ÎÊýÐÞ¸Ä2	DATA	04
+	²ÎÊýÐÞ¸Ä3	DATA	05
+	²ÎÊýÐÞ¸Ä4	DATA	06
+	²ÎÊýÐÞ¸Ä5	DATA	07
+	ÄÚ²¿²ÎÊýÐÞ¸Ä»­Ãæ	DATA	08
+	¹¤¼þÐÍºÅ±í	DATA	09
+	¹¤¼þÐÍºÅ±í2	DATA	10
+	µ÷ÊÔ»­Ãæ1K	DATA	010
+	µ÷ÊÔ»­Ãæ2K	DATA	011
+	µ÷ÊÔ»­Ãæ3K	DATA	012
+	µ÷ÊÔ×¼±¸ÐÍºÅ»­Ãæ	DATA	013
+	µ÷ÊÔ×¼±¸²ÎÊý»­Ãæ	DATA	014
+	µ÷ÊÔ×¼±¸¶¯×÷»­Ãæ	DATA	015
+	µ÷ÊÔÎïÁÏÈ¡»­Ãæ	DATA	016
+	µ÷ÊÔËÍ·Å¹¤¼þ»­Ãæ	DATA	017
+	µ÷ÊÔÈ¡·Å¹¤¼þ»­Ãæ	DATA	018
+//¹¤×÷µ¥²½»­Ãæ
+ÖÐ¼äµÈ´ýÀ´ÁÏ  DATA 020
+ÓÒ±ßÏòX¿ì½øE80  DATA 021
+ÓÒ±ßÏòX¼ì²âF20  DATA 022
+ÓÒ±ßÏòX¿ì½øG70  DATA 023
+ÓÒ±ßY1È¡Ç°ÉÏÍ£  DATA 024
+ÓÒ±ßY1È¡ÍùÏÂ  DATA 025
+ÓÒ±ßY1È¡ÏÂÍ£  DATA 026
+ÓÒ±ßY1È¡ÍùÉÏ  DATA 027
+ÓÒ±ßY1È¡ºóÉÏÍ£  DATA 028
+ÖÐ¼äÏòX¿ì½øH170  DATA 029
+ÖÐ¼äY2È¡Ç°ÉÏÍ£  DATA 030
+ÖÐ¼äY2È¡ÍùÏÂ  DATA 031
+ÖÐ¼äY2È¡ÏÂÍ£  DATA 032
+ÖÐ¼äY2È¡ÍùÉÏ  DATA 033
+ÖÐ¼äY2È¡ºóÉÏÍ£  DATA 034
+ÖÐ¼äÏòX¿ì½øB320  DATA 035
+ÖÐ¼äY1·ÅÇ°ÉÏÍ£  DATA 036
+ÖÐ¼äY1·ÅÍùÏÂ  DATA 037
+ÖÐ¼äY1·ÅÏÂÍ£  DATA 038
+ÖÐ¼äY1·ÅÍùÉÏ  DATA 039
+ÖÐ¼äY1·ÅºóÉÏÍ£  DATA 040
+×ó±ßÏòX260¿ì½ø  DATA 041
+×ó±ßY2·ÅÇ°ÉÏÍ£  DATA 042
+×ó±ßY2·ÅÍùÏÂ  DATA 043
+×ó±ßY2·ÅÏÂÍ£  DATA 044
+×ó±ßY2·ÅÍùÉÏ  DATA 045
+×ó±ßY2·ÅºóÉÏÍ£  DATA 046
+ÓÒ±ßÏòX¿ì½øD580  DATA 047
+ÖÐ¼äÁãÎ»µÈ´ý  DATA 048
 
-//å›ºå®šç”»é¢50-69
-	ç‰ˆæœ¬å·ç”»é¢	DATA	050
-	é”®ç›˜èƒŒæ™¯ç”»é¢	DATA	051
-	é”®ç›˜ç”»é¢	DATA	052
-	ä¸­æ–‡èƒŒæ™¯é”®ç›˜	DATA	053
-	ä¸­æ–‡é”®ç›˜	DATA	054
-	ç¡®å®šæ¢å¤æˆå‡ºåŽ‚ç”»é¢	DATA	055
-	æ•°æ®åˆå§‹åŒ–ç”»é¢	DATA	056
-	æ•°æ®ä¿å­˜ç”»é¢	DATA	057
-	è®¾å¤‡å¼€æœºåˆå§‹åŒ–	DATA	058
-	ä½Žç”µåŽ‹ç”»é¢	DATA	060
-	å†…éƒ¨å‚æ•°1	DATA	061
-	å†…éƒ¨å‚æ•°2	DATA	062
-	ä¼ æ„Ÿå™¨æŠ¥è­¦ç”»é¢	DATA	063
-	ä¼ æ„Ÿå™¨æŠ¥è­¦ç”»é¢çº¢	DATA	064
-	æç¤ºè¯­ç”»é¢	DATA	65
+
+
+//±¨¾¯»­Ãæ 40-49
+//	±¨¾¯K1»­Ãæ	DATA	040
+
+
+//¹Ì¶¨»­Ãæ50-69
+	°æ±¾ºÅ»­Ãæ	DATA	050
+	¼üÅÌ±³¾°»­Ãæ	DATA	051
+	¼üÅÌ»­Ãæ	DATA	052
+	ÖÐÎÄ±³¾°¼üÅÌ	DATA	053
+	ÖÐÎÄ¼üÅÌ	DATA	054
+	È·¶¨»Ö¸´³É³ö³§»­Ãæ	DATA	055
+	Êý¾Ý³õÊ¼»¯»­Ãæ	DATA	056
+	Êý¾Ý±£´æ»­Ãæ	DATA	057
+	Éè±¸¿ª»ú³õÊ¼»¯	DATA	058
+	µÍµçÑ¹»­Ãæ	DATA	060
+	ÄÚ²¿²ÎÊý1	DATA	061
+	ÄÚ²¿²ÎÊý2	DATA	062
+	´«¸ÐÆ÷±¨¾¯»­Ãæ	DATA	063
+	´«¸ÐÆ÷±¨¾¯»­Ãæºì	DATA	064
+	ÌáÊ¾Óï»­Ãæ	DATA	65  
+
+	´«¸ÐÆ÷Í¼»­Ãæ	DATA	066
+	´«¸ÐÆ÷±í¸ñ1»­Ãæ	DATA	067
+	´«¸ÐÆ÷±í¸ñ2»­Ãæ	DATA	068
+	´«¸ÐÆ÷±í¸ñ3»­Ãæ	DATA	069
+	²âÊÔ»­Ãæ1	DATA	070
+
+
+
+
+
+
+
 
 
 ////////////////////
@@ -488,123 +575,122 @@
 	P6	DATA	0E8H
 	P7	DATA	0F8H
 
-	INT_CLKO	DATA	08FH	                                        ;	//å¤–éƒ¨ä¸­æ–­ä¸Žæ—¶é’Ÿè¾“å‡ºæŽ§åˆ¶å¯„å­˜å™¨
-	æ•°æ®å¯„å­˜å™¨	EQU	0C2H
-	åœ°å€å¯„å­˜å™¨é«˜å­—	EQU	0C3H
-	åœ°å€å¯„å­˜å™¨ä½Žå­—	EQU	0C4H
-	å‘½ä»¤å¯„å­˜å™¨	EQU	0C5H
-	å‘½ä»¤è§¦å‘å¯„å­˜å™¨	EQU	0C6H
-	æŽ§åˆ¶å¯„å­˜å™¨	EQU	0C7H	                                       //	æŽ§åˆ¶å¯„å­˜å™¨		MOV20Hå¤ä½
+	INT_CLKO	DATA	08FH	                                        ;	//Íâ²¿ÖÐ¶ÏÓëÊ±ÖÓÊä³ö¿ØÖÆ¼Ä´æÆ÷
+	Êý¾Ý¼Ä´æÆ÷	EQU	0C2H
+	µØÖ·¼Ä´æÆ÷¸ß×Ö	EQU	0C3H
+	µØÖ·¼Ä´æÆ÷µÍ×Ö	EQU	0C4H
+	ÃüÁî¼Ä´æÆ÷	EQU	0C5H
+	ÃüÁî´¥·¢¼Ä´æÆ÷	EQU	0C6H
+	¿ØÖÆ¼Ä´æÆ÷	EQU	0C7H	                                       //	¿ØÖÆ¼Ä´æÆ÷		MOV20H¸´Î»
 
 
 
-	ADCæŽ§åˆ¶å¯„å­˜å™¨	EQU	0BCH	                                    ;ADCæŽ§åˆ¶å¯„å­˜å™¨
-	ADCé«˜8ä½ç»“æžœ	EQU	0BDH	                                     ;ADCé«˜8ä½ç»“æžœ
-	ADCä½Ž2ä½ç»“æžœ	EQU	0BEH	                                     ;ADCä½Ž2ä½ç»“æžœ
-	P1å£ç¬¬2åŠŸ	EQU	09DH	                                        ;P1å£ç¬¬2åŠŸèƒ½æŽ§åˆ¶å¯„å­˜å™¨
+	ADC¿ØÖÆ¼Ä´æÆ÷	EQU	0BCH	                                    ;ADC¿ØÖÆ¼Ä´æÆ÷
+	ADC¸ß8Î»½á¹û	EQU	0BDH	                                     ;ADC¸ß8Î»½á¹û
+	ADCµÍ2Î»½á¹û	EQU	0BEH	                                     ;ADCµÍ2Î»½á¹û
+	P1¿ÚµÚ2¹¦	EQU	09DH	                                        ;P1¿ÚµÚ2¹¦ÄÜ¿ØÖÆ¼Ä´æÆ÷
 
-	ADCç”µæºæŽ§åˆ¶ä½	EQU	80H	                                     ;ADCç”µæºæŽ§åˆ¶ä½
-	ADCå®Œæˆæ ‡å¿—	EQU	10H	                                       ;ADCå®Œæˆæ ‡å¿—
-	ADCèµ·å§‹æŽ§åˆ¶ä½	EQU	08H	                                     ;ADCèµ·å§‹æŽ§åˆ¶ä½
-	ADCæ—¶é’Ÿ	EQU	00H	                                           ;00H/540ä¸ªæ—¶é’Ÿ;20H	/360ä¸ª;40H	/180ä¸ª;60H	/90ä¸ª
-	AUXR	DATA	08EH	                                            //è¾…åŠ©ç‰¹æ®ŠåŠŸèƒ½å¯„å­˜å™¨
-	S2CON	EQU	09AH	                                            //UART2	æŽ§åˆ¶å¯„å­˜å™¨
-	S2BUF	EQU	09BH	                                            //UART2	æ•°æ®å¯„å­˜å™¨
+	ADCµçÔ´¿ØÖÆÎ»	EQU	80H	                                     ;ADCµçÔ´¿ØÖÆÎ»
+	ADCÍê³É±êÖ¾	EQU	10H	                                       ;ADCÍê³É±êÖ¾
+	ADCÆðÊ¼¿ØÖÆÎ»	EQU	08H	                                     ;ADCÆðÊ¼¿ØÖÆÎ»
+	ADCÊ±ÖÓ	EQU	00H	                                           ;00H/540¸öÊ±ÖÓ;20H	/360¸ö;40H	/180¸ö;60H	/90¸ö
+	AUXR	DATA	08EH	                                            //¸¨ÖúÌØÊâ¹¦ÄÜ¼Ä´æÆ÷
+	S2CON	EQU	09AH	                                            //UART2	¿ØÖÆ¼Ä´æÆ÷
+	S2BUF	EQU	09BH	                                            //UART2	Êý¾Ý¼Ä´æÆ÷
 	S2RI	EQU	01H	                                              //S2CON.0
 	S2TI	EQU	02H	                                              //S2CON.1
 	S2RB8	EQU	04H	                                             //S2CON.2
 	S2TB8	EQU	08H	                                             //S2CON.3
-	IE2	EQU	0AFH	                                              //ä¸­æ–­æŽ§åˆ¶å¯„å­˜å™¨2
-	P_SW2	EQU	0BAH	                                            //å¤–è®¾åŠŸèƒ½åˆ‡æ¢å¯„å­˜å™¨2
+	IE2	EQU	0AFH	                                              //ÖÐ¶Ï¿ØÖÆ¼Ä´æÆ÷2
+	P_SW2	EQU	0BAH	                                            //ÍâÉè¹¦ÄÜÇÐ»»¼Ä´æÆ÷2
 	S2_S0	EQU	01H	                                             //P_SW2.0
 
-	T2H	DATA	0D6H	                                             //å®šæ—¶å™¨2é«˜8ä½
-	T2L	DATA	0D7H	                                             //å®šæ—¶å™¨2ä½Ž8ä½
+	T2H	DATA	0D6H	                                             //¶¨Ê±Æ÷2¸ß8Î»
+	T2L	DATA	0D7H	                                             //¶¨Ê±Æ÷2µÍ8Î»
 
 	WAKECLKO	EQU	8FH
 	P4SW	EQU	0BBH
-	P_SW1	DATA	0A2H	                                           ;å¤–è®¾åŠŸèƒ½åˆ‡æ¢å¯„å­˜å™¨1
-		;ç”µæºä¸­æ–­
-	ELVD	BIT	IE.6	                                             //ä½ŽåŽ‹æ£€æµ‹ä¸­æ–­ä½¿èƒ½ä½
-	LVDF	EQU	020H	                                             //PCON.5,ä½ŽåŽ‹æ£€æµ‹ä¸­æ–­æ ‡å¿—ä½
+	P_SW1	DATA	0A2H	                                           ;ÍâÉè¹¦ÄÜÇÐ»»¼Ä´æÆ÷1
+		;µçÔ´ÖÐ¶Ï
+	ELVD	BIT	IE.6	                                             //µÍÑ¹¼ì²âÖÐ¶ÏÊ¹ÄÜÎ»
+	LVDF	EQU	020H	                                             //PCON.5,µÍÑ¹¼ì²âÖÐ¶Ï±êÖ¾Î»
 	AUXR1	DATA	0A2H
 
-;	WDT_CONTR	DATA	0C1H;çœ‹é—¨ç‹—
-;	MOV			WDT_CONTR,	#23H				;ä½¿èƒ½çœ‹é—¨ç‹—,æº¢å‡ºæ—¶é—´çº¦ä¸º0.5S
-;	MOV	WDT_CONTR,	#24H					;ä½¿èƒ½çœ‹é—¨ç‹—,æº¢å‡ºæ—¶é—´çº¦ä¸º1S
-;	MOV	WDT_CONTR,	#25H		;ä½¿èƒ½çœ‹é—¨ç‹—,æº¢å‡ºæ—¶é—´çº¦ä¸º2S
-;	MOV	WDT_CONTR,	#26H					;ä½¿èƒ½çœ‹é—¨ç‹—,æº¢å‡ºæ—¶é—´çº¦ä¸º4S
-;	MOV	WDT_CONTR,	#27H			;ä½¿èƒ½çœ‹é—¨ç‹—,æº¢å‡ºæ—¶é—´çº¦ä¸º8S
-;	ORL	WDT_CONTR,	#10H					;æ¸…çœ‹é—¨ç‹—
+;	WDT_CONTR	DATA	0C1H;¿´ÃÅ¹·
+;	MOV			WDT_CONTR,	#23H				;Ê¹ÄÜ¿´ÃÅ¹·,Òç³öÊ±¼äÔ¼Îª0.5S
+;	MOV	WDT_CONTR,	#24H					;Ê¹ÄÜ¿´ÃÅ¹·,Òç³öÊ±¼äÔ¼Îª1S
+;	MOV	WDT_CONTR,	#25H		;Ê¹ÄÜ¿´ÃÅ¹·,Òç³öÊ±¼äÔ¼Îª2S
+;	MOV	WDT_CONTR,	#26H					;Ê¹ÄÜ¿´ÃÅ¹·,Òç³öÊ±¼äÔ¼Îª4S
+;	MOV	WDT_CONTR,	#27H			;Ê¹ÄÜ¿´ÃÅ¹·,Òç³öÊ±¼äÔ¼Îª8S
+;	ORL	WDT_CONTR,	#10H					;Çå¿´ÃÅ¹·
 
 /////////////////////////////////////////////////
 	CCP_S0	EQU	10H	                                            ;P_SW1.3
 	CCP_S1	EQU	20H	                                            ;P_SW1.5
-	CCON	EQU	0D8H	                                             ;PCAæŽ§åˆ¶å¯„å­˜å™¨
-	CCF0	BIT	CCON.0	                                           ;PCAæ¨¡å—0ä¸­æ–­æ ‡å¿—
-	CCF1	BIT	CCON.1	                                           ;PCAæ¨¡å—1ä¸­æ–­æ ‡å¿—
-	CR	BIT	CCON.6	                                             ;PCAå®šæ—¶å™¨è¿è¡ŒæŽ§åˆ¶ä½
-	CF	BIT	CCON.7	                                             ;PCAå®šæ—¶å™¨æº¢å‡ºæ ‡å¿—
-	CMOD	EQU	0D9H	                                             ;PCAæ¨¡å¼å¯„å­˜å™¨
-	CL	EQU	0E9H	                                               ;PCAå®šæ—¶å™¨ä½Žå­—èŠ‚
-	CH	EQU	0F9H	                                               ;PCAå®šæ—¶å™¨é«˜å­—èŠ‚
-	CCAPM0	EQU	0DAH	                                           ;PCAæ¨¡å—0æ¨¡å¼å¯„å­˜å™¨
-	CCAP0L	EQU	0EAH	                                           ;PCAæ¨¡å—0æ•èŽ·å¯„å­˜å™¨	LOW
-	CCAP0H	EQU	0FAH	                                           ;PCAæ¨¡å—0æ•èŽ·å¯„å­˜å™¨	HIGH
-	CCAPM1	EQU	0DBH	                                           ;PCAæ¨¡å—1æ¨¡å¼å¯„å­˜å™¨
-	CCAP1L	EQU	0EBH	                                           ;PCAæ¨¡å—1æ•èŽ·å¯„å­˜å™¨	LOW
-	CCAP1H	EQU	0FBH	                                           ;PCAæ¨¡å—1æ•èŽ·å¯„å­˜å™¨	HIGH
-	CCAPM2	EQU	0DCH	                                           ;PCAæ¨¡å—2æ¨¡å¼å¯„å­˜å™¨
-	CCAP2L	EQU	0ECH	                                           ;PCAæ¨¡å—2æ•èŽ·å¯„å­˜å™¨	LOW
-	CCAP2H	EQU	0FCH	                                           ;PCAæ¨¡å—2æ•èŽ·å¯„å­˜å™¨	HIGH
-	PCA_PWM0	EQU	0F2H	                                         ;PCAæ¨¡å—0çš„PWMå¯„å­˜å™¨
-	PCA_PWM1	EQU	0F3H	                                         ;PCAæ¨¡å—1çš„PWMå¯„å­˜å™¨
-	PCA_PWM2	EQU	0F4H	                                         ;PCAæ¨¡å—2çš„PWMå¯„å­˜å™¨
+	CCON	EQU	0D8H	                                             ;PCA¿ØÖÆ¼Ä´æÆ÷
+	CCF0	BIT	CCON.0	                                           ;PCAÄ£¿é0ÖÐ¶Ï±êÖ¾
+	CCF1	BIT	CCON.1	                                           ;PCAÄ£¿é1ÖÐ¶Ï±êÖ¾
+	CR	BIT	CCON.6	                                             ;PCA¶¨Ê±Æ÷ÔËÐÐ¿ØÖÆÎ»
+	CF	BIT	CCON.7	                                             ;PCA¶¨Ê±Æ÷Òç³ö±êÖ¾
+	CMOD	EQU	0D9H	                                             ;PCAÄ£Ê½¼Ä´æÆ÷
+	CL	EQU	0E9H	                                               ;PCA¶¨Ê±Æ÷µÍ×Ö½Ú
+	CH	EQU	0F9H	                                               ;PCA¶¨Ê±Æ÷¸ß×Ö½Ú
+	CCAPM0	EQU	0DAH	                                           ;PCAÄ£¿é0Ä£Ê½¼Ä´æÆ÷
+	CCAP0L	EQU	0EAH	                                           ;PCAÄ£¿é0²¶»ñ¼Ä´æÆ÷	LOW
+	CCAP0H	EQU	0FAH	                                           ;PCAÄ£¿é0²¶»ñ¼Ä´æÆ÷	HIGH
+	CCAPM1	EQU	0DBH	                                           ;PCAÄ£¿é1Ä£Ê½¼Ä´æÆ÷
+	CCAP1L	EQU	0EBH	                                           ;PCAÄ£¿é1²¶»ñ¼Ä´æÆ÷	LOW
+	CCAP1H	EQU	0FBH	                                           ;PCAÄ£¿é1²¶»ñ¼Ä´æÆ÷	HIGH
+	CCAPM2	EQU	0DCH	                                           ;PCAÄ£¿é2Ä£Ê½¼Ä´æÆ÷
+	CCAP2L	EQU	0ECH	                                           ;PCAÄ£¿é2²¶»ñ¼Ä´æÆ÷	LOW
+	CCAP2H	EQU	0FCH	                                           ;PCAÄ£¿é2²¶»ñ¼Ä´æÆ÷	HIGH
+	PCA_PWM0	EQU	0F2H	                                         ;PCAÄ£¿é0µÄPWM¼Ä´æÆ÷
+	PCA_PWM1	EQU	0F3H	                                         ;PCAÄ£¿é1µÄPWM¼Ä´æÆ÷
+	PCA_PWM2	EQU	0F4H	                                         ;PCAÄ£¿é2µÄPWM¼Ä´æÆ÷
 
 
 
 
-	T4T3M	DATA	0D1H	                                           //å®šæ—¶å™¨3å’Œå®šæ—¶å™¨4æŽ§åˆ¶å¯„å­˜å™¨
-	T4H	DATA	0D2H	                                             //å®šæ—¶å™¨4é«˜8ä½
-	T4L	DATA	0D3H	                                             //å®šæ—¶å™¨4ä½Ž8ä½
-	T3H	DATA	0D4H	                                             //å®šæ—¶å™¨3é«˜8ä½
-	T3L	DATA	0D5H	                                             //å®šæ—¶å™¨3ä½Ž8ä½
+	T4T3M	DATA	0D1H	                                           //¶¨Ê±Æ÷3ºÍ¶¨Ê±Æ÷4¿ØÖÆ¼Ä´æÆ÷
+	T4H	DATA	0D2H	                                             //¶¨Ê±Æ÷4¸ß8Î»
+	T4L	DATA	0D3H	                                             //¶¨Ê±Æ÷4µÍ8Î»
+	T3H	DATA	0D4H	                                             //¶¨Ê±Æ÷3¸ß8Î»
+	T3L	DATA	0D5H	                                             //¶¨Ê±Æ÷3µÍ8Î»
 ///////////////////////////////////////
 
 	ORG	0000H
-	LJMP	å¼€æœº
-	ORG	0003H	                                                 //3.2æ€¥åœå¼€å…³
-	LJMP	ä¸­æ–­INT0
+	LJMP	¿ª»ú
+	ORG	0003H	                                                 //3.2¼±Í£¿ª¹Ø
+	LJMP	ÖÐ¶ÏINT0
 	ORG	000BH	                                                 //3.4
-	LJMP	ä¸­æ–­T0	                                               //æ­¥è¿›ç”µæœºè„‰å†²ç”¨
-;		ORG					0013H//3.3å…‰æ …ä¿¡å·
-;		LJMP				ä¸­æ–­INT1
+	LJMP	ÖÐ¶ÏT0	                                               //²½½øµç»úÂö³åÓÃ
+;		ORG					0013H//3.3¹âÕ¤ÐÅºÅ
+;		LJMP				ÖÐ¶ÏINT1
 	ORG	001BH	                                                 //3.5
-	LJMP	ä¸­æ–­T1
+	LJMP	ÖÐ¶ÏT1
 	ORG	023H
-	LJMP	UART1ä¸²å£ä¸­æ–­
-	ORG	0033H	                                                 //LVDä¸­æ–­å…¥å£
-	LJMP	ä½Žç”µåŽ‹LVDä¸­æ–­
+	LJMP	UART1´®¿ÚÖÐ¶Ï
+	ORG	0033H	                                                 //LVDÖÐ¶ÏÈë¿Ú
+	LJMP	µÍµçÑ¹LVDÖÐ¶Ï
 	ORG	0043H
-	LJMP	UART2ä¸²å£ä¸­æ–­
+	LJMP	UART2´®¿ÚÖÐ¶Ï
 	;ORG	0053H
-;	LJMP	ä¸­æ–­INT2									//3.7
+;	LJMP	ÖÐ¶ÏINT2									//3.7
 ;	ORG	005BH
-;	LJMP	ä¸­æ–­INT3
+;	LJMP	ÖÐ¶ÏINT3
 	//ORG	063H
-	//LJMP	ä¸­æ–­T2								/ä¸²å£ä¸­æ–­ç”¨  57600
+	//LJMP	ÖÐ¶ÏT2								/´®¿ÚÖÐ¶ÏÓÃ  57600
 ;	ORG	0083H
-;	LJMP	ä¸­æ–­INT4
+;	LJMP	ÖÐ¶ÏINT4
 	;ORG	009BH
-;		LJMP	ä¸­æ–­T3
+;		LJMP	ÖÐ¶ÏT3
 ;	ORG	00A3H
-;		LJMP	ä¸­æ–­T4
+;		LJMP	ÖÐ¶ÏT4
 	ORG	0100H
 
-
-å¼€æœº:	MOV	SP, #080H                                         ;090H
-	LCALL	è®¾ç½®ä¸ºå‡†åŒå‘å£
-	MOV	IP, #01	                                               //ä¸­æ–­INT0ä¼˜å…ˆ                                         ;
+¿ª»ú:	MOV	SP, #090H	                                        ;090H
+	LCALL	ÉèÖÃÎª×¼Ë«Ïò¿Ú
+	MOV	IP, #01	                                               //ÖÐ¶ÏINT0ÓÅÏÈ                                         ;
 	MOV	P0, #00000000B
 	MOV	P1, #11111111B
 	MOV	P2, #00000000B
@@ -613,13 +699,13 @@
 	MOV	P5, #00000000B
 	MOV	P_SW1	, #00H
 	LCALL	DY1S
-	LCALL	è¯»EEPROM      
+	LCALL	¶ÁEEPROM
 	lcall	dy100ms
-LCALL	åž‹å·æ³¨è§£ç¬¬10æ‰‡åŒºè¯»å‡ºåˆ°SRAM
-//LCALL	ä¸Šç”µè¯»0200HæŽ‰ç”µä¿å­˜åˆ°2E2F
-//	JNB	æ€¥åœå¼€å…³	,	ä¸è¯»æŽ‰ç”µä¿å­˜
-	//LCALL	è¯»0200HæŽ‰ç”µä¿å­˜åˆ°2E2F   
-ä¸è¯»æŽ‰ç”µä¿å­˜:
+	LCALL	ÐÍºÅ×¢½âµÚ10ÉÈÇø¶Á³öµ½SRAM
+//LCALL	ÉÏµç¶Á0200Hµôµç±£´æµ½2E2F
+//	JNB	¼±Í£¿ª¹Ø	,	²»¶Áµôµç±£´æ
+	//LCALL	¶Á0200Hµôµç±£´æµ½2E2F   
+²»¶Áµôµç±£´æ:
 	MOV	20H, #0FFH
 	MOV	21H, #0FFH
 	MOV	22H, #0FFH
@@ -630,1216 +716,1490 @@ LCALL	åž‹å·æ³¨è§£ç¬¬10æ‰‡åŒºè¯»å‡ºåˆ°SRAM
 	MOV	27H, #0FFH
 	MOV	28H, #0FFH
 	MOV	29H, #0FFH
-	MOV	2AH, #0FFH
-	MOV	2BH, #0FFH
-	//MOV	2CH,	#0FFH			ä¿å­˜æ ‡è®°06H	EQU	2CH
-	//MOV	2DH,	#0FFH				ä¿å­˜æ ‡è®°06L
-	MOV	2EH, #0FFH
-	MOV	2FH, #0FFH
-	LCALL	ä¸²å£1åˆå§‹åŒ–
-//	LCALL	ä¸²å£2åˆå§‹åŒ–
+
+	LCALL	´®¿Ú1³õÊ¼»¯
+//	LCALL	´®¿Ú2³õÊ¼»¯
 	LCALL	DY10MS
-	LCALL	å‘é€20Hè‡³5FHåˆ°è§¦æ‘¸å±
-	LCALL	å‘é€ç‰ˆæœ¬å·
-	LCALL	æ€¥åœå¼€å…³æ£€æŸ¥
-	LCALL	ä½¿èƒ½INT0ä¸­æ–­
-;	LCALL	ä½Žç”µåŽ‹LVDä¸­æ–­ä½¿èƒ½
-	//	LCALL	åˆå§‹åŒ–CCPMPW
-	LCALL	ä½¿èƒ½å®šæ—¶å™¨T0
-	LCALL	ä½¿èƒ½å®šæ—¶å™¨T1
-	CPL	æŒ‡ç¤ºç¯
-å¾…æœºå‰å‡†å¤‡:
+	LCALL	·¢ËÍ20HÖÁ5FHµ½´¥ÃþÆÁ
+	LCALL	·¢ËÍ°æ±¾ºÅ
+	LCALL	¼±Í£¿ª¹Ø¼ì²é
+	LCALL	Ê¹ÄÜINT0ÖÐ¶Ï
+;	LCALL	µÍµçÑ¹LVDÖÐ¶ÏÊ¹ÄÜ
+	//	LCALL	³õÊ¼»¯CCPMPW
+	LCALL	Ê¹ÄÜ¶¨Ê±Æ÷T0
+	LCALL	Ê¹ÄÜ¶¨Ê±Æ÷T1
+´ý»úÇ°×¼±¸:       
 
-	SETB	Yåˆ¹è½¦
-	SETB	ç¼“å­˜æ•°æ®ä¸è‡ªåŠ¨è¯»å‡ºæ ‡è®°
+LCALL		Ã¿¶Î³¤¶È¼ÆËã
+
+
+	CLR	Y1ÖáÓÒÎü×¦
+	CLR	Y2Öá×óÎü×¦
+	SETB	YÉ²³µ
+	SETB	»º´æÊý¾Ý²»×Ô¶¯¶Á³ö±ê¼Ç
 ;###
-	MOV	STCæ•°æ®é¦–å€L	, #20H
-	MOV	å‘é€ç¼“å†²æ•°æ®ä¸ªæ•°, #8H
-	LCALL	æŒ‡ä»¤æ•°æ®ä¸²å†™å…¥å‘é€ç¼“å†²
-;### 
-	LCALL	å‘é€åž‹å·è¡¨æ ¼æ³¨è§£ 
-å¾…æœºæ£€æµ‹:
 
-	MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
+	LCALL	·¢ËÍRAM10H»º³åÇøÖ¡Í·³õÊ¼»¯
+;### 
+	LCALL	·¢ËÍÐÍºÅ±í¸ñ×¢½â
+´ý»ú¼ì²â:
+
+	MOV	ÏÔÊ¾»­Ãæ, #µÈ´ý»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
 
 	LCALL	DY100MS
-LCALL		å‘é€å½“å‰åž‹å·æ³¨è§£ 
+	LCALL	·¢ËÍµ±Ç°ÐÍºÅ×¢½â
 
 
-	;LCALL	åž‹å·è¡¨æ ¼æ³¨è§£åˆå§‹åŒ–	   
-;LCALL	åž‹å·æ³¨è§£ç¬¬10æ‰‡åŒºè¯»å‡ºä¿å­˜æµ‹è¯• 
-;LCALL	 è¯»8åž‹å·IAPEEPROMåˆå§‹åŒ–æµ‹è¯•
-;LCALL	å†™åž‹å·IAPEEPROMåˆå§‹åŒ–æµ‹è¯• 
-;	LCALL	åž‹å·æ³¨è§£SRAMä¿å­˜åˆ°ç¬¬10æ‰‡åŒº   
-	;LCALL	åž‹å·æ³¨è§£ç¬¬10æ‰‡åŒºè¯»å‡ºåˆ°SRAM
+	;LCALL	ÐÍºÅ±í¸ñ×¢½â³õÊ¼»¯	   
+;LCALL	ÐÍºÅ×¢½âµÚ10ÉÈÇø¶Á³ö±£´æ²âÊÔ 
+;LCALL	 ¶Á8ÐÍºÅIAPEEPROM³õÊ¼»¯²âÊÔ
+;LCALL	Ð´ÐÍºÅIAPEEPROM³õÊ¼»¯²âÊÔ 
+;	LCALL	ÐÍºÅ×¢½âSRAM±£´æµ½µÚ10ÉÈÇø   
+	;LCALL	ÐÍºÅ×¢½âµÚ10ÉÈÇø¶Á³öµ½SRAM
+                          
+¼ì²â: 
 
+ÐÍºÅ×¢½â¸ü¸Ä:
+	JB	ÐÍºÅ×¢½â±£´æ±ê¼Ç, ÐÍºÅ¸ü¸Ä
+	SETB	ÐÍºÅ×¢½â±£´æ±ê¼Ç
+	LCALL	·¢ËÍ°´Å¤±ê¼Çµ½´¥ÃþÆÁ
+	LCALL	¶Á±äÁ¿µØÖ·0100hÊý¾Ý	                                 //2503  
+	LCALL	ÐÍºÅ×¢½âSRAM±£´æµ½µÚ10ÉÈÇø
+;LCALL	·¢ËÍÐÍºÅ±í¸ñ×¢½â  
+	LCALL	·¢ËÍµ±Ç°ÐÍºÅ×¢½â
+;	MOV	ÏÔÊ¾»­Ãæ, #µÈ´ý»­Ãæ
+	;LCALL	DGUSÇÐ»»Í¼Æ¬
+;LCALL			Ð´ÐÍºÅIAPEEPROM
+ÐÍºÅ¸ü¸Ä:
+	MOV	A, ÐÍºÅ¸ü¸ÄÖµ
+	SUBB	A	, ÐÍºÅµ±Ç°Öµ
+	JZ	¿ª»ú²ÎÊý¸´Î»	                                           ;JZ,A=0 ; PC=(PC)+2+REL
+	
+	MOV	ÐÍºÅµ±Ç°Öµ	, ÐÍºÅ¸ü¸ÄÖµ
+	LCALL	¶ÁÐÍºÅIAPEEPROM
+;LCALL		·¢ËÍÐÍºÅÖµµ½´¥ÃþÆÁ   
+LCALL	Ã¿¶Î³¤¶È¼ÆËã
+	LCALL	·¢ËÍ20HÖÁ5FHµ½´¥ÃþÆÁ
+	LCALL	·¢ËÍµ±Ç°ÐÍºÅ×¢½â
+	LCALL	Ð´EEPROM
+ LCALL	  ·¢ËÍRAM10H»º³åÇøÖ¡Í·³õÊ¼»¯
+¿ª»ú²ÎÊý¸´Î»:
+	JB	²ÎÊý³õÊ¼»¯±ê¼Ç, ²ÎÊý±£´æ
+	SETB	²ÎÊý³õÊ¼»¯±ê¼Ç
+	LCALL	·¢ËÍ°´Å¤±ê¼Çµ½´¥ÃþÆÁ
+	LCALL	EEPROM³õÊ¼»¯
+	LCALL	Ð´ÐÍºÅIAPEEPROM³õÊ¼»¯
+	LCALL	ÐÍºÅ±í¸ñ×¢½â³õÊ¼»¯	                                  ;SRAM0100H ³õÊ¼»¯     
+	LCALL	ÐÍºÅ×¢½âSRAM±£´æµ½µÚ10ÉÈÇø
+	LCALL	·¢ËÍÐÍºÅ±í¸ñ×¢½â
+	LCALL	·¢ËÍµ±Ç°ÐÍºÅ×¢½â
+	MOV	ÏÔÊ¾»­Ãæ, #µÈ´ý»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+LCALL	  ·¢ËÍRAM10H»º³åÇøÖ¡Í·³õÊ¼»¯
 
-æ£€æµ‹:  
-     CPL	P4.5
-åž‹å·æ³¨è§£æ›´æ”¹:   
-	JB		  åž‹å·æ³¨è§£ä¿å­˜æ ‡è®°, åž‹å·æ›´æ”¹
-	SETB		åž‹å·æ³¨è§£ä¿å­˜æ ‡è®°
-	LCALL	å‘é€æŒ‰æ‰­æ ‡è®°åˆ°è§¦æ‘¸å±   
-	LCALL		è¯»å˜é‡åœ°å€0100hæ•°æ®  //2503  
-	LCALL	åž‹å·æ³¨è§£SRAMä¿å­˜åˆ°ç¬¬10æ‰‡åŒº
-;LCALL	å‘é€åž‹å·è¡¨æ ¼æ³¨è§£  
-	LCALL		å‘é€å½“å‰åž‹å·æ³¨è§£ 
-;	MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…ç”»é¢
-	;LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-;LCALL			å†™åž‹å·IAPEEPROM
-åž‹å·æ›´æ”¹:
-MOV		A,	åž‹å·æ›´æ”¹å€¼ 
-SUBB		A   , åž‹å·å½“å‰å€¼ 
-JZ	    å¼€æœºå‚æ•°å¤ä½  ;JZ,A=0 ; PC=(PC)+2+REL
-MOV		åž‹å·å½“å‰å€¼ , åž‹å·æ›´æ”¹å€¼  
-LCALL		è¯»åž‹å·IAPEEPROM
-;LCALL		å‘é€åž‹å·å€¼åˆ°è§¦æ‘¸å± 
-LCALL	å‘é€2CHè‡³4FHåˆ°è§¦æ‘¸å±
-LCALL	å‘é€å½“å‰åž‹å·æ³¨è§£ 
-LCALL	å†™EEPROM 
- 
-å¼€æœºå‚æ•°å¤ä½:
-	JB	å‚æ•°åˆå§‹åŒ–æ ‡è®°, å‚æ•°ä¿å­˜
-	SETB	å‚æ•°åˆå§‹åŒ–æ ‡è®°
-	LCALL	å‘é€æŒ‰æ‰­æ ‡è®°åˆ°è§¦æ‘¸å±
-	LCALL	EEPROMåˆå§‹åŒ–   
-	LCALL	å†™åž‹å·IAPEEPROMåˆå§‹åŒ–
-	LCALL	åž‹å·è¡¨æ ¼æ³¨è§£åˆå§‹åŒ–	      ;SRAM0100H åˆå§‹åŒ–     
-	LCALL	åž‹å·æ³¨è§£SRAMä¿å­˜åˆ°ç¬¬10æ‰‡åŒº     
-	LCALL	å‘é€åž‹å·è¡¨æ ¼æ³¨è§£  
-	LCALL	å‘é€å½“å‰åž‹å·æ³¨è§£   
-	MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-
-
-å‚æ•°ä¿å­˜:
-	JB	å‚æ•°ä¿å­˜æ ‡è®°	, è°ƒè¯•
-	SETB	å‚æ•°ä¿å­˜æ ‡è®°
+²ÎÊý±£´æ:
+	JB	²ÎÊý±£´æ±ê¼Ç	, µ÷ÊÔ
+	SETB	²ÎÊý±£´æ±ê¼Ç
 	MOV	2AH, #0FFH
 	MOV	2BH, #0FFH
-	LCALL	å‘é€æŒ‰æ‰­æ ‡è®°åˆ°è§¦æ‘¸å±
-	MOV	æ˜¾ç¤ºç”»é¢, #æ•°æ®ä¿å­˜ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	LCALL	è¯»å˜é‡åœ°å€æ•°æ® 
-	LCALL		DY100MS
-	SETB	å‚æ•°ä¿å­˜æ ‡è®°
-	LCALL	å†™EEPROM    
-	LCALL	å†™åž‹å·IAPEEPROM      //2503	
-;	LCALL		è¯»å˜é‡åœ°å€0100hæ•°æ®  //2503    
+	LCALL	·¢ËÍ°´Å¤±ê¼Çµ½´¥ÃþÆÁ
+	MOV	ÏÔÊ¾»­Ãæ, #Êý¾Ý±£´æ»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+	LCALL	¶Á±äÁ¿µØÖ·Êý¾Ý
+	LCALL	DY500MS
+	SETB	²ÎÊý±£´æ±ê¼Ç
+	LCALL	Ð´EEPROM
+	LCALL	Ð´ÐÍºÅIAPEEPROM	                                     //2503	
+;	LCALL		¶Á±äÁ¿µØÖ·0100hÊý¾Ý  //2503    
 ;	LCALL		DY100MS
-;	LCALL	åž‹å·æ³¨è§£SRAMä¿å­˜åˆ°ç¬¬10æ‰‡åŒº
-;	LCALL	DY1S
-	MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
+;	LCALL	ÐÍºÅ×¢½âSRAM±£´æµ½µÚ10ÉÈÇø
+;	LCALL	DY1S   
 
-è°ƒè¯•:
-	JB	è°ƒè¯•æŒ‰é’®æ ‡è®°	, ç¼–å†™æµ‹è¯•
-	SETB	è°ƒè¯•æŒ‰é’®æ ‡è®°
-	LCALL	å‘é€æŒ‰æ‰­æ ‡è®°åˆ°è§¦æ‘¸å± 
-LCALL			æœºæ¢°æ‰‹å½’é›¶ 
-	MOV	æ˜¾ç¤ºç”»é¢, #è°ƒè¯•å‡†å¤‡åŠ¨ä½œç”»é¢ 
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡ 
-	LCALL	è°ƒè¯•å‡†å¤‡
+	LCALL		Ã¿¶Î³¤¶È¼ÆËã  
+LCALL	·¢ËÍ20HÖÁ5FHµ½´¥ÃþÆÁ
+	MOV	ÏÔÊ¾»­Ãæ, #µÈ´ý»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+LCALL	  ·¢ËÍRAM10H»º³åÇøÖ¡Í·³õÊ¼»¯
+µ÷ÊÔ:
+	JB	µ÷ÊÔ°´Å¥±ê¼Ç	, ±àÐ´²âÊÔ
+	SETB	µ÷ÊÔ°´Å¥±ê¼Ç
+	LCALL	·¢ËÍ°´Å¤±ê¼Çµ½´¥ÃþÆÁ 
+		LCALL	»úÐµÊÖ¹éÁã
+	MOV	ÏÔÊ¾»­Ãæ, #µ÷ÊÔ×¼±¸¶¯×÷»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+	LCALL	µ÷ÊÔ×¼±¸
+±àÐ´²âÊÔ:
 
-ç¼–å†™æµ‹è¯•:
+	JB	²âÊÔ°´Å¥±ê¼Ç, ÊÇ·ñÔËÐÐ¼ì²â 
+ LCALL	·¢ËÍRAM10H»º³åÇøÖ¡Í·³õÊ¼»¯      
+	LCALL	»úÐµÊÖ¹éÁã
+	LCALL	±àÐ´²âÊÔ¶¯×÷
 
-	JB	æµ‹è¯•æŒ‰é’®æ ‡è®°, æ˜¯å¦è¿è¡Œæ£€æµ‹   
-	LCALL			æœºæ¢°æ‰‹å½’é›¶ 
-	LCALL	ç¼–å†™æµ‹è¯•åŠ¨ä½œ
 
+ÊÇ·ñÔËÐÐ¼ì²â:
+	JB	¸´Î»ÔËÐÐ°´Å¥±ê¼Ç, ·µ»Ø¼ì²â
+	SETB	¸´Î»ÔËÐÐ°´Å¥±ê¼Ç
+	LCALL	·¢ËÍ°´Å¤±ê¼Çµ½´¥ÃþÆÁ
+	LJMP	ÔËÐÐÇ°×¼±¸
 
-æ˜¯å¦è¿è¡Œæ£€æµ‹:
-	JB	å¤ä½è¿è¡ŒæŒ‰é’®æ ‡è®°, è¿”å›žæ£€æµ‹
-	SETB	å¤ä½è¿è¡ŒæŒ‰é’®æ ‡è®°
-	LCALL	å‘é€æŒ‰æ‰­æ ‡è®°åˆ°è§¦æ‘¸å± 
- 	LJMP		   è¿è¡Œå‰å‡†å¤‡
-
-è¿”å›žæ£€æµ‹:
-	LJMP		   æ£€æµ‹
+·µ»Ø¼ì²â:
+	LJMP	¼ì²â
 
  ;********************************** 
-                                   //
+
+
+
+                        //
  ;*******************************************88888
-//æ˜¯å¦è¿è¡Œæ£€æµ‹:
-//	JB	å¤ä½è¿è¡ŒæŒ‰é’®æ ‡è®°, æ£€æµ‹
-//	SETB	å¤ä½è¿è¡ŒæŒ‰é’®æ ‡è®°
-//	LCALL	å‘é€æŒ‰æ‰­æ ‡è®°åˆ°è§¦æ‘¸å±
-è¿è¡Œå‰å‡†å¤‡:
-	SETB	Yåˆ¹è½¦ 
-	LCALL			æœºæ¢°æ‰‹å½’é›¶
-	LCALL	æ¯æ®µé•¿åº¦è®¡ç®—
-	LCALL	å‘é€é•¿åº¦åˆ°è§¦æ‘¸å±
- 
-	LCALL	Xè½´A180å›ºå®šè·ç¦»è¿è¡Œ
-è¿è¡Œç¨‹åº:
-
-ç­‰å¾…æ¥æ–™:
-	MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…æ¥æ–™ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	LCALL	DY100MS
-                            
-å·¥ä»¶æ£€æµ‹ä¸­:
-	MOV	æ˜¾ç¤ºç”»é¢, #å·¥ä»¶æ£€æµ‹ä¸­ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	LCALL	Xè½´E80è¿è¡Œ
-	LCALL	DY200MS
-	LCALL	å·¥ä»¶F20ç«¯é¢æ£€æµ‹ç›´æŽ¥è¿è¡Œ
-	;LCALL	DY1S
-æœªåŠ å·¥å·¥ä»¶æŠ“å–:
-	MOV	æ˜¾ç¤ºç”»é¢, #æœªåŠ å·¥å·¥ä»¶æŠ“å–ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	LCALL	Xè½´F70æŠ“é“èŠ¯å³è¿è¡Œ
-	LCALL	DY100MS
- 
-	SETB	Y1è½´å³æ–¹å‘
-	LCALL	Y1è½´äºŒå¤´è¿è¡Œ
-	SETB	Y1è½´å³å¸çˆª
-	LCALL	DY100MS
-	CLR	Y1è½´å³æ–¹å‘
-	LCALL	Y1è½´äºŒå¤´è¿è¡Œ
- 
-
-ç­‰å¾…åŠ å·¥å®Œæˆ:
-	MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…åŠ å·¥å®Œæˆç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	LCALL	Xè½´H180è®¡ç®—é•¿åº¦è¿è¡Œ
-	LCALL	DY100MS
-
-
-åŠ å·¥å·¥ä»¶æŠ“å–:
-	MOV	æ˜¾ç¤ºç”»é¢, #åŠ å·¥å·¥ä»¶æŠ“å–ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
- 
-	LCALL		DY100MS
+//ÊÇ·ñÔËÐÐ¼ì²â:
+//	JB	¸´Î»ÔËÐÐ°´Å¥±ê¼Ç, ¼ì²â
+//	SETB	¸´Î»ÔËÐÐ°´Å¥±ê¼Ç
+//	LCALL	·¢ËÍ°´Å¤±ê¼Çµ½´¥ÃþÆÁ
+ÔËÐÐÇ°×¼±¸:
+	SETB	YÉ²³µ
+	LCALL	»úÐµÊÖ¹éÁã
+	LCALL	Ã¿¶Î³¤¶È¼ÆËã
+;	LCALL	·¢ËÍ³¤¶Èµ½´¥ÃþÆÁ 
+	MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äµÈ´ýÀ´ÁÏ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+	LCALL	XÏòÓÒÁãÎ»¾àÀëÔËÐÐ
+	LCALL	XÖáA180¹Ì¶¨¾àÀëÔËÐÐ
+ÔËÐÐ³ÌÐò:
   
-	SETB	Y2è½´å·¦æ–¹å‘
-	LCALL	Y2è½´ä¸­é—´è¿è¡Œ
-	SETB	Y2è½´å·¦å¸çˆª
-	LCALL	DY100MS
-	CLR	Y2è½´å·¦æ–¹å‘
-	LCALL	Y2è½´ä¸­é—´è¿è¡Œ
+»úÐµÊÖÖÐ¼äµÈ´ýÀ´ÁÏ:
+	MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äµÈ´ýÀ´ÁÏ
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬   
+;????????????????
+	LCALL	DY1S
+                            
+»úÐµÊÖÓÒ±ßÏòX¿ì½øE80:
+	MOV	ÏÔÊ¾»­Ãæ, #ÓÒ±ßÏòX¿ì½øE80
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬
+	LCALL	XÖáE80ÔËÐÐ   
+
+»úÐµÊÖ¹¤¼þ¼ì²âÖÐ:
+	MOV	ÏÔÊ¾»­Ãæ, #ÓÒ±ßÏòX¼ì²âF20
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬ 
+
+	LCALL	¹¤¼þF20¶ËÃæ¼ì²âÔËÐÐ
+	;LCALL	DY1S
+
+»úÐµÊÖÓÒ±ßÏòX¿ì½øG70:
+	MOV	ÏÔÊ¾»­Ãæ, #ÓÒ±ßÏòX¿ì½øG70
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬
+	LCALL	XÖáF70×¥ÌúÐ¾ÓÒÔËÐÐ
+ MOV	ÏÔÊ¾»­Ãæ, #ÓÒ±ßY1È¡Ç°ÉÏÍ£   
+ LCALL	DGUSÇåÁãÇÐ»»Í¼Æ¬ 
+
+»úÐµÊÖÓÒ±ßY1È¡ÍùÏÂ:
+ MOV	ÏÔÊ¾»­Ãæ, #ÓÒ±ßY1È¡ÍùÏÂ
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬
+	SETB	Y1ÖáÓÒ·½Ïò
+	LCALL	Y1Öá¶þÍ·ÔËÐÐ
+
+ MOV	ÏÔÊ¾»­Ãæ, #ÓÒ±ßY1È¡ÏÂÍ£
+LCALL	DGUSÇåÁãÇÐ»»Í¼Æ¬  
+
+»úÐµÊÖY1ÖáÓÒÎü×¦½ô:
+	SETB	Y1ÖáÓÒÎü×¦   
+	LCALL	DY200MS    
+
+»úÐµÊÖÓÒ±ßY1È¡ÍùÉÏ:
+MOV	ÏÔÊ¾»­Ãæ,   #ÓÒ±ßY1È¡ÍùÉÏ
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬
+	CLR	Y1ÖáÓÒ·½Ïò 
+	LCALL	Y1Öá¶þÍ·ÔËÐÐ
+	MOV	ÏÔÊ¾»­Ãæ, #ÓÒ±ßY1È¡ºóÉÏÍ£   
+LCALL	DGUSÇåÁãÇÐ»»Í¼Æ¬  
+ 
+
+»úÐµÊÖÖÐ¼äÏòX¿ì½øH170:
+
+	MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äÏòX¿ì½øH170 
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬  
+
+	LCALL	XÖáH180¼ÆËã³¤¶ÈÔËÐÐ 
+
+	MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äY2È¡Ç°ÉÏÍ£   
+LCALL	DGUSÇåÁãÇÐ»»Í¼Æ¬
+; ????????????????????????///
+µÈ´ý¼Ó¹¤Íê³É:  
+	LCALL	DY1S      
+
+»úÐµÊÖÖÐ¼äY2È¡ÍùÏÂ:
+	MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äY2È¡ÍùÏÂ
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬
+	SETB	Y2Öá×ó·½Ïò
+	LCALL	Y2ÖáÖÐ¼äÔËÐÐ
+
+	MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äY2È¡ÏÂÍ£ 
+LCALL	DGUSÇåÁãÇÐ»»Í¼Æ¬  
+
+»úÐµÊÖY2Öá×óÎü×¦½ô:
+ 	SETB	Y2Öá×óÎü×¦  ;5555555555   
+ 	LCALL	DY200MS   
+
+»úÐµÊÖÖÐ¼äY2È¡ÍùÉÏ:
+	MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äY2È¡ÍùÉÏ
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬
+;LCALL	DY500MS
+	CLR	Y2Öá×ó·½Ïò
+	LCALL	Y2ÖáÖÐ¼äÔËÐÐ
+
+	MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äY2È¡ºóÉÏÍ£
+LCALL	DGUSÇåÁãÇÐ»»Í¼Æ¬
+»úÐµÊÖÖÐ¼äÏòX¿ì½øB320:
+	MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äÏòX¿ì½øB320
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬
+	LCALL	XÖáB320ÔËÐÐ 
+	
+	MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äY1·ÅÇ°ÉÏÍ£
+LCALL	DGUSÇåÁãÇÐ»»Í¼Æ¬ 
+»úÐµÊÖÖÐ¼äY1·ÅÍùÏÂ:
+	MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äY1·ÅÍùÏÂ
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬
+	SETB	Y1ÖáÓÒ·½Ïò
+	LCALL	Y1ÖáÖÐ¼äÔËÐÐ 
+		MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äY1·ÅÏÂÍ£
+LCALL	DGUSÇåÁãÇÐ»»Í¼Æ¬
+»úÐµÊÖY1ÖáÓÒÎü×¦ËÉ:
+	CLR	Y1ÖáÓÒÎü×¦ ;5555555555 
+  
+    
+ LCALL	DY200MS 
+
+
+»úÐµÊÖÖÐ¼äY1·ÅÍùÉÏ:
+
+		MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äY1·ÅÍùÉÏ
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬
+
+	CLR	Y1ÖáÓÒ·½Ïò
+	LCALL	Y1ÖáÖÐ¼äÔËÐÐ
+
+	MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äY1·ÅºóÉÏÍ£ 
+	LCALL	DGUSÇåÁãÇÐ»»Í¼Æ¬
+µÈ´ý¼Ó¹¤¹¤¼þÈ¡×ß:
+;???????????????????????????
+	LCALL	DY1S   
+           
+
+»úÐµÊÖ×ó±ßÏòX260¿ì½ø:
+	MOV	ÏÔÊ¾»­Ãæ, #×ó±ßÏòX260¿ì½ø 
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬
+	LCALL	XÖáC260ÔËÐÐ   
+
+ MOV	ÏÔÊ¾»­Ãæ, #×ó±ßY2·ÅÇ°ÉÏÍ£
+LCALL	DGUSÇåÁãÇÐ»»Í¼Æ¬
+»úÐµÊÖ×ó±ßY2·ÅÍùÏÂ:
+ MOV	ÏÔÊ¾»­Ãæ, # ×ó±ßY2·ÅÍùÏÂ
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬
+	SETB	Y2Öá×ó·½Ïò
+	LCALL	Y2Öá¶þÍ·ÔËÐÐ  
+	MOV	ÏÔÊ¾»­Ãæ, #×ó±ßY2·ÅÏÂÍ£ 
+LCALL	DGUSÇåÁãÇÐ»»Í¼Æ¬ 
+»úÐµÊÖY2Öá×óÎü×¦ËÉ:
+	CLR	Y2Öá×óÎü×¦      
+  
+ 
+LCALL	DY200MS  
+
+
+»úÐµÊÖ×ó±ßY2·ÅÍùÏÂÉÏ:
+MOV	ÏÔÊ¾»­Ãæ, #×ó±ßY2·ÅÍùÉÏ 
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬
+CLR	Y2Öá×ó·½Ïò
+CALL	Y2Öá¶þÍ·ÔËÐÐ
+                   
+MOV	ÏÔÊ¾»­Ãæ, #×ó±ßY2·ÅºóÉÏÍ£ 
+LCALL	DGUSÇåÁãÇÐ»»Í¼Æ¬
+»úÐµÊÖ»Øµ½ÁãÎ»:
+	MOV	ÏÔÊ¾»­Ãæ, #ÓÒ±ßÏòX¿ì½øD580
+LCALL	DGUSÑÓÊ±ÇÐ»»Í¼Æ¬
+	LCALL	XÖáD580ÔËÐÐ   
+	MOV	ÏÔÊ¾»­Ãæ, #ÖÐ¼äÁãÎ»µÈ´ý
+LCALL	DGUSÇåÁãÇÐ»»Í¼Æ¬
+
+
+LCALL	·¢ËÍ³¤¶Èµ½´¥ÃþÆÁ
+	LJMP		»úÐµÊÖÖÐ¼äµÈ´ýÀ´ÁÏ
+
+
+	LJMP	´ý»ú¼ì²â	                                             //ÔËÐÐ³ÌÐò
+
+DGUSÑÓÊ±ÇÐ»»Í¼Æ¬:
+LCALL		DY5MS       
+LCALL	DGUSÇÐ»»Í¼Æ¬   
+  RET
+DGUSÇåÁãÇÐ»»Í¼Æ¬:
+LCALL		DY5MS       
+ LCALL	DGUSÇÐ»»Í¼Æ¬ 
+ LCALL		DY20MS
+ MOV		T0Âö³åÊý05H,#0
+ MOV		T0Âö³åÊý05L,#0  
+ LCALL	·¢ËÍË¢ÐÂ8Êý¾Ý 
+ ;LCALL	DY20MS  
+  	RET
+
 
  
 
-æœªåŠ å·¥å·¥ä»¶æ”¾:
-	MOV	æ˜¾ç¤ºç”»é¢, #æœªåŠ å·¥å·¥ä»¶æ”¾ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	LCALL	Xè½´B320è¿è¡Œ
-	LCALL		DY100MS
-      
-	SETB	Y1è½´å³æ–¹å‘
-	LCALL	Y1è½´ä¸­é—´è¿è¡Œ
-	CLR	Y1è½´å³å¸çˆª
-	LCALL	DY100MS
-	CLR	Y1è½´å³æ–¹å‘
-	LCALL	Y1è½´ä¸­é—´è¿è¡Œ
-	   
-
-ç­‰å¾…åŠ å·¥å·¥ä»¶å–èµ°:
-	MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…åŠ å·¥å·¥ä»¶å–èµ°ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	LCALL	DY100MS
 
 
-æ”¾åŠ å·¥å·¥ä»¶:
-	MOV	æ˜¾ç¤ºç”»é¢, #æ”¾åŠ å·¥å·¥ä»¶ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-
-	LCALL	Xè½´C260è¿è¡Œ
-	LCALL		DY100MS
- 
-	SETB	Y2è½´å·¦æ–¹å‘
-	LCALL	Y2è½´äºŒå¤´è¿è¡Œ
-	CLR	Y2è½´å·¦å¸çˆª
-	LCALL	DY100MS
-	CLR	Y2è½´å·¦æ–¹å‘
-	LCALL	Y2è½´äºŒå¤´è¿è¡Œ
- 
-å›žåˆ°é›¶ä½:
-	MOV	æ˜¾ç¤ºç”»é¢, #å›žåˆ°é›¶ä½ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	LCALL	Xè½´D580è¿è¡Œ
-	LCALL		DY100MS  
-
- LJMP	     ç­‰å¾…æ¥æ–™
 
 
-	LJMP	å¾…æœºæ£€æµ‹	                                             //è¿è¡Œç¨‹åº
+
 
  ;****************************************8888888
 /*
-  åž‹å·æ›´æ”¹å€¼	EQU	44H
-	åž‹å·å½“å‰å€¼	EQU	45H
-å•ç‹¬åž‹å·æ”¹å˜æ£€æµ‹:
-	JB	å•ç‹¬åž‹å·æ”¹å˜æ ‡è®°	, æ— ä¿å­˜
-	SETB	å•ç‹¬å‚æ•°ä¿å­˜æ ‡è®° 	
-	LCALL	è¯»åž‹å·EEPROM         	
-LCALL	å‘é€20Hè‡³5FHåˆ°å˜é‡åœ°å€
-	;LCALL	è¯»å˜é‡åœ°å€æ•°æ®
+  ÐÍºÅ¸ü¸ÄÖµ	EQU	44H
+	ÐÍºÅµ±Ç°Öµ	EQU	45H
+µ¥¶ÀÐÍºÅ¸Ä±ä¼ì²â:
+	JB	µ¥¶ÀÐÍºÅ¸Ä±ä±ê¼Ç	, ÎÞ±£´æ
+	SETB	µ¥¶À²ÎÊý±£´æ±ê¼Ç 	
+	LCALL	¶ÁÐÍºÅEEPROM         	
+LCALL	·¢ËÍ20HÖÁ5FHµ½±äÁ¿µØÖ·
+	;LCALL	¶Á±äÁ¿µØÖ·Êý¾Ý
 	LCALL	DY1S
 
-		MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	LCALL	å‘é€20Hè‡³5FHåˆ°è§¦æ‘¸å±
-æ— ä¿å­˜:	RET
+		MOV	ÏÔÊ¾»­Ãæ, #µÈ´ý»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+	LCALL	·¢ËÍ20HÖÁ5FHµ½´¥ÃþÆÁ
+ÎÞ±£´æ:	RET
 //***ABCDEF************************  
         */
 // ****************************************************88888*****************
 
-;æŽ¥æ”¶æ•°æ®è¯»å®Œæ ‡è®°    SETB	æŽ¥æ”¶æ•°æ®è¯»å®Œæ ‡è®°
-;ä¸‹ä¸€é¡¹å¼€å…³æ ‡è®°    
-	//è°ƒè¯•å‡†å¤‡ç”»é¢	DATA	015
-	//è°ƒè¯•ç‰©æ–™å–ç”»é¢	DATA	016
-	//è°ƒè¯•é€æ”¾å·¥ä»¶ç”»é¢	DATA	017
-	//è°ƒè¯•å–æ”¾å·¥ä»¶ç”»é¢	DATA	01
+;½ÓÊÕÊý¾Ý¶ÁÍê±ê¼Ç    SETB	½ÓÊÕÊý¾Ý¶ÁÍê±ê¼Ç
+;ÏÂÒ»Ïî¿ª¹Ø±ê¼Ç    
+	//µ÷ÊÔ×¼±¸»­Ãæ	DATA	015
+	//µ÷ÊÔÎïÁÏÈ¡»­Ãæ	DATA	016
+	//µ÷ÊÔËÍ·Å¹¤¼þ»­Ãæ	DATA	017
+	//µ÷ÊÔÈ¡·Å¹¤¼þ»­Ãæ	DATA	01
 
 
-è°ƒè¯•å‡†å¤‡:
+µ÷ÊÔ×¼±¸:
    
-æŽ¥æ”¶è°ƒè¯•æ•°å€¼åˆå§‹åŒ–:
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	50
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	50
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	50
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	50
-	MOV	å·¦å³Xæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H	, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	å·¦å³Xæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L	, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L
-	MOV	ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H	, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L	, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L
-	LCALL	å‘é€XYå½“å‰æ•°å€¼åˆ°è§¦æ‘¸å±
+½ÓÊÕµ÷ÊÔÊýÖµ³õÊ¼»¯:
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµH	, #HIGH	00
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµL	, #LOW	00
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH	, #HIGH	00
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL	, #LOW	00
+	MOV	×óÓÒX·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµH	, ×óÓÒX·½Ïò½ÓÊÕÊýÖµH
+	MOV	×óÓÒX·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµL	, ×óÓÒX·½Ïò½ÓÊÕÊýÖµL
+	MOV	ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµH	, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH
+	MOV	ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµL	, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL
+	LCALL	·¢ËÍXYµ±Ç°ÊýÖµµ½´¥ÃþÆÁ
 
-	JB	è°ƒè¯•ä¸‹ä¸€é¡¹æ ‡è®°	, $
-	SETB	è°ƒè¯•ä¸‹ä¸€é¡¹æ ‡è®°	                                       ; è°ƒè¯•1æ ‡è®°
-	LCALL	å‘é€æŒ‰æ‰­æ ‡è®°åˆ°è§¦æ‘¸å±
-;	LCALL			æœºæ¢°æ‰‹å½’é›¶                          
+	JB	µ÷ÊÔÏÂÒ»Ïî±ê¼Ç	, $
+	SETB	µ÷ÊÔÏÂÒ»Ïî±ê¼Ç
+	LCALL	·¢ËÍ°´Å¤±ê¼Çµ½´¥ÃþÆÁ
+;*******ÓÒ±ß****************************************	
+ÓÒ±ßÎïÁÏÈ¡Î»ÖÃµ÷ÊÔA¿ìËÙÒÆ¶¯:
+	MOV	DPTR, #µ÷ÊÔÎïÁÏÈ¡Î»ÖÃTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
+	MOV	ÏÔÊ¾»­Ãæ, #ÌáÊ¾Óï»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµH	, #HIGH	400
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµL	, #LOW	400
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH	, #HIGH	800
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL	, #LOW	800
+	LCALL	·¢ËÍXYµ±Ç°ÊýÖµµ½´¥ÃþÆÁ
+	LCALL	×óÓÒX·½Ïòµ÷ÊÔ¶¯×÷
+	LCALL	ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔ¶¯×÷
+ ///////////////////////////////////////
+	MOV	ÏÔÊ¾»­Ãæ, #µ÷ÊÔÎïÁÏÈ¡»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+ÊÖ¶¯ÓÒ±ßÎïÁÏÈ¡Î»ÖÃµ÷ÊÔA:
+	JB	½ÓÊÕÊý¾Ý¶ÁÍê±ê¼Ç	, $
+	SETB	½ÓÊÕÊý¾Ý¶ÁÍê±ê¼Ç
+	LCALL	×óÓÒX·½Ïòµ÷ÊÔ¶¯×÷
+	LCALL	ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔ¶¯×÷
+	JB	µ÷ÊÔÏÂÒ»Ïî±ê¼Ç	, ÊÖ¶¯ÓÒ±ßÎïÁÏÈ¡Î»ÖÃµ÷ÊÔA
+	SETB	µ÷ÊÔÏÂÒ»Ïî±ê¼Ç
+	LCALL	·¢ËÍ°´Å¤±ê¼Çµ½´¥ÃþÆÁ
+	MOV	YÏòÁ½Í·È¡·Å¾àÀëH, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH
+	MOV	YÏòÁ½Í·È¡·Å¾àÀëL, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL
+	MOV	XÏòÓÒÁãÎ»H, ×óÓÒX·½Ïò½ÓÊÕÊýÖµH
+	MOV	XÏòÓÒÁãÎ»L, ×óÓÒX·½Ïò½ÓÊÕÊýÖµL
+///////////////////////////////////////     
 
-;*******å³è¾¹****************************************	
-å³è¾¹ç‰©æ–™å–ä½ç½®è°ƒè¯•Aå¿«é€Ÿç§»åŠ¨:
-	MOV	æ˜¾ç¤ºç”»é¢, #è°ƒè¯•ç‰©æ–™å–ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	200
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	200
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	800
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	800
-	LCALL	å‘é€XYå½“å‰æ•°å€¼åˆ°è§¦æ‘¸å±
-	LCALL	å·¦å³Xæ–¹å‘è°ƒè¯•åŠ¨ä½œ
-	LCALL	ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•åŠ¨ä½œ
-
-
-æ‰‹åŠ¨å³è¾¹ç‰©æ–™å–ä½ç½®è°ƒè¯•A:
-	JB	æŽ¥æ”¶æ•°æ®è¯»å®Œæ ‡è®°	, $
-	SETB	æŽ¥æ”¶æ•°æ®è¯»å®Œæ ‡è®°
-	LCALL	å·¦å³Xæ–¹å‘è°ƒè¯•åŠ¨ä½œ
-	LCALL	ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•åŠ¨ä½œ
-	JB	è°ƒè¯•ä¸‹ä¸€é¡¹æ ‡è®°	, æ‰‹åŠ¨å³è¾¹ç‰©æ–™å–ä½ç½®è°ƒè¯•A
-	SETB	è°ƒè¯•ä¸‹ä¸€é¡¹æ ‡è®°	                                       ; è°ƒè¯•1æ ‡è®°
-	LCALL	å‘é€æŒ‰æ‰­æ ‡è®°åˆ°è§¦æ‘¸å±
-	MOV	Yå‘ä¸¤å¤´å–æ”¾è·ç¦»H, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	Yå‘ä¸¤å¤´å–æ”¾è·ç¦»L, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L
-	MOV	Xå‘å³é›¶ä½H, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	Xå‘å³é›¶ä½L, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L
-
-
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	200
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	200
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	300
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	300
-	LCALL	å‘é€XYå½“å‰æ•°å€¼åˆ°è§¦æ‘¸å±
-	LCALL	ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•åŠ¨ä½œ
-	LCALL	å·¦å³Xæ–¹å‘è°ƒè¯•åŠ¨ä½œ
-
-
-;*******ä¸­é—´****************************************	
-ä¸­é—´åŠ å·¥ä½ç½®è°ƒè¯•Bå¿«é€Ÿç§»åŠ¨:
-
-	MOV	æ˜¾ç¤ºç”»é¢, #è°ƒè¯•é€æ”¾å·¥ä»¶ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	5000
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	5000
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	4000
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	4000
-	LCALL	å‘é€XYå½“å‰æ•°å€¼åˆ°è§¦æ‘¸å±
-	LCALL	å·¦å³Xæ–¹å‘è°ƒè¯•åŠ¨ä½œ
-	LCALL	ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•åŠ¨ä½œ
-æ‰‹åŠ¨ä¸­é—´åŠ å·¥ä½ç½®è°ƒè¯•B:
-	JB	æŽ¥æ”¶æ•°æ®è¯»å®Œæ ‡è®°	, $
-	SETB	æŽ¥æ”¶æ•°æ®è¯»å®Œæ ‡è®°
-	LCALL	å·¦å³Xæ–¹å‘è°ƒè¯•åŠ¨ä½œ
-	LCALL	ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•åŠ¨ä½œ
-	JB	è°ƒè¯•ä¸‹ä¸€é¡¹æ ‡è®°	, æ‰‹åŠ¨ä¸­é—´åŠ å·¥ä½ç½®è°ƒè¯•B
-	SETB	è°ƒè¯•ä¸‹ä¸€é¡¹æ ‡è®°	                                       ; è°ƒè¯•1æ ‡è®°
-	LCALL	å‘é€æŒ‰æ‰­æ ‡è®°åˆ°è§¦æ‘¸å±
-
-	MOV	Yå‘ä¸­é—´æŠ“Vè·ç¦»H, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	Yå‘ä¸­é—´æŠ“Vè·ç¦»L, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L
-	MOV	Xå‘å³é›¶ä½è‡³ä¸­å¿ƒè·ç¦»H, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	Xå‘å³é›¶ä½è‡³ä¸­å¿ƒè·ç¦»L, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L
-
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	5000
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	5000
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	300
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	300
-	LCALL	å‘é€XYå½“å‰æ•°å€¼åˆ°è§¦æ‘¸å±
-	LCALL	ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•åŠ¨ä½œ
-	LCALL	å·¦å³Xæ–¹å‘è°ƒè¯•åŠ¨ä½œ
+	SETB	Y1ÖáÓÒÎü×¦
+	LCALL	DY100MS
+ÓÒ±ßÎïÁÏÈ¡Î»ÖÃµ÷ÊÔA¿ìËÙ»Ø¹é:
+	MOV	DPTR, #µ÷ÊÔÎïÁÏÈ¡»Ø¹éTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
+	MOV	ÏÔÊ¾»­Ãæ, #ÌáÊ¾Óï»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+	;MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµH	, #HIGH	400
+;	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµL	, #LOW		400
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH	, #HIGH	000
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL	, #LOW	000
+	LCALL	·¢ËÍXYµ±Ç°ÊýÖµµ½´¥ÃþÆÁ
+	LCALL	ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔ¶¯×÷
+;	LCALL	×óÓÒX·½Ïòµ÷ÊÔ¶¯×÷
 
 
-;**********å·¦è¾¹*****************************************
-å·¦è¾¹æ”¾ä½ç½®è°ƒè¯•Cå¿«é€Ÿç§»åŠ¨:
-	MOV	æ˜¾ç¤ºç”»é¢, #è°ƒè¯•å–æ”¾å·¥ä»¶ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	7600
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	7600
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	300
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	300
-	LCALL	å‘é€XYå½“å‰æ•°å€¼åˆ°è§¦æ‘¸å±
-	LCALL	å·¦å³Xæ–¹å‘è°ƒè¯•åŠ¨ä½œ
-	LCALL	ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•åŠ¨ä½œ
-æ‰‹åŠ¨å·¦è¾¹æ”¾ä½ç½®è°ƒè¯•C:
-	JB	æŽ¥æ”¶æ•°æ®è¯»å®Œæ ‡è®°	, $
-	SETB	æŽ¥æ”¶æ•°æ®è¯»å®Œæ ‡è®°
-	LCALL	å·¦å³Xæ–¹å‘è°ƒè¯•åŠ¨ä½œ
-	LCALL	ä¸Šä¸‹Y2å·¦æ–¹å‘è°ƒè¯•åŠ¨ä½œ
-	JB	è°ƒè¯•ä¸‹ä¸€é¡¹æ ‡è®°	, æ‰‹åŠ¨å·¦è¾¹æ”¾ä½ç½®è°ƒè¯•C
-	SETB	è°ƒè¯•ä¸‹ä¸€é¡¹æ ‡è®°	                                       ; è°ƒè¯•1æ ‡è®°
-	LCALL	å‘é€æŒ‰æ‰­æ ‡è®°åˆ°è§¦æ‘¸å±
-	MOV	Yå‘ä¸¤å¤´å–æ”¾è·ç¦»H, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	Yå‘ä¸¤å¤´å–æ”¾è·ç¦»L, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L
-	MOV	Xå‘å³é›¶ä½è‡³å·¦é›¶ä½è·ç¦»H, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	Xå‘å³é›¶ä½è‡³å·¦é›¶ä½è·ç¦»L, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L
+;*******ÖÐ¼ä*1***************************************	
+ÖÐ¼ä¼Ó¹¤Î»ÖÃµ÷ÊÔB¿ìËÙÒÆ¶¯:
+	MOV	DPTR, #µ÷ÊÔÖÐ¼ä¼Ó¹¤Î»ÖÃ·ÅTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
+;MOV	ÏÔÊ¾»­Ãæ, #ÌáÊ¾Óï»­Ãæ
+;	LCALL	DGUSÇÐ»»Í¼Æ¬     
+	
 
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	50
-	MOV	å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	50
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H	, #HIGH	30
-	MOV	ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L	, #LOW	30
-	LCALL	å‘é€XYå½“å‰æ•°å€¼åˆ°è§¦æ‘¸å±
-	LCALL	ä¸Šä¸‹Y2å·¦æ–¹å‘è°ƒè¯•åŠ¨ä½œ
-	LCALL	å·¦å³Xæ–¹å‘è°ƒè¯•åŠ¨ä½œ
+	//23MOV	R4,	XÏòÓÒÁãÎ»H 
+//23	MOV	R3,	XÏòÓÒÁãÎ»L
+ MOV	R2,	 #HIGH	5000     ;(B320+A180 )
+ MOV	 R1,	 #LOW	5000
+;R2,R1+R4R3=R3R2R1
+//23LCALL	Ê®Áù¼ÓÊ®Áù
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµH	, R2
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµL	, R1
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH	, #HIGH	4000
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL	, #LOW	4000
+	LCALL	·¢ËÍXYµ±Ç°ÊýÖµµ½´¥ÃþÆÁ
+	LCALL	×óÓÒX·½Ïòµ÷ÊÔ¶¯×÷
+	LCALL	ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔ¶¯×÷
+//////////////////////////////////////////
+	MOV	ÏÔÊ¾»­Ãæ, #µ÷ÊÔËÍ·Å¹¤¼þ»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+ÊÖ¶¯ÖÐ¼ä¼Ó¹¤Î»ÖÃµ÷ÊÔB:
+	JB	½ÓÊÕÊý¾Ý¶ÁÍê±ê¼Ç	, $
+	SETB	½ÓÊÕÊý¾Ý¶ÁÍê±ê¼Ç
+	LCALL	×óÓÒX·½Ïòµ÷ÊÔ¶¯×÷
+	LCALL	ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔ¶¯×÷
+	JB	µ÷ÊÔÏÂÒ»Ïî±ê¼Ç	, ÊÖ¶¯ÖÐ¼ä¼Ó¹¤Î»ÖÃµ÷ÊÔB
+	SETB	µ÷ÊÔÏÂÒ»Ïî±ê¼Ç
+	LCALL	·¢ËÍ°´Å¤±ê¼Çµ½´¥ÃþÆÁ
+	MOV	YÏòÖÐ¼ä×¥V¾àÀëH, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH
+	MOV	YÏòÖÐ¼ä×¥V¾àÀëL, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL 
+MOV	XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëH, ×óÓÒX·½Ïò½ÓÊÕÊýÖµH
+	MOV	XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëL, ×óÓÒX·½Ïò½ÓÊÕÊýÖµL
+/*23	MOV	R4,   ×óÓÒX·½Ïò½ÓÊÕÊýÖµH   	
+	MOV	R3,   ×óÓÒX·½Ïò½ÓÊÕÊýÖµL	
+	MOV	R2,    XÏòÓÒÁãÎ»H 
+	MOV	R1,    XÏòÓÒÁãÎ»L
+	 ;R4R3-R2R1=R3R2R1
+	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç  
+MOV	XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëH, R2
+MOV	XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëL, R1
+	                 */
+	CLR	Y1ÖáÓÒÎü×¦
+	LCALL	DY100MS
+/////////////////////////////////////////
+ÖÐ¼ä¼Ó¹¤Î»ÖÃµ÷ÊÔB¿ìËÙ»Ø¹é:
+ 
+	MOV	DPTR, #µ÷ÊÔÖÐ¼ä¼Ó¹¤Î»ÖÃ·Å»Ø¹éTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
+	MOV	ÏÔÊ¾»­Ãæ, #ÌáÊ¾Óï»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+
+	;MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµH	, #HIGH	5000
+	;MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµL	, #LOW	5000
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH	, #HIGH	000
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL	, #LOW	000
+	LCALL	·¢ËÍXYµ±Ç°ÊýÖµµ½´¥ÃþÆÁ
+	LCALL	ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔ¶¯×÷
+;	LCALL	×óÓÒX·½Ïòµ÷ÊÔ¶¯×÷
+
+;20250309*******ÖÐ¼ä*2***************************************	
+
+ÖÐ¼ä¼Ó¹¤Î»ÖÃµ÷ÊÔBY2¿ìËÙÒÆ¶¯:
+	MOV	DPTR, #µ÷ÊÔÖÐ¼ä¼Ó¹¤Î»ÖÃÈ¡TAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
+	;MOV	ÏÔÊ¾»­Ãæ, #ÌáÊ¾Óï»­Ãæ
+	;LCALL	DGUSÇÐ»»Í¼Æ¬ 
+ 
+
+	;MOV	R4,XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëH  
+;	MOV	R3,XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëL 
+	MOV	R4,	×óÓÒX·½Ïò½ÓÊÕÊýÖµH 
+	MOV	R3	,×óÓÒX·½Ïò½ÓÊÕÊýÖµL 
+
+	MOV	R2,     #HIGH	Y1Y2ÖÐÐÄ320¾àÀë 
+	MOV	R1,     #LOW	 Y1Y2ÖÐÐÄ320¾àÀë
+	 ;R4R3-R2R1=R3R2R1
+	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç
+
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµH	, R2
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµL	, R1
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH	, YÏòÖÐ¼ä×¥V¾àÀëH                   ;HIGH	300
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL	, YÏòÖÐ¼ä×¥V¾àÀëL                   ;#LOW	300
+	LCALL	·¢ËÍXYµ±Ç°ÊýÖµµ½´¥ÃþÆÁ
+	LCALL	×óÓÒX·½Ïòµ÷ÊÔ¶¯×÷
+	LCALL	ÉÏÏÂY2×ó·½Ïòµ÷ÊÔ¶¯×÷
+	SETB	Y2Öá×óÎü×¦
+	LCALL	DY100MS
+
+
+ÖÐ¼ä¼Ó¹¤Î»ÖÃµ÷ÊÔBY2¿ìËÙ»Ø¹é:
+	MOV	DPTR, #µ÷ÊÔÖÐ¼ä¼Ó¹¤Î»ÖÃÈ¡»Ø¹éTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
+	;MOV	ÏÔÊ¾»­Ãæ, #ÌáÊ¾Óï»­Ãæ
+	;LCALL	DGUSÇÐ»»Í¼Æ¬
+//	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµH	, XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëH
+	//MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµL	, XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëL  
+	MOV	R4,	×óÓÒX·½Ïò½ÓÊÕÊýÖµH
+	MOV	R3,	×óÓÒX·½Ïò½ÓÊÕÊýÖµL
+	MOV	R2,     #HIGH	Y1Y2ÖÐÐÄ320¾àÀë 
+	MOV	R1,     #LOW	 Y1Y2ÖÐÐÄ320¾àÀë
+;R2,R1+R4R3=R3R2R1
+	LCALL	Ê®Áù¼ÓÊ®Áù
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµH	, R2
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµL	, R1
+
+
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH	, #HIGH	000
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL	, #LOW	000
+	LCALL	·¢ËÍXYµ±Ç°ÊýÖµµ½´¥ÃþÆÁ
+	LCALL	ÉÏÏÂY2×ó·½Ïòµ÷ÊÔ¶¯×÷                                 ;ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔ¶¯×÷
+	LCALL	×óÓÒX·½Ïòµ÷ÊÔ¶¯×÷
 
 
 
-æ‰‹åŠ¨ä½ç½®è°ƒè¯•ç»“æŸ:
-	LCALL	æ¯æ®µé•¿åº¦è®¡ç®—
-	LCALL	å‘é€20Hè‡³5FHåˆ°è§¦æ‘¸å±
-	LCALL	å†™EEPROM
-	MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
+;**********×ó±ß*****************************************
+×ó±ß·ÅÎ»ÖÃµ÷ÊÔC¿ìËÙÒÆ¶¯:
+	MOV	DPTR, #µ÷ÊÔ×ó±ßÎ»ÖÃ·ÅTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
+	;MOV	ÏÔÊ¾»­Ãæ, #ÌáÊ¾Óï»­Ãæ
+	;LCALL	DGUSÇÐ»»Í¼Æ¬    
+	MOV	R4,	×óÓÒX·½Ïò½ÓÊÕÊýÖµH
+	MOV	R3,	×óÓÒX·½Ïò½ÓÊÕÊýÖµL
+ MOV		R2,	 #HIGH	2600
+ MOV	 R1,	 #LOW		2600
+;R2,R1+R4R3=R3R2R1
+	LCALL	Ê®Áù¼ÓÊ®Áù
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµH	, R2
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµL	, R1
+
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH	, YÏòÁ½Í·È¡·Å¾àÀëH	                 ;#HIGH	300
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL	, YÏòÁ½Í·È¡·Å¾àÀëL	                 ; #LOW	300
+	LCALL	·¢ËÍXYµ±Ç°ÊýÖµµ½´¥ÃþÆÁ
+	LCALL	×óÓÒX·½Ïòµ÷ÊÔ¶¯×÷
+	LCALL	ÉÏÏÂY2×ó·½Ïòµ÷ÊÔ¶¯×÷
+	MOV	ÏÔÊ¾»­Ãæ, #µ÷ÊÔÈ¡·Å¹¤¼þ»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+  ////////////////////////////////////////////////
+ÊÖ¶¯×ó±ß·ÅÎ»ÖÃµ÷ÊÔC:
+	JB	½ÓÊÕÊý¾Ý¶ÁÍê±ê¼Ç	, $
+	SETB	½ÓÊÕÊý¾Ý¶ÁÍê±ê¼Ç
+	LCALL	×óÓÒX·½Ïòµ÷ÊÔ¶¯×÷
+	LCALL	ÉÏÏÂY2×ó·½Ïòµ÷ÊÔ¶¯×÷
+	JB	µ÷ÊÔÏÂÒ»Ïî±ê¼Ç, ÊÖ¶¯×ó±ß·ÅÎ»ÖÃµ÷ÊÔC
+	SETB	µ÷ÊÔÏÂÒ»Ïî±ê¼Ç
+	LCALL	·¢ËÍ°´Å¤±ê¼Çµ½´¥ÃþÆÁ
+	;MOV	YÏòÁ½Í·È¡·Å¾àÀëH, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH
+	;MOV	YÏòÁ½Í·È¡·Å¾àÀëL, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL
+	MOV	XÏòÓÒÁãÎ»ÖÁ×óÁãÎ»¾àÀëH, ×óÓÒX·½Ïò½ÓÊÕÊýÖµH
+	MOV	XÏòÓÒÁãÎ»ÖÁ×óÁãÎ»¾àÀëL, ×óÓÒX·½Ïò½ÓÊÕÊýÖµL
+	/*23MOV	R4,   ×óÓÒX·½Ïò½ÓÊÕÊýÖµH   	
+	MOV	R3,   ×óÓÒX·½Ïò½ÓÊÕÊýÖµL	
+	MOV	R2,    XÏòÓÒÁãÎ»H 
+	MOV	R1,    XÏòÓÒÁãÎ»L
+	 ;R4R3-R2R1=R3R2R1
+	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç  
+MOV		XÏòÓÒÁãÎ»ÖÁ×óÁãÎ»¾àÀëH, R2
+MOV		XÏòÓÒÁãÎ»ÖÁ×óÁãÎ»¾àÀëL ,R1   */
+	CLR	Y2Öá×óÎü×¦
+	LCALL	DY100MS
+×ó±ß·ÅÎ»ÖÃµ÷ÊÔC¿ìËÙ»Ø¹é:
+	MOV	DPTR, #µ÷ÊÔ×ó±ßÎ»ÖÃ·Å»Ø¹éTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
+	MOV	ÏÔÊ¾»­Ãæ, #ÌáÊ¾Óï»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµH	, XÏòÓÒÁãÎ»H
+	MOV	×óÓÒX·½Ïò½ÓÊÕÊýÖµL	, XÏòÓÒÁãÎ»L
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH	, #HIGH	000
+	MOV	ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL	, #LOW	000
+	LCALL	·¢ËÍXYµ±Ç°ÊýÖµµ½´¥ÃþÆÁ
+	LCALL	ÉÏÏÂY2×ó·½Ïòµ÷ÊÔ¶¯×÷
+	LCALL	×óÓÒX·½Ïòµ÷ÊÔ¶¯×÷
+	MOV	DPTR, #µ÷ÊÔ½áÊø¹éÁãTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
+	MOV	ÏÔÊ¾»­Ãæ, #ÌáÊ¾Óï»­Ãæ
+                            LCALL		DY100MS
+	;LCALL	»úÐµÊÖ¹éÁã
+
+
+;	LCALL	×óÓÒX·½Ïòµ÷ÊÔ¶¯×÷    
+/* MOV	DPTR, #µ÷ÊÔÎïÁÏÈ¡Î»ÖÃTAB
+	MOV	DPTR, #µ÷ÊÔÎïÁÏÈ¡»Ø¹éTAB
+	MOV	DPTR, #µ÷ÊÔÖÐ¼ä¼Ó¹¤Î»ÖÃ·ÅTAB  
+	MOV	DPTR, #µ÷ÊÔÖÐ¼ä¼Ó¹¤Î»ÖÃ·Å»Ø¹éTAB 
+	MOV	DPTR, #µ÷ÊÔÖÐ¼ä¼Ó¹¤Î»ÖÃÈ¡TAB  
+	MOV	DPTR, #µ÷ÊÔÖÐ¼ä¼Ó¹¤Î»ÖÃÈ¡»Ø¹éTAB  
+	MOV	DPTR, #µ÷ÊÔ×ó±ßÎ»ÖÃ·ÅTAB  
+	MOV	DPTR, #µ÷ÊÔ×ó±ßÎ»ÖÃ·Å»Ø¹éTAB  
+     */
+ ////////////////////////////////////
+
+ÊÖ¶¯Î»ÖÃµ÷ÊÔ½áÊø:
+	LCALL	Ã¿¶Î³¤¶È¼ÆËã
+	LCALL	·¢ËÍ20HÖÁ5FHµ½´¥ÃþÆÁ
+	LCALL	Ð´EEPROM
+	MOV	ÏÔÊ¾»­Ãæ, #µÈ´ý»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
 	RET
 
-//************å³è¾¹è°ƒè¯•**X****************************
-å·¦å³Xæ–¹å‘è°ƒè¯•åŠ¨ä½œ:
-	MOV	R4, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	R3, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L
-	MOV	R2, å·¦å³Xæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H
-	MOV	R1, å·¦å³Xæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L
-	LCALL	åå…­å‡åå…­æ­£è´Ÿæ ‡è®°
-	JNB	æ•°å€¼ä¸ºé›¶æ ‡è®°	, å·¦å³Xæ–¹å‘è°ƒè¯•é€€å‡º
-	MOV	è¿è¡Œé•¿åº¦H, R2
-	MOV	è¿è¡Œé•¿åº¦L, R1
-	JNB	æ•°å€¼æ­£è´Ÿæ ‡è®°	, å·¦å³Xæ–¹å‘è°ƒè¯•å³ç§»
-å·¦å³Xæ–¹å‘è°ƒè¯•å·¦ç§»:
-	SETB	Xè½´æ–¹å‘
-	CLR	Xè„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	è°ƒè¯•æ…¢é€Ÿè®¡æ•°è¿è¡Œ
-	SETB	Xè„‰å†²è¾“å‡ºæ ‡è®°
-	MOV	å·¦å³Xæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H	, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	å·¦å³Xæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L	, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L
+//************ÓÒ±ßµ÷ÊÔ**X****************************
+×óÓÒX·½Ïòµ÷ÊÔ¶¯×÷:
+	MOV	R4, ×óÓÒX·½Ïò½ÓÊÕÊýÖµH
+	MOV	R3, ×óÓÒX·½Ïò½ÓÊÕÊýÖµL
+	MOV	R2, ×óÓÒX·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµH
+	MOV	R1, ×óÓÒX·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµL
+	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç
+	JNB	ÊýÖµÎªÁã±ê¼Ç	, ×óÓÒX·½Ïòµ÷ÊÔÍË³ö
+	MOV	ÔËÐÐ³¤¶ÈH, R2
+	MOV	ÔËÐÐ³¤¶ÈL, R1
+	JNB	ÊýÖµÕý¸º±ê¼Ç	, ×óÓÒX·½Ïòµ÷ÊÔÓÒÒÆ
+×óÓÒX·½Ïòµ÷ÊÔ×óÒÆ:
+	SETB	XÖá·½Ïò
+	CLR	XÂö³åÊä³ö±ê¼Ç
+	LCALL	µ÷ÊÔÂýËÙ¼ÆÊýÔËÐÐ
+	SETB	XÂö³åÊä³ö±ê¼Ç
+	MOV	×óÓÒX·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµH	, ×óÓÒX·½Ïò½ÓÊÕÊýÖµH
+	MOV	×óÓÒX·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµL	, ×óÓÒX·½Ïò½ÓÊÕÊýÖµL
 	RET
-å·¦å³Xæ–¹å‘è°ƒè¯•å³ç§»:
+×óÓÒX·½Ïòµ÷ÊÔÓÒÒÆ:
 	MOV	R4, #0FFH
 	MOV	R3, #0FFH
-	MOV	R2, è¿è¡Œé•¿åº¦H
-	MOV	R1, è¿è¡Œé•¿åº¦L
+	MOV	R2, ÔËÐÐ³¤¶ÈH
+	MOV	R1, ÔËÐÐ³¤¶ÈL
  ;R4R3-R2R1=R3R2R1
-	;LCALL	åå…­å‡åå…­æ­£è´Ÿæ ‡è®°
+	;LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç
 	;-R2R1=R2R1
-	LCALL	åå…­ä½è´Ÿæ•°è½¬æ¢æˆæ­£æ•°
+	LCALL	Ê®ÁùÎ»¸ºÊý×ª»»³ÉÕýÊý
 
-	MOV	è¿è¡Œé•¿åº¦H, R2
-	MOV	è¿è¡Œé•¿åº¦L, R1
-å·¦å³Xæ–¹å‘è°ƒè¯•å³ç§»2:
-	CLR	Xè½´æ–¹å‘
-	CLR	Xè„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	è°ƒè¯•æ…¢é€Ÿè®¡æ•°è¿è¡Œ
-	SETB	Xè„‰å†²è¾“å‡ºæ ‡è®°
-	MOV	å·¦å³Xæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H	, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	å·¦å³Xæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L	, å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L
+	MOV	ÔËÐÐ³¤¶ÈH, R2
+	MOV	ÔËÐÐ³¤¶ÈL, R1
+×óÓÒX·½Ïòµ÷ÊÔÓÒÒÆ2:
+	CLR	XÖá·½Ïò
+	CLR	XÂö³åÊä³ö±ê¼Ç
+	LCALL	µ÷ÊÔÂýËÙ¼ÆÊýÔËÐÐ
+	SETB	XÂö³åÊä³ö±ê¼Ç
+	MOV	×óÓÒX·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµH	, ×óÓÒX·½Ïò½ÓÊÕÊýÖµH
+	MOV	×óÓÒX·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµL	, ×óÓÒX·½Ïò½ÓÊÕÊýÖµL
 	RET
-å·¦å³Xæ–¹å‘è°ƒè¯•é€€å‡º:
+×óÓÒX·½Ïòµ÷ÊÔÍË³ö:
 	RET
 
  ;-R2R1=R2R1
 
 
 
-//************ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•åŠ¨ä½œ****************************
-ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•åŠ¨ä½œ:
-	MOV	R4, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	R3, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L
-	MOV	R2, ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H
-	MOV	R1, ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L
-	LCALL	åå…­å‡åå…­æ­£è´Ÿæ ‡è®°
-	JNB	æ•°å€¼ä¸ºé›¶æ ‡è®°	, ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•é€€å‡º
-	MOV	è¿è¡Œé•¿åº¦H, R2
-	MOV	è¿è¡Œé•¿åº¦L, R1
-	JNB	æ•°å€¼æ­£è´Ÿæ ‡è®°	, ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•ä¸Šç§»
-ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•ä¸‹ç§»:
-	SETB	Y1è½´å³æ–¹å‘
-	CLR	Y1è„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	è°ƒè¯•æ…¢é€Ÿè®¡æ•°è¿è¡Œ
-	SETB	Y1è„‰å†²è¾“å‡ºæ ‡è®°
-	MOV	ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H	, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L	, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L
+//************ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔ¶¯×÷****************************
+ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔ¶¯×÷:
+	MOV	R4, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH
+	MOV	R3, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL
+	MOV	R2, ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµH
+	MOV	R1, ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµL
+	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç
+	JNB	ÊýÖµÎªÁã±ê¼Ç	, ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔÍË³ö
+	MOV	ÔËÐÐ³¤¶ÈH, R2
+	MOV	ÔËÐÐ³¤¶ÈL, R1
+	JNB	ÊýÖµÕý¸º±ê¼Ç	, ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔÉÏÒÆ
+ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔÏÂÒÆ:
+	SETB	Y1ÖáÓÒ·½Ïò
+	CLR	Y1Âö³åÊä³ö±ê¼Ç
+	LCALL	µ÷ÊÔÂýËÙ¼ÆÊýÔËÐÐ
+	SETB	Y1Âö³åÊä³ö±ê¼Ç
+	MOV	ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµH	, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH
+	MOV	ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµL	, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL
 	RET
-ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•ä¸Šç§»:
+ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔÉÏÒÆ:
 	MOV	R4, #0FFH
 	MOV	R3, #0FFH
-	MOV	R2, è¿è¡Œé•¿åº¦H
-	MOV	R1, è¿è¡Œé•¿åº¦L
+	MOV	R2, ÔËÐÐ³¤¶ÈH
+	MOV	R1, ÔËÐÐ³¤¶ÈL
  ;R4R3-R2R1=R3R2R1
-	;LCALL	åå…­å‡åå…­æ­£è´Ÿæ ‡è®°     
+	;LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç     
 	;-R2R1=R2R1
-	LCALL	åå…­ä½è´Ÿæ•°è½¬æ¢æˆæ­£æ•°
-	MOV	è¿è¡Œé•¿åº¦H, R2
-	MOV	è¿è¡Œé•¿åº¦L, R1
-ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•ä¸Šç§»2:
+	LCALL	Ê®ÁùÎ»¸ºÊý×ª»»³ÉÕýÊý
+	MOV	ÔËÐÐ³¤¶ÈH, R2
+	MOV	ÔËÐÐ³¤¶ÈL, R1
+ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔÉÏÒÆ2:
 
-	CLR	Y1è½´å³æ–¹å‘
-	CLR	Y1è„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	è°ƒè¯•æ…¢é€Ÿè®¡æ•°è¿è¡Œ
-	SETB	Y1è„‰å†²è¾“å‡ºæ ‡è®°
-	MOV	ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H	, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L	, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L
+	CLR	Y1ÖáÓÒ·½Ïò
+	CLR	Y1Âö³åÊä³ö±ê¼Ç
+	LCALL	µ÷ÊÔÂýËÙ¼ÆÊýÔËÐÐ
+	SETB	Y1Âö³åÊä³ö±ê¼Ç
+	MOV	ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµH	, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH
+	MOV	ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµL	, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL
 	RET
-ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•é€€å‡º:
+ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔÍË³ö:
 	RET
-//**************ä¸Šä¸‹Y1å³æ–¹å‘è°ƒè¯•åŠ¨ä½œEND******************  
+//**************ÉÏÏÂY1ÓÒ·½Ïòµ÷ÊÔ¶¯×÷END******************  
 
-//************ä¸Šä¸‹Y2å·¦æ–¹å‘è°ƒè¯•åŠ¨ä½œ*********************** 
-ä¸Šä¸‹Y2å·¦æ–¹å‘è°ƒè¯•åŠ¨ä½œ:
-	MOV	R4, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	R3, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L
-	MOV	R2, ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H
-	MOV	R1, ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L
-	LCALL	åå…­å‡åå…­æ­£è´Ÿæ ‡è®°
-	JNB	æ•°å€¼ä¸ºé›¶æ ‡è®°	, ä¸Šä¸‹Y2å·¦æ–¹å‘è°ƒè¯•é€€å‡º
-	MOV	è¿è¡Œé•¿åº¦H, R2
-	MOV	è¿è¡Œé•¿åº¦L, R1
-	JNB	æ•°å€¼æ­£è´Ÿæ ‡è®°	, ä¸Šä¸‹Y2å·¦æ–¹å‘è°ƒè¯•ä¸Šç§»
-ä¸Šä¸‹Y2å·¦æ–¹å‘è°ƒè¯•ä¸‹ç§»:
-	SETB	Y2è½´å·¦æ–¹å‘
-	CLR	Y2è„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	è°ƒè¯•æ…¢é€Ÿè®¡æ•°è¿è¡Œ
-	SETB	Y2è„‰å†²è¾“å‡ºæ ‡è®°
-	MOV	ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H	, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L	, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L
+//************ÉÏÏÂY2×ó·½Ïòµ÷ÊÔ¶¯×÷*********************** 
+ÉÏÏÂY2×ó·½Ïòµ÷ÊÔ¶¯×÷:
+	MOV	R4, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH
+	MOV	R3, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL
+	MOV	R2, ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµH
+	MOV	R1, ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµL
+	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç
+	JNB	ÊýÖµÎªÁã±ê¼Ç	, ÉÏÏÂY2×ó·½Ïòµ÷ÊÔÍË³ö
+	MOV	ÔËÐÐ³¤¶ÈH, R2
+	MOV	ÔËÐÐ³¤¶ÈL, R1
+	JNB	ÊýÖµÕý¸º±ê¼Ç	, ÉÏÏÂY2×ó·½Ïòµ÷ÊÔÉÏÒÆ
+ÉÏÏÂY2×ó·½Ïòµ÷ÊÔÏÂÒÆ:
+	SETB	Y2Öá×ó·½Ïò
+	CLR	Y2Âö³åÊä³ö±ê¼Ç
+	LCALL	µ÷ÊÔÂýËÙ¼ÆÊýÔËÐÐ
+	SETB	Y2Âö³åÊä³ö±ê¼Ç
+	MOV	ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµH	, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH
+	MOV	ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµL	, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL
 	RET
-ä¸Šä¸‹Y2å·¦æ–¹å‘è°ƒè¯•ä¸Šç§»:
+ÉÏÏÂY2×ó·½Ïòµ÷ÊÔÉÏÒÆ:
 	MOV	R4, #0FFH
 	MOV	R3, #0FFH
-	MOV	R2, è¿è¡Œé•¿åº¦H
-	MOV	R1, è¿è¡Œé•¿åº¦L
+	MOV	R2, ÔËÐÐ³¤¶ÈH
+	MOV	R1, ÔËÐÐ³¤¶ÈL
  ;R4R3-R2R1=R3R2R1
-	;	LCALL	åå…­å‡åå…­æ­£è´Ÿæ ‡è®°
+	;	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç
 
 	;-R2R1=R2R1
-	LCALL	åå…­ä½è´Ÿæ•°è½¬æ¢æˆæ­£æ•°
-	MOV	è¿è¡Œé•¿åº¦H, R2
-	MOV	è¿è¡Œé•¿åº¦L, R1
-ä¸Šä¸‹Y2å·¦æ–¹å‘è°ƒè¯•ä¸Šç§»2:
+	LCALL	Ê®ÁùÎ»¸ºÊý×ª»»³ÉÕýÊý
+	MOV	ÔËÐÐ³¤¶ÈH, R2
+	MOV	ÔËÐÐ³¤¶ÈL, R1
+ÉÏÏÂY2×ó·½Ïòµ÷ÊÔÉÏÒÆ2:
 
-	CLR	Y2è½´å·¦æ–¹å‘
-	CLR	Y2è„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	è°ƒè¯•æ…¢é€Ÿè®¡æ•°è¿è¡Œ
+	CLR	Y2Öá×ó·½Ïò
+	CLR	Y2Âö³åÊä³ö±ê¼Ç
+	LCALL	µ÷ÊÔÂýËÙ¼ÆÊýÔËÐÐ
 	
 
-	SETB	Y2è„‰å†²è¾“å‡ºæ ‡è®°
-	MOV	ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H	, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H
-	MOV	ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L	, ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L
+	SETB	Y2Âö³åÊä³ö±ê¼Ç
+	MOV	ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµH	, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµH
+	MOV	ÉÏÏÂY·½ÏòÉÏÒ»´Î½ÓÊÕÊýÖµL	, ÉÏÏÂY·½Ïò½ÓÊÕÊýÖµL
 	RET
-ä¸Šä¸‹Y2å·¦æ–¹å‘è°ƒè¯•é€€å‡º:
+ÉÏÏÂY2×ó·½Ïòµ÷ÊÔÍË³ö:
 	RET
-//**************ä¸Šä¸‹Y2å·¦æ–¹å‘è°ƒè¯•åŠ¨ä½œEND******************
+//**************ÉÏÏÂY2×ó·½Ïòµ÷ÊÔ¶¯×÷END******************
 
-//***è°ƒè¯•æ…¢é€Ÿè®¡æ•°è¿è¡Œ*XYæ–¹å‘å…±ç”¨*******
-//CLR			Xæ–¹å‘    
-//CLR	Xè„‰å†²è¾“å‡ºæ ‡è®°       
-è°ƒè¯•æ…¢é€Ÿè®¡æ•°è¿è¡Œ:
-	MOV	è¿è¡Œé€Ÿåº¦H	, #HIGH	è°ƒè¯•å¿«é€Ÿåº¦
-	MOV	è¿è¡Œé€Ÿåº¦L	, #LOW	è°ƒè¯•å¿«é€Ÿåº¦
-	LCALL	ç”µæœºåŠ å‡é€Ÿè¿è¡Œ
+//***µ÷ÊÔÂýËÙ¼ÆÊýÔËÐÐ*XY·½Ïò¹²ÓÃ*******
+//CLR			X·½Ïò    
+//CLR	XÂö³åÊä³ö±ê¼Ç       
+µ÷ÊÔÂýËÙ¼ÆÊýÔËÐÐ:
+
+
+;	MOV	ÔËÐÐËÙ¶ÈH	, #HIGH	µ÷ÊÔ¿ìËÙ¶È
+	;MOV	ÔËÐÐËÙ¶ÈL	, #LOW		µ÷ÊÔ¿ìËÙ¶È   
+;LCALL	µç»ú¼Ó¼õËÙÔËÐÐ 
+ ;  ret 
+
+	MOV	µ±Ç°ËÙ¶Èh	, #HIGH	µ÷ÊÔµã¶¯ËÙ¶È
+	MOV	µ±Ç°ËÙ¶ÈL	, #LOW	µ÷ÊÔµã¶¯ËÙ¶È
+	MOV	a, ÔËÐÐ³¤¶ÈH
+	JNZ	µ÷ÊÔÓÐ¼ÓËÙÔËÐÐ
+	MOV	a	, ÔËÐÐ³¤¶ÈL
+;A=(Öµ)Ë³ÐòÖ´ÐÐ<CY=0>	,A>(Öµ)Ìø×ª<CY=0>,A<(Öµ)	Ìø×ª<CY=1>
+	CJNE	A, #100, µ÷ÊÔ±È½ÏL½á¹û²»ÏàÍ¬
+µ÷ÊÔ±È½ÏL½á¹û²»ÏàÍ¬:
+	jc	µ÷ÊÔÎÞ¼ÓËÙÔËÐÐ
+µ÷ÊÔÓÐ¼ÓËÙÔËÐÐ:
+	MOV	ÔËÐÐËÙ¶ÈH	, #HIGH	µ÷ÊÔÓÐ¼Ó¼õËÙËÙ¶È
+	MOV	ÔËÐÐËÙ¶ÈL	, #low	µ÷ÊÔÓÐ¼Ó¼õËÙËÙ¶È
+
+
+	LCALL	µç»ú¼Ó¼õËÙÔËÐÐ
+	ret
+µ÷ÊÔÎÞ¼ÓËÙÔËÐÐ:
+	MOV	µ±Ç°³¤¶ÈH	, ÔËÐÐ³¤¶ÈH
+	MOV	µ±Ç°³¤¶Èl	, ÔËÐÐ³¤¶ÈL
+;	MOV	µ±Ç°ËÙ¶Èh,ÔËÐÐËÙ¶ÈH	 
+;	MOV	µ±Ç°ËÙ¶ÈL,ÔËÐÐËÙ¶ÈL 
+	LCALL	¼ÆËãµ±Ç°ËÙ¶È×ªT0¸³Öµ
+	LCALL	ÖÐ¶ÏÂö³å¼ÆÊýÇåÁã
+µ÷ÊÔµã¶¯ÔËÐÐÖÐ:
+	CLR	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	JB	T0ÖÐ¶Ï4´Î±ê¼Ç	, $
+	SETB	T0ÖÐ¶Ï4´Î±ê¼Ç
+	LCALL	³¤¶È¼õÒ»
+	JB	³¤¶È¼õÒ»±ê¼Ç	, µ÷ÊÔµã¶¯ÔËÐÐÖÐ
+	SETB	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	SETB	³¤¶È¼õÒ»±ê¼Ç
+	LCALL	ÖÐ¶ÏÂö³å¼ÆÊý½áÊø·¢ËÍ
 	RET
- //*******è°ƒè¯•æ…¢é€Ÿè®¡æ•°è¿è¡Œ*END*********************
 
+ //*******µ÷ÊÔÂýËÙ¼ÆÊýÔËÐÐ*END*********************
 
+ //*******  ÔËÐÐÖÐXYº¯Êý*********************
 
-//////////////////////////////
-
-Xè½´A180å›ºå®šè·ç¦»è¿è¡Œ:
-	MOV	è¿è¡Œé•¿åº¦H	, A180é•¿åº¦H
-	MOV	è¿è¡Œé•¿åº¦L	, A180é•¿åº¦H
-	SETB	Xè½´æ–¹å‘
-	LCALL	Xè½´æ–¹å‘è¿è¡Œ
+XÏòÓÒÁãÎ»¾àÀëÔËÐÐ:
+	MOV	ÔËÐÐ³¤¶ÈH	, XÏòÓÒÁãÎ»H
+	MOV	ÔËÐÐ³¤¶ÈL	, XÏòÓÒÁãÎ»L
+	SETB	XÖá·½Ïò
+	LCALL	XÖá·½ÏòÔËÐÐ
+	RET
+XÖáA180¹Ì¶¨¾àÀëÔËÐÐ:
+	MOV	ÔËÐÐ³¤¶ÈH	, A180³¤¶ÈH
+	MOV	ÔËÐÐ³¤¶ÈL	, A180³¤¶ÈL
+	SETB	XÖá·½Ïò
+	LCALL	XÖá·½ÏòÔËÐÐ
 	RET
 
-
-
-
-Xè½´B320è¿è¡Œ:
-	MOV	è¿è¡Œé•¿åº¦H, #HIGH	Y1Y2ä¸­å¿ƒè·ç¦»	                         ;#320
-	MOV	è¿è¡Œé•¿åº¦L, #LOW	Y1Y2ä¸­å¿ƒè·ç¦»
-	SETB	Xè½´æ–¹å‘
-	LCALL	Xè½´æ–¹å‘è¿è¡Œ
+XÖáB320ÔËÐÐ:
+	MOV	ÔËÐÐ³¤¶ÈH, #HIGH	Y1Y2ÖÐÐÄ320¾àÀë	                         ;#320
+	MOV	ÔËÐÐ³¤¶ÈL, #LOW	Y1Y2ÖÐÐÄ320¾àÀë
+	SETB	XÖá·½Ïò
+	LCALL	XÖá·½ÏòÔËÐÐ
 	RET
   
 
-Xè½´C260è¿è¡Œ:
-	MOV	è¿è¡Œé•¿åº¦H	, C260é•¿åº¦H
-	MOV	è¿è¡Œé•¿åº¦L	, C260é•¿åº¦L
-	SETB	Xè½´æ–¹å‘
-	LCALL	Xè½´æ–¹å‘è¿è¡Œ
+XÖáC260ÔËÐÐ:
+	MOV	ÔËÐÐ³¤¶ÈH	, C260³¤¶ÈH
+	MOV	ÔËÐÐ³¤¶ÈL	, C260³¤¶ÈL
+	SETB	XÖá·½Ïò
+	LCALL	XÖá·½ÏòÔËÐÐ
 	RET
  
-Xè½´D580è¿è¡Œ:
-	MOV	è¿è¡Œé•¿åº¦H	, D580é•¿åº¦H
-	MOV	è¿è¡Œé•¿åº¦L	, D580é•¿åº¦L
-	CLR	Xè½´æ–¹å‘
-	LCALL	Xè½´æ–¹å‘è¿è¡Œ
+XÖáD580ÔËÐÐ:
+	MOV	ÔËÐÐ³¤¶ÈH	, D580³¤¶ÈH
+	MOV	ÔËÐÐ³¤¶ÈL	, D580³¤¶ÈL
+	CLR	XÖá·½Ïò
+	LCALL	XÖá·½ÏòÔËÐÐ
 	RET
   
-Xè½´E80è¿è¡Œ:
-	MOV	è¿è¡Œé•¿åº¦H	, E80é•¿åº¦H
-	MOV	è¿è¡Œé•¿åº¦L	, E80é•¿åº¦L
-	CLR	Xè½´æ–¹å‘
-	LCALL	Xè½´æ–¹å‘è¿è¡Œ
+XÖáE80ÔËÐÐ:
+	MOV	ÔËÐÐ³¤¶ÈH	, E80³¤¶ÈH
+	MOV	ÔËÐÐ³¤¶ÈL	, E80³¤¶ÈL
+	CLR	XÖá·½Ïò
+	LCALL	XÖá·½ÏòÔËÐÐ
+	RET
+
+¹¤¼þF20¶ËÃæ¼ì²âÔËÐÐ: 
+	
+;lcall	¹¤¼þF20¶ËÃæ¼ì²â     
+
+
+	;MOV	¶ËÃæ¼ì²â¾àÀëH	, #HIGH	158;¼ì²âÌáÇ°20¾àÀë
+	;MOV	¶ËÃæ¼ì²â¾àÀëL	, #LOW	158	;¼ì²âÌáÇ°20¾àÀë
+
+	MOV	ÔËÐÐ³¤¶ÈH,	¶ËÃæ¼ì²â¾àÀëh
+	MOV	ÔËÐÐ³¤¶ÈL, ¶ËÃæ¼ì²â¾àÀëL
+	CLR	XÖá·½Ïò
+	LCALL	XÖá·½ÏòÔËÐÐ
 	RET
 
 
-å·¥ä»¶F20ç«¯é¢æ£€æµ‹ç›´æŽ¥è¿è¡Œ:
 
-	MOV	ç«¯é¢æ£€æµ‹è·ç¦»H	, #HIGH	æ£€æµ‹æå‰è·ç¦»
-	MOV	ç«¯é¢æ£€æµ‹è·ç¦»L	, #LOW		æ£€æµ‹æå‰è·ç¦»  
-
-	MOV	è¿è¡Œé•¿åº¦H, #HIGH	æ£€æµ‹æå‰è·ç¦»
-	MOV	è¿è¡Œé•¿åº¦L, #LOW		æ£€æµ‹æå‰è·ç¦»
-	CLR	Xè½´æ–¹å‘
-	LCALL	Xè½´æ–¹å‘è¿è¡Œ
+¹¤¼þF20¶ËÃæ¼ì²âÖ±½ÓÔËÐÐ:    
+	MOV	ÔËÐÐ³¤¶ÈH, #HIGH	¼ì²âÌáÇ°20¾àÀë
+	MOV	ÔËÐÐ³¤¶ÈL, #LOW	¼ì²âÌáÇ°20¾àÀë
+	CLR	XÖá·½Ïò
+	LCALL	XÖá·½ÏòÔËÐÐ
 	RET
 
  
-Xè½´F70æŠ“é“èŠ¯å³è¿è¡Œ:
-	MOV	è¿è¡Œé•¿åº¦H, å·¥ä»¶ç«¯é¢è‡³ä¸­å¿ƒè·ç¦»H
-	MOV	è¿è¡Œé•¿åº¦L, å·¥ä»¶ç«¯é¢è‡³ä¸­å¿ƒè·ç¦»L
-	CLR	Xè½´æ–¹å‘
-	LCALL	Xè½´æ–¹å‘è¿è¡Œ
+XÖáF70×¥ÌúÐ¾ÓÒÔËÐÐ:
+	MOV	ÔËÐÐ³¤¶ÈH, ¹¤¼þ¶ËÃæÖÁÖÐÐÄ¾àÀëH
+	MOV	ÔËÐÐ³¤¶ÈL, ¹¤¼þ¶ËÃæÖÁÖÐÐÄ¾àÀëL
+	CLR	XÖá·½Ïò
+	LCALL	XÖá·½ÏòÔËÐÐ
 	RET
 
-Xè½´H180è®¡ç®—é•¿åº¦è¿è¡Œ:
-	MOV	è¿è¡Œé•¿åº¦H, H180é•¿åº¦H
-	MOV	è¿è¡Œé•¿åº¦L, H180é•¿åº¦L
-	SETB	Xè½´æ–¹å‘
-	LCALL	Xè½´æ–¹å‘è¿è¡Œ
+XÖáH180¼ÆËã³¤¶ÈÔËÐÐ: 
+lcall		H180³¤¶È¼ÆËã
+	MOV	ÔËÐÐ³¤¶ÈH, H180³¤¶ÈH
+	MOV	ÔËÐÐ³¤¶ÈL, H180³¤¶ÈL
+	SETB	XÖá·½Ïò
+	LCALL	XÖá·½ÏòÔËÐÐ
 	RET
   /*
-		A180é•¿åº¦H 
-	B320é•¿åº¦H
-	C260é•¿åº¦H	 
-	D580é•¿åº¦H 
-	E80é•¿åº¦H  
-H180é•¿åº¦è®¡ç®—
+		A180³¤¶ÈH 
+	B320³¤¶ÈH
+	C260³¤¶ÈH	 
+	D580³¤¶ÈH 
+	E80³¤¶ÈH  
+H180³¤¶È¼ÆËã
 
  */
 
 
-Xå…¨ç¨‹å·¦è¿è¡Œ:
-	SETB	Xè½´æ–¹å‘
-	LCALL	å³é›¶ä½è‡³å·¦é›¶ä½è¿è¡Œ
+XÈ«³Ì×óÔËÐÐ:
+	SETB	XÖá·½Ïò
+	LCALL	ÓÒÁãÎ»ÖÁ×óÁãÎ»ÔËÐÐ
 	RET
-Xå…¨ç¨‹å³è¿è¡Œ:
-	CLR	Xè½´æ–¹å‘
-	LCALL	å³é›¶ä½è‡³å·¦é›¶ä½è¿è¡Œ
+XÈ«³ÌÓÒÔËÐÐ:
+	CLR	XÖá·½Ïò
+	LCALL	ÓÒÁãÎ»ÖÁ×óÁãÎ»ÔËÐÐ
 	RET
-å³é›¶ä½è‡³å·¦é›¶ä½è¿è¡Œ:
-	MOV	è¿è¡Œé•¿åº¦H, Xå‘å³é›¶ä½è‡³å·¦é›¶ä½è·ç¦»H
-	MOV	è¿è¡Œé•¿åº¦L	, Xå‘å³é›¶ä½è‡³å·¦é›¶ä½è·ç¦»H
-	LCALL	Xè½´æ–¹å‘è¿è¡Œ
-	RET
-
-
-//*****é•¿åº¦è®¡ç®—***** 
-æ¯æ®µé•¿åº¦è®¡ç®—:
-	LCALL	A180é•¿åº¦è®¡ç®—
-	LCALL	C260é•¿åº¦è®¡ç®—
-	LCALL	D580é•¿åº¦è®¡ç®—
-	LCALL	E80é•¿åº¦è®¡ç®—
-	LCALL	H180é•¿åº¦è®¡ç®—
-
-    ;   RET
-
-B320é•¿åº¦è®¡ç®—:
-	MOV	B320é•¿åº¦H, #HIGH	Y1Y2ä¸­å¿ƒè·ç¦»
-	MOV	B320é•¿åº¦L, #LOW	Y1Y2ä¸­å¿ƒè·ç¦»
-F20é•¿åº¦è®¡ç®—:
-	MOV	F20H	, #HIGH	æ£€æµ‹æå‰è·ç¦»
-	MOV	F20L	, #LOW	æ£€æµ‹æå‰è·ç¦»
-G7é•¿åº¦0è®¡ç®—:
-    // å·¥ä»¶ç«¯é¢è‡³ä¸­å¿ƒè·ç¦»H
-			//  å·¥ä»¶ç«¯é¢è‡³ä¸­å¿ƒè·ç¦»H
+ÓÒÁãÎ»ÖÁ×óÁãÎ»ÔËÐÐ:
+	MOV	ÔËÐÐ³¤¶ÈH, XÏòÓÒÁãÎ»ÖÁ×óÁãÎ»¾àÀëH
+	MOV	ÔËÐÐ³¤¶ÈL	, XÏòÓÒÁãÎ»ÖÁ×óÁãÎ»¾àÀëH
+	LCALL	XÖá·½ÏòÔËÐÐ
 	RET
 
-A180é•¿åº¦è®¡ç®—:
-	MOV	R4, Xå‘å³é›¶ä½è‡³ä¸­å¿ƒè·ç¦»H
-	MOV	R3, Xå‘å³é›¶ä½è‡³ä¸­å¿ƒè·ç¦»L
-	MOV	R2, #HIGH	Y1Y2ä¸­å¿ƒè·ç¦»	                                ;#320
-	MOV	R1, #LOW	Y1Y2ä¸­å¿ƒè·ç¦»
-//R4R3-R2,R1=R3R2R1 åˆ¤æ–­-æ•°å€¼ä¸ºé›¶æ ‡è®°-æ•°å€¼æ­£è´Ÿæ ‡è®°
-	LCALL	åå…­å‡åå…­æ­£è´Ÿæ ‡è®°
-	MOV	A180é•¿åº¦H, R2
-	MOV	A180é•¿åº¦L	, R1
+
+
+;<--C260--<--B320--<------A180-------<--ÓÒÁãÎ»--  
+; --------D580----->-E80->-F20->-G70->
+//*****³¤¶È¼ÆËã***** 
+Ã¿¶Î³¤¶È¼ÆËã:     
+	MOV	¶ËÃæ¼ì²â¾àÀëH	, #HIGH	198;¼ì²âÌáÇ°20¾àÀë
+	MOV	¶ËÃæ¼ì²â¾àÀëL	, #LOW	198	;¼ì²âÌáÇ°20¾àÀë
+B320³¤¶È¼ÆËã:
+	MOV	B320³¤¶ÈH, #HIGH	Y1Y2ÖÐÐÄ320¾àÀë
+	MOV	B320³¤¶ÈL, #LOW	Y1Y2ÖÐÐÄ320¾àÀë
+F20³¤¶È¼ÆËã:
+	MOV	F20H	, #HIGH	¼ì²âÌáÇ°20¾àÀë
+	MOV	F20L	, #LOW	¼ì²âÌáÇ°20¾àÀë    
+
+	LCALL	A180³¤¶È¼ÆËã
+	LCALL	C260³¤¶È¼ÆËã
+	LCALL	D580³¤¶È¼ÆËã
+	LCALL	E80³¤¶È¼ÆËã
+	LCALL	H180³¤¶È¼ÆËã
 	RET
 
-C260é•¿åº¦è®¡ç®—:
-	MOV	R4, Xå‘å³é›¶ä½è‡³å·¦é›¶ä½è·ç¦»H
-	MOV	R3, Xå‘å³é›¶ä½è‡³å·¦é›¶ä½è·ç¦»L
-	MOV	R2, Xå‘å³é›¶ä½è‡³ä¸­å¿ƒè·ç¦»H
-	MOV	R1, Xå‘å³é›¶ä½è‡³ä¸­å¿ƒè·ç¦»L
-//R4R3-R2,R1=R3R2R1 åˆ¤æ–­-æ•°å€¼ä¸ºé›¶æ ‡è®°-æ•°å€¼æ­£è´Ÿæ ‡è®°
-	LCALL	åå…­å‡åå…­æ­£è´Ÿæ ‡è®°
-	MOV	C260é•¿åº¦H	, R2
-	MOV	C260é•¿åº¦L	, R1
+A180³¤¶È¼ÆËã:
+	MOV	R4, XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëH
+	MOV	R3, XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëL
+	MOV	R2, #HIGH	Y1Y2ÖÐÐÄ320¾àÀë	                                ;#320
+	MOV	R1, #LOW	Y1Y2ÖÐÐÄ320¾àÀë
+//R4R3-R2,R1=R3R2R1 ÅÐ¶Ï-ÊýÖµÎªÁã±ê¼Ç-ÊýÖµÕý¸º±ê¼Ç
+	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç
+	MOV	A180³¤¶ÈH	, R2
+	MOV	A180³¤¶ÈL	, R1
 	RET
 
-D580é•¿åº¦è®¡ç®—:
-	MOV	R4, C260é•¿åº¦H
-	MOV	R3, C260é•¿åº¦L
-	MOV	R2, #HIGH	Y1Y2ä¸­å¿ƒè·ç¦»	                                ;#320
-	MOV	R1, #LOW	Y1Y2ä¸­å¿ƒè·ç¦»
+C260³¤¶È¼ÆËã:
+	MOV	R4, XÏòÓÒÁãÎ»ÖÁ×óÁãÎ»¾àÀëH
+	MOV	R3, XÏòÓÒÁãÎ»ÖÁ×óÁãÎ»¾àÀëL
+	MOV	R2, XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëH
+	MOV	R1, XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëL
+//R4R3-R2,R1=R3R2R1 ÅÐ¶Ï-ÊýÖµÎªÁã±ê¼Ç-ÊýÖµÕý¸º±ê¼Ç
+	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç
+	MOV	C260³¤¶ÈH	, R2
+	MOV	C260³¤¶ÈL	, R1
+	RET
+
+D580³¤¶È¼ÆËã:
+	MOV	R4, C260³¤¶ÈH
+	MOV	R3, C260³¤¶ÈL
+	MOV	R2, #HIGH	Y1Y2ÖÐÐÄ320¾àÀë	                                ;#320
+	MOV	R1, #LOW	Y1Y2ÖÐÐÄ320¾àÀë
 ;R2,R1+R4R3=R3R2R1
-	LCALL	åå…­åŠ åå…­
-	MOV	D580é•¿åº¦H	, R2
-	MOV	D580é•¿åº¦L	, R1
+	LCALL	Ê®Áù¼ÓÊ®Áù
+	MOV	D580³¤¶ÈH	, R2
+	MOV	D580³¤¶ÈL	, R1
 	RET
 
-E80é•¿åº¦è®¡ç®—:
-	MOV	R4, A180é•¿åº¦H
-	MOV	R3, A180é•¿åº¦L
-	MOV	R2, å·¥ä»¶ç«¯é¢è‡³ä¸­å¿ƒè·ç¦»H
-	MOV	R1, å·¥ä»¶ç«¯é¢è‡³ä¸­å¿ƒè·ç¦»L
-//R4R3-R2,R1=R3R2R1 åˆ¤æ–­-æ•°å€¼ä¸ºé›¶æ ‡è®°-æ•°å€¼æ­£è´Ÿæ ‡è®°
-	LCALL	åå…­å‡åå…­æ­£è´Ÿæ ‡è®°
+E80³¤¶È¼ÆËã:
+	MOV	R4, A180³¤¶ÈH
+	MOV	R3, A180³¤¶ÈL
+	MOV	R2, ¹¤¼þ¶ËÃæÖÁÖÐÐÄ¾àÀëH
+	MOV	R1, ¹¤¼þ¶ËÃæÖÁÖÐÐÄ¾àÀëL
+//R4R3-R2,R1=R3R2R1 ÅÐ¶Ï-ÊýÖµÎªÁã±ê¼Ç-ÊýÖµÕý¸º±ê¼Ç
+	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç
 	MOV	A, R2
 	MOV	R4	, A
 	MOV	A, R1
 	MOV	R3	, A
-	MOV	R2, #HIGH	æ£€æµ‹æå‰è·ç¦»
-	MOV	R1, #LOW		æ£€æµ‹æå‰è·ç¦»
-//R4R3-R2,R1=R3R2R1 åˆ¤æ–­-æ•°å€¼ä¸ºé›¶æ ‡è®°-æ•°å€¼æ­£è´Ÿæ ‡è®°
-	LCALL	åå…­å‡åå…­æ­£è´Ÿæ ‡è®°
-	MOV	E80é•¿åº¦H	, R2
-	MOV	E80é•¿åº¦L	, R1
+	MOV	R2, #HIGH	¼ì²âÌáÇ°20¾àÀë
+	MOV	R1, #LOW	¼ì²âÌáÇ°20¾àÀë
+//R4R3-R2,R1=R3R2R1 ÅÐ¶Ï-ÊýÖµÎªÁã±ê¼Ç-ÊýÖµÕý¸º±ê¼Ç
+	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç
+	MOV	E80³¤¶ÈH	, R2
+	MOV	E80³¤¶ÈL	, R1
 	RET
 
-H180é•¿åº¦è®¡ç®—:
+F20¶ËÃæ¼ì²â¾àÀë¼ì²â:
+  ;?????????????????
+	MOV	¶ËÃæ¼ì²â¾àÀëH	, #HIGH	¼ì²âÌáÇ°20¾àÀë
+	MOV	¶ËÃæ¼ì²â¾àÀëL	, #LOW	¼ì²âÌáÇ°20¾àÀë
+	RET
 
-	MOV	ç«¯é¢æ£€æµ‹è·ç¦»H	, #HIGH	æ£€æµ‹æå‰è·ç¦»
-	MOV	ç«¯é¢æ£€æµ‹è·ç¦»L	, #LOW	æ£€æµ‹æå‰è·ç¦»
-
-	MOV	R4, å·¥ä»¶ç«¯é¢è‡³ä¸­å¿ƒè·ç¦»H
-	MOV	R3, å·¥ä»¶ç«¯é¢è‡³ä¸­å¿ƒè·ç¦»L
-	MOV	R2, ç«¯é¢æ£€æµ‹è·ç¦»H
-	MOV	R1, ç«¯é¢æ£€æµ‹è·ç¦»L
+H180³¤¶È¼ÆËã:  
+	MOV	R4, ¹¤¼þ¶ËÃæÖÁÖÐÐÄ¾àÀëH    ;700
+	MOV	R3, ¹¤¼þ¶ËÃæÖÁÖÐÐÄ¾àÀëL
+	MOV	R2, ¶ËÃæ¼ì²â¾àÀëH            ;200 		
+	MOV	R1, ¶ËÃæ¼ì²â¾àÀëL
 ;R2,R1+R4R3=R3R2R1
-	LCALL	åå…­åŠ åå…­
-	MOV	R4, E80é•¿åº¦H
-	MOV	R3, E80é•¿åº¦L
+	LCALL	Ê®Áù¼ÓÊ®Áù
+	MOV	R4, E80³¤¶ÈH              	;800
+	MOV	R3, E80³¤¶ÈL
 ;R2,R1+R4R3=R3R2R1
-	LCALL	åå…­åŠ åå…­
-	MOV	H180é•¿åº¦H	, R2
-	MOV	H180é•¿åº¦L	, R1
+	LCALL	Ê®Áù¼ÓÊ®Áù
+	MOV	H180³¤¶ÈH	, R2
+	MOV	H180³¤¶ÈL	, R1
 	RET
 
 
 
-å·¥ä»¶F20ç«¯é¢æ£€æµ‹:
-	SETB	Xè½´æ–¹å‘
-	CLR	Xè„‰å†²è¾“å‡ºæ ‡è®°
+¹¤¼þF20¶ËÃæ¼ì²â:
+	SETB	XÖá·½Ïò
+	CLR	XÂö³åÊä³ö±ê¼Ç
 	MOV	DPTR, #00H
-//ç”¨	æ£€æµ‹é€Ÿåº¦  ã€ŠXè½´D580åŠ å³è¿è¡Œã€‹è¿è¡Œé•¿åº¦Héœ€é‡æ–°è®¡ç®— ç¼–å†™
-	MOV	è¿è¡Œé€Ÿåº¦H	, æ£€æµ‹é€Ÿåº¦H	                                 //æ£€æµ‹é€Ÿåº¦H	                          
-	MOV	è¿è¡Œé€Ÿåº¦L	, æ£€æµ‹é€Ÿåº¦L	                                 //æ£€æµ‹é€Ÿåº¦L
-	LCALL	è®¡ç®—é€Ÿåº¦è½¬å®šæ—¶å™¨å¹¶èµ‹å€¼
-å·¥ä»¶ç«¯é¢æ£€æµ‹ä¸­:
-	JB	T0ä¸­æ–­4æ¬¡æ ‡è®°	, $
-	SETB	T0ä¸­æ–­4æ¬¡æ ‡è®°
+//ÓÃ	¼ì²âËÙ¶È  ¡¶XÖáD580¼ÓÓÒÔËÐÐ¡·ÔËÐÐ³¤¶ÈHÐèÖØÐÂ¼ÆËã ±àÐ´
+	MOV	ÔËÐÐËÙ¶ÈH	, ¼ì²âËÙ¶ÈH	                                 //¼ì²âËÙ¶ÈH	                          
+	MOV	ÔËÐÐËÙ¶ÈL	, ¼ì²âËÙ¶ÈL	                                 //¼ì²âËÙ¶ÈL
+	LCALL	¼ÆËãµ±Ç°ËÙ¶È×ªT0¸³Öµ
+¹¤¼þ¶ËÃæ¼ì²âÖÐ:
+	JB	T0ÖÐ¶Ï4´Î±ê¼Ç	, $
+	SETB	T0ÖÐ¶Ï4´Î±ê¼Ç
 	INC	DPTR
-	JB	Y1å³å·¥ä»¶æ£€æµ‹, å·¥ä»¶ç«¯é¢æ£€æµ‹ä¸­
-	SETB	Xè„‰å†²è¾“å‡ºæ ‡è®°
-	MOV	ç«¯é¢æ£€æµ‹è·ç¦»H	, DPH
-	MOV	ç«¯é¢æ£€æµ‹è·ç¦»L	, DPL
+	JB	Y1ÓÒ¹¤¼þ¼ì²â, ¹¤¼þ¶ËÃæ¼ì²âÖÐ
+	SETB	XÂö³åÊä³ö±ê¼Ç
+	MOV	¶ËÃæ¼ì²â¾àÀëH	, DPH
+	MOV	¶ËÃæ¼ì²â¾àÀëL	, DPL
+	RET
+
+;*********X,Y1,Y2Öá·½ÏòÔËÐÐ:**************
+XÖá·½ÏòÔËÐÐ:
+	MOV	ÔËÐÐËÙ¶ÈH	, ×óÓÒÔËÐÐËÙ¶ÈH
+	MOV	ÔËÐÐËÙ¶ÈL	, ×óÓÒÔËÐÐËÙ¶ÈL
+	CLR	XÂö³åÊä³ö±ê¼Ç
+	LCALL	µç»ú¼Ó¼õËÙÔËÐÐ
+	SETB	XÂö³åÊä³ö±ê¼Ç
+	RET
+    ;????????????
+Y1Öá¶þÍ·ÔËÐÐ:
+	MOV	ÔËÐÐ³¤¶ÈH	, YÏòÁ½Í·È¡·Å¾àÀëH	                          //100:2000
+	MOV	ÔËÐÐ³¤¶ÈL	, YÏòÁ½Í·È¡·Å¾àÀëL
+	MOV	ÔËÐÐËÙ¶ÈH	, ÉÏÏÂÔËÐÐËÙ¶ÈH	                             //#HIGH	400
+	MOV	ÔËÐÐËÙ¶ÈL	, ÉÏÏÂÔËÐÐËÙ¶ÈL	                             //#LOW	400
+	CLR	Y1Âö³åÊä³ö±ê¼Ç
+	LCALL	µç»ú¼Ó¼õËÙÔËÐÐ
+	SETB	Y1Âö³åÊä³ö±ê¼Ç
+	RET
+
+Y2Öá¶þÍ·ÔËÐÐ:
+	MOV	ÔËÐÐ³¤¶ÈH	, YÏòÁ½Í·È¡·Å¾àÀëH	                          //100:2000
+	MOV	ÔËÐÐ³¤¶ÈL	, YÏòÁ½Í·È¡·Å¾àÀëL
+	MOV	ÔËÐÐËÙ¶ÈH	, ÉÏÏÂÔËÐÐËÙ¶ÈH	                             //#HIGH	400
+	MOV	ÔËÐÐËÙ¶ÈL	, ÉÏÏÂÔËÐÐËÙ¶ÈL	                             //#LOW	400
+	CLR	Y2Âö³åÊä³ö±ê¼Ç
+	LCALL	µç»ú¼Ó¼õËÙÔËÐÐ
+	SETB	Y2Âö³åÊä³ö±ê¼Ç
 	RET
 
 
-Xè½´æ–¹å‘è¿è¡Œ:
-	MOV	è¿è¡Œé€Ÿåº¦H	, å·¦å³è¿è¡Œé€Ÿåº¦H
-	MOV	è¿è¡Œé€Ÿåº¦L	, å·¦å³è¿è¡Œé€Ÿåº¦L
-	CLR	Xè„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	ç”µæœºåŠ å‡é€Ÿè¿è¡Œ
-	SETB	Xè„‰å†²è¾“å‡ºæ ‡è®°
-	RET
-	//YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
- //* **********Y************************************
-//	å·¥ä»¶é“èŠ¯ç›´å¾„H	 
-	//å·¥ä»¶é“èŠ¯ç›´å¾„L	 
- 
-Y1è½´äºŒå¤´è¿è¡Œ:
-	MOV	è¿è¡Œé•¿åº¦H	, Yå‘ä¸¤å¤´å–æ”¾è·ç¦»H	                          //100:2000
-	MOV	è¿è¡Œé•¿åº¦L	, Yå‘ä¸¤å¤´å–æ”¾è·ç¦»L
-	MOV	è¿è¡Œé€Ÿåº¦H	, ä¸Šä¸‹è¿è¡Œé€Ÿåº¦H	                             //#HIGH	400
-	MOV	è¿è¡Œé€Ÿåº¦L	, ä¸Šä¸‹è¿è¡Œé€Ÿåº¦L	                             //#LOW	400
-	CLR	Y1è„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	ç”µæœºåŠ å‡é€Ÿè¿è¡Œ
-	SETB	Y1è„‰å†²è¾“å‡ºæ ‡è®°
+Y1ÖáÖÐ¼äÔËÐÐ:
+	MOV	ÔËÐÐ³¤¶ÈH	, YÏòÖÐ¼ä×¥V¾àÀëH	                           //100:2000
+	MOV	ÔËÐÐ³¤¶ÈL	, YÏòÖÐ¼ä×¥V¾àÀëL
+	MOV	ÔËÐÐËÙ¶ÈH	, ÉÏÏÂÔËÐÐËÙ¶ÈH	                             //#HIGH	400
+	MOV	ÔËÐÐËÙ¶ÈL	, ÉÏÏÂÔËÐÐËÙ¶ÈL	                             //#LOW	400
+	CLR	Y1Âö³åÊä³ö±ê¼Ç
+	LCALL	µç»ú¼Ó¼õËÙÔËÐÐ
+	SETB	Y1Âö³åÊä³ö±ê¼Ç
 	RET
 
-Y2è½´äºŒå¤´è¿è¡Œ:
-	MOV	è¿è¡Œé•¿åº¦H	, Yå‘ä¸¤å¤´å–æ”¾è·ç¦»H	                          //100:2000
-	MOV	è¿è¡Œé•¿åº¦L	, Yå‘ä¸¤å¤´å–æ”¾è·ç¦»L
-	MOV	è¿è¡Œé€Ÿåº¦H	, ä¸Šä¸‹è¿è¡Œé€Ÿåº¦H	                             //#HIGH	400
-	MOV	è¿è¡Œé€Ÿåº¦L	, ä¸Šä¸‹è¿è¡Œé€Ÿåº¦L	                             //#LOW	400
-	CLR	Y2è„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	ç”µæœºåŠ å‡é€Ÿè¿è¡Œ
-	SETB	Y2è„‰å†²è¾“å‡ºæ ‡è®°
-	RET
-
-
-Y1è½´ä¸­é—´è¿è¡Œ:
-	MOV	è¿è¡Œé•¿åº¦H	, Yå‘ä¸­é—´æŠ“Vè·ç¦»H	                           //100:2000
-	MOV	è¿è¡Œé•¿åº¦L	, Yå‘ä¸­é—´æŠ“Vè·ç¦»L
-	MOV	è¿è¡Œé€Ÿåº¦H	, ä¸Šä¸‹è¿è¡Œé€Ÿåº¦H	                             //#HIGH	400
-	MOV	è¿è¡Œé€Ÿåº¦L	, ä¸Šä¸‹è¿è¡Œé€Ÿåº¦L	                             //#LOW	400
-	CLR	Y1è„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	ç”µæœºåŠ å‡é€Ÿè¿è¡Œ
-	SETB	Y1è„‰å†²è¾“å‡ºæ ‡è®°
-	RET
-
-Y2è½´ä¸­é—´è¿è¡Œ:
-	MOV	è¿è¡Œé•¿åº¦H	, Yå‘ä¸­é—´æŠ“Vè·ç¦»H	                           //100:2000
-	MOV	è¿è¡Œé•¿åº¦L	, Yå‘ä¸­é—´æŠ“Vè·ç¦»L
-	MOV	è¿è¡Œé€Ÿåº¦H	, ä¸Šä¸‹è¿è¡Œé€Ÿåº¦H	                             //#HIGH	400
-	MOV	è¿è¡Œé€Ÿåº¦L	, ä¸Šä¸‹è¿è¡Œé€Ÿåº¦L	                             //#LOW	400
+Y2ÖáÖÐ¼äÔËÐÐ:
+	MOV	ÔËÐÐ³¤¶ÈH	, YÏòÖÐ¼ä×¥V¾àÀëH	                           //100:2000
+	MOV	ÔËÐÐ³¤¶ÈL	, YÏòÖÐ¼ä×¥V¾àÀëL
+	MOV	ÔËÐÐËÙ¶ÈH	, ÉÏÏÂÔËÐÐËÙ¶ÈH	                             //#HIGH	400
+	MOV	ÔËÐÐËÙ¶ÈL	, ÉÏÏÂÔËÐÐËÙ¶ÈL	                             //#LOW	400
 	
-	CLR	Y2è„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	ç”µæœºåŠ å‡é€Ÿè¿è¡Œ
-	SETB	Y2è„‰å†²è¾“å‡ºæ ‡è®°
+	CLR	Y2Âö³åÊä³ö±ê¼Ç
+	LCALL	µç»ú¼Ó¼õËÙÔËÐÐ
+	SETB	Y2Âö³åÊä³ö±ê¼Ç
 	RET
+  ;*****************»úÐµÊÖ¹éÁã**¿ªÊ¼************* 
+»úÐµÊÖ¹éÁã:   
+lcall	·¢ËÍRAM10H»º³åÇøÖ¡Í·³õÊ¼»¯
+	MOV	ÏÔÊ¾»­Ãæ, #ÌáÊ¾Óï»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
 
- æœºæ¢°æ‰‹å½’é›¶:
-	MOV	æ˜¾ç¤ºç”»é¢, #æç¤ºè¯­ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
+	MOV	DPTR, #´¹Ö±·½Ïò¹éÁãTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
+	LCALL	Y1Y2·½Ïò¿ìËÙ¹éÁã
 
-	MOV	DPTR, #åž‚ç›´æ–¹å‘å½’é›¶TAB
-	LCALL	å‘é€æç¤ºå­—ç¬¦
-	LCALL	Y1Y2æ–¹å‘å¿«é€Ÿå½’é›¶             
-
-	MOV	DPTR, #æ°´å¹³æ–¹å‘å½’é›¶TAB
-	LCALL	å‘é€æç¤ºå­—ç¬¦
+	MOV	DPTR, #Ë®Æ½·½Ïò¹éÁãTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
 	LCALL	DY500MS
-	LCALL	Xæ–¹å‘å¿«é€Ÿå½’é›¶
+	LCALL	X·½Ïò¿ìËÙ¹éÁã
 
-	MOV	DPTR, #æ–¹å‘å½’é›¶TAB
-	LCALL	å‘é€æç¤ºå­—ç¬¦
+	MOV	DPTR, #·½Ïò¹éÁãTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
 	LCALL	DY500MS
-	LCALL	Xæ–¹å‘å¿«é€Ÿå½’é›¶    
+	LCALL	X·½Ïò¿ìËÙ¹éÁã
 
-	LCALL	XY1Y2æ–¹å‘ç²¾ç»†å½’é›¶  
+	LCALL	XY1Y2·½Ïò¾«Ï¸¹éÁã
 
-	MOV	DPTR, #å¼€æœºå¤ä½å®ŒæˆTAB
-	LCALL	å‘é€æç¤ºå­—ç¬¦
- 	LCALL	DY100MS
-	MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
+	MOV	DPTR, #¿ª»ú¸´Î»Íê³ÉTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
+	LCALL	DY100MS
+	MOV	ÏÔÊ¾»­Ãæ, #µÈ´ý»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
 	RET
 
-Xæ–¹å‘å¿«é€Ÿå½’é›¶:
-	MOV	å½“å‰é€Ÿåº¦H	, #HIGH	å¿«é€Ÿå½’é›¶é€Ÿåº¦
-	MOV	å½“å‰é€Ÿåº¦L	, #LOW		å¿«é€Ÿå½’é›¶é€Ÿåº¦
-	LCALL	è®¡ç®—é€Ÿåº¦è½¬å®šæ—¶å™¨å¹¶èµ‹å€¼
-		CLR	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-Xå½’é›¶åˆ°ä½æ£€æŸ¥: 
-		JB	T0ä¸­æ–­4æ¬¡æ ‡è®°	, $   
-	SETB	T0ä¸­æ–­4æ¬¡æ ‡è®°
-Xå½’é›¶åŠ¨ä½œ:   
-JNB	Xå³é™ä½ä¿¡å·	,Xå½’é›¶åˆ°ä½
-	CLR	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-	CLR	Xè½´æ–¹å‘
-	CLR	Xè„‰å†²è¾“å‡ºæ ‡è®°  
-JB	Xå³é™ä½ä¿¡å·	,	 Xå½’é›¶åˆ°ä½æ£€æŸ¥
-Xå½’é›¶åˆ°ä½: 
-	SETB	Xè„‰å†²è¾“å‡ºæ ‡è®°  
-	setb	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
+X·½Ïò¿ìËÙ¹éÁã:
+	MOV	µ±Ç°ËÙ¶ÈH	, #HIGH	¿ìËÙ¹éÁãËÙ¶È
+	MOV	µ±Ç°ËÙ¶ÈL	, #LOW	¿ìËÙ¹éÁãËÙ¶È
+	LCALL	¼ÆËãµ±Ç°ËÙ¶È×ªT0¸³Öµ
+	CLR	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+X¹éÁãµ½Î»¼ì²é:
+	JB	T0ÖÐ¶Ï4´Î±ê¼Ç	, $
+	SETB	T0ÖÐ¶Ï4´Î±ê¼Ç
+X¹éÁã¶¯×÷:
+	JNB	XÓÒÏÞÎ»ÐÅºÅ	, X¹éÁãµ½Î»
+	CLR	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	CLR	XÖá·½Ïò
+	CLR	XÂö³åÊä³ö±ê¼Ç
+	JB	XÓÒÏÞÎ»ÐÅºÅ	, X¹éÁãµ½Î»¼ì²é
+X¹éÁãµ½Î»:
+	SETB	XÂö³åÊä³ö±ê¼Ç
+	setb	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
 	RET
 
 
-Y1Y2æ–¹å‘å¿«é€Ÿå½’é›¶:
-	MOV	å½“å‰é€Ÿåº¦H	, #HIGH	å¿«é€Ÿå½’é›¶é€Ÿåº¦
-	MOV	å½“å‰é€Ÿåº¦L	, #LOW		å¿«é€Ÿå½’é›¶é€Ÿåº¦
-	LCALL	è®¡ç®—é€Ÿåº¦è½¬å®šæ—¶å™¨å¹¶èµ‹å€¼
-		CLR	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-Y1Y2å½’é›¶åˆ°ä½æ£€æŸ¥: 
-		JB	T0ä¸­æ–­4æ¬¡æ ‡è®°	, $     
-			SETB	T0ä¸­æ–­4æ¬¡æ ‡è®°
-Y1å½’é›¶åŠ¨ä½œ:   
-	JNB	Y1å³é›¶ä½ä¿¡å·	, Y1å½’é›¶åˆ°ä½
-	CLR	Y1è½´å³æ–¹å‘
-	CLR	Y1è„‰å†²è¾“å‡ºæ ‡è®°
-	JB		Y1å³é›¶ä½ä¿¡å·,	 Y2å½’é›¶åŠ¨ä½œ
-Y1å½’é›¶åˆ°ä½:
-SETB  Y1è„‰å†²è¾“å‡ºæ ‡è®°
-Y2å½’é›¶åŠ¨ä½œ:  
-	JNB	Y2å·¦é›¶ä½ä¿¡å·	, Y2å½’é›¶åˆ°ä½
-	CLR	Y2è½´å·¦æ–¹å‘ 
-	CLR	Y2è„‰å†²è¾“å‡ºæ ‡è®°  
-	JB	Y2å·¦é›¶ä½ä¿¡å·,Y1Y2å½’é›¶åˆ°ä½æ£€æŸ¥	
-Y2å½’é›¶åˆ°ä½:
-	SETB	Y2è„‰å†²è¾“å‡ºæ ‡è®°   
-	JB	Y1å³é›¶ä½ä¿¡å·	, Y1Y2å½’é›¶åˆ°ä½æ£€æŸ¥
-	JB	Y2å·¦é›¶ä½ä¿¡å·	, Y1Y2å½’é›¶åˆ°ä½æ£€æŸ¥
-	SETB	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-	RET     
+Y1Y2·½Ïò¿ìËÙ¹éÁã:
+	MOV	µ±Ç°ËÙ¶ÈH	, #HIGH	¿ìËÙ¹éÁãËÙ¶È
+	MOV	µ±Ç°ËÙ¶ÈL	, #LOW	¿ìËÙ¹éÁãËÙ¶È
+	LCALL	¼ÆËãµ±Ç°ËÙ¶È×ªT0¸³Öµ
+	CLR	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+Y1Y2¹éÁãµ½Î»¼ì²é:
+	JB	T0ÖÐ¶Ï4´Î±ê¼Ç	, $
+	SETB	T0ÖÐ¶Ï4´Î±ê¼Ç
+Y1¹éÁã¶¯×÷:
+	JNB	Y1ÓÒÁãÎ»ÐÅºÅ	, Y1¹éÁãµ½Î»
+	CLR	Y1ÖáÓÒ·½Ïò
+	CLR	Y1Âö³åÊä³ö±ê¼Ç
+	JB	Y1ÓÒÁãÎ»ÐÅºÅ, Y2¹éÁã¶¯×÷
+Y1¹éÁãµ½Î»:
+	SETB	Y1Âö³åÊä³ö±ê¼Ç
+Y2¹éÁã¶¯×÷:
+	JNB	Y2×óÁãÎ»ÐÅºÅ	, Y2¹éÁãµ½Î»
+	CLR	Y2Öá×ó·½Ïò
+	CLR	Y2Âö³åÊä³ö±ê¼Ç
+	JB	Y2×óÁãÎ»ÐÅºÅ, Y1Y2¹éÁãµ½Î»¼ì²é
+Y2¹éÁãµ½Î»:
+	SETB	Y2Âö³åÊä³ö±ê¼Ç
+	JB	Y1ÓÒÁãÎ»ÐÅºÅ	, Y1Y2¹éÁãµ½Î»¼ì²é
+	JB	Y2×óÁãÎ»ÐÅºÅ	, Y1Y2¹éÁãµ½Î»¼ì²é
+	SETB	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	RET
 
-XY1Y2æ–¹å‘ç²¾ç»†å½’é›¶:
-	MOV	å½“å‰é•¿åº¦H,  #HIGH	200
-	MOV	å½“å‰é•¿åº¦L, 	#LOW	200
-	MOV	å½“å‰é€Ÿåº¦H	, #HIGH	ç²¾ç»†å½’é›¶é€Ÿåº¦
-	MOV	å½“å‰é€Ÿåº¦L	, #LOW		ç²¾ç»†å½’é›¶é€Ÿåº¦
-	LCALL	è®¡ç®—é€Ÿåº¦è½¬å®šæ—¶å™¨å¹¶èµ‹å€¼
-ç²¾ç»†å½’é›¶è¿›20MMè¿è¡Œä¸­: 
-	CLR	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®° 
-	SETB	Xè½´æ–¹å‘	
-	CLR	Xè„‰å†²è¾“å‡ºæ ‡è®°  
-	SETB	Y1è½´å³æ–¹å‘
-	CLR		Y1è„‰å†²è¾“å‡ºæ ‡è®°
-	SETB	Y2è½´å·¦æ–¹å‘ 
-	CLR		Y2è„‰å†²è¾“å‡ºæ ‡è®°
-ç²¾ç»†è¿›20MMè¿è¡Œä¸­:
-	JB	T0ä¸­æ–­4æ¬¡æ ‡è®°	, $
-	SETB	T0ä¸­æ–­4æ¬¡æ ‡è®°    
-	LCALL	é•¿åº¦å‡ä¸€
-	JB	é•¿åº¦å‡ä¸€æ ‡è®°	, ç²¾ç»†è¿›20MMè¿è¡Œä¸­
-	SETB	é•¿åº¦å‡ä¸€æ ‡è®°     
-	SETB	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®° 
+XY1Y2·½Ïò¾«Ï¸¹éÁã:
+	MOV	µ±Ç°³¤¶ÈH, #HIGH	200
+	MOV	µ±Ç°³¤¶ÈL, #LOW	200
+	MOV	µ±Ç°ËÙ¶ÈH	, #HIGH	¾«Ï¸¹éÁãËÙ¶È
+	MOV	µ±Ç°ËÙ¶ÈL	, #LOW	¾«Ï¸¹éÁãËÙ¶È
+	LCALL	¼ÆËãµ±Ç°ËÙ¶È×ªT0¸³Öµ
+¾«Ï¸¹éÁã½ø20MMÔËÐÐÖÐ:
+	CLR	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	SETB	XÖá·½Ïò
+	CLR	XÂö³åÊä³ö±ê¼Ç
+	SETB	Y1ÖáÓÒ·½Ïò
+	CLR	Y1Âö³åÊä³ö±ê¼Ç
+	SETB	Y2Öá×ó·½Ïò
+	CLR	Y2Âö³åÊä³ö±ê¼Ç
+¾«Ï¸½ø20MMÔËÐÐÖÐ:
+	JB	T0ÖÐ¶Ï4´Î±ê¼Ç	, $
+	SETB	T0ÖÐ¶Ï4´Î±ê¼Ç
+	LCALL	³¤¶È¼õÒ»
+	JB	³¤¶È¼õÒ»±ê¼Ç	, ¾«Ï¸½ø20MMÔËÐÐÖÐ
+	SETB	³¤¶È¼õÒ»±ê¼Ç
+	SETB	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
 	LCALL	DY500MS
-é‡æ–°æ‰¾é›¶ä½:  
-	CLR	Xè½´æ–¹å‘	
-	CLR	Y1è½´å³æ–¹å‘
-	CLR	Y2è½´å·¦æ–¹å‘ 
-	CLR	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°   
+ÖØÐÂÕÒÁãÎ»:
+	CLR	XÖá·½Ïò
+	CLR	Y1ÖáÓÒ·½Ïò
+	CLR	Y2Öá×ó·½Ïò
+	CLR	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
 
-é‡æ–°æ‰¾é›¶ä½ä¸­:
-	JB	T0ä¸­æ–­4æ¬¡æ ‡è®°	, $
-	SETB	T0ä¸­æ–­4æ¬¡æ ‡è®° 
-Y1é‡æ–°æ‰¾é›¶æ£€æŸ¥:
-	JB		Y1å³é›¶ä½ä¿¡å·,  Y2é‡æ–°æ‰¾é›¶æ£€æŸ¥
-	SETB	Y1è„‰å†²è¾“å‡ºæ ‡è®°    
-Y2é‡æ–°æ‰¾é›¶æ£€æŸ¥:
-	JB	Y2å·¦é›¶ä½ä¿¡å·	, Xé‡æ–°æ‰¾é›¶æ£€æŸ¥
-	SETB	Y2è„‰å†²è¾“å‡ºæ ‡è®° 
-Xé‡æ–°æ‰¾é›¶æ£€æŸ¥:    
-	JB	Xå³é™ä½ä¿¡å·	, XYé‡æ–°æ‰¾é›¶åˆ¤æ–­
-	SETB	Xè„‰å†²è¾“å‡ºæ ‡è®°
-XYé‡æ–°æ‰¾é›¶åˆ¤æ–­:
-	JB		Y1å³é›¶ä½ä¿¡å·, 	é‡æ–°æ‰¾é›¶ä½ä¸­  
-	JB		Y2å·¦é›¶ä½ä¿¡å·	, é‡æ–°æ‰¾é›¶ä½ä¸­
-	JB			Xå³é™ä½ä¿¡å·	, é‡æ–°æ‰¾é›¶ä½ä¸­      
-	SETB	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-	SETB	Xè½´æ–¹å‘	
-	SETB	Xè„‰å†²è¾“å‡ºæ ‡è®°  
-	SETB	Y1è½´å³æ–¹å‘
-	SETB	Y1è„‰å†²è¾“å‡ºæ ‡è®°
-	SETB	Y2è½´å·¦æ–¹å‘ 
-	SETB		Y2è„‰å†²è¾“å‡ºæ ‡è®°
+ÖØÐÂÕÒÁãÎ»ÖÐ:
+	JB	T0ÖÐ¶Ï4´Î±ê¼Ç	, $
+	SETB	T0ÖÐ¶Ï4´Î±ê¼Ç
+Y1ÖØÐÂÕÒÁã¼ì²é:
+	JB	Y1ÓÒÁãÎ»ÐÅºÅ, Y2ÖØÐÂÕÒÁã¼ì²é
+	SETB	Y1Âö³åÊä³ö±ê¼Ç
+Y2ÖØÐÂÕÒÁã¼ì²é:
+	JB	Y2×óÁãÎ»ÐÅºÅ	, XÖØÐÂÕÒÁã¼ì²é
+	SETB	Y2Âö³åÊä³ö±ê¼Ç
+XÖØÐÂÕÒÁã¼ì²é:
+	JB	XÓÒÏÞÎ»ÐÅºÅ	, XYÖØÐÂÕÒÁãÅÐ¶Ï
+	SETB	XÂö³åÊä³ö±ê¼Ç
+XYÖØÐÂÕÒÁãÅÐ¶Ï:
+	JB	Y1ÓÒÁãÎ»ÐÅºÅ, ÖØÐÂÕÒÁãÎ»ÖÐ
+	JB	Y2×óÁãÎ»ÐÅºÅ	, ÖØÐÂÕÒÁãÎ»ÖÐ
+	JB	XÓÒÏÞÎ»ÐÅºÅ	, ÖØÐÂÕÒÁãÎ»ÖÐ
+	SETB	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	SETB	XÖá·½Ïò
+	SETB	XÂö³åÊä³ö±ê¼Ç
+	SETB	Y1ÖáÓÒ·½Ïò
+	SETB	Y1Âö³åÊä³ö±ê¼Ç
+	SETB	Y2Öá×ó·½Ïò
+	SETB	Y2Âö³åÊä³ö±ê¼Ç
 	RET
-
-;***********************************************************************   
-ç”µæœºåŠ å‡é€Ÿè¿è¡Œ:
-	LCALL	ä¸­æ–­è„‰å†²è®¡æ•°æ¸…é›¶
-	LCALL	åˆ¤æ–­è¿è¡Œé•¿åº¦å°äºŽæžé™å€¼
-	JNB	æ•°å€¼å°äºŽæžé™å€¼æ ‡è®°	, æ— åŠ å‡é€Ÿè¿è¡Œ
-	LCALL	åˆ¤æ–­é€Ÿåº¦å¤§äºŽæ€»æ­¥æ•°
-	LCALL	è®¡ç®—Såž‹æ­¥æ•°é€Ÿåº¦æ€»ç³»æ•°
-	LCALL	è®¡ç®—Såž‹åŠ å‡é€Ÿæ€»æ­¥æ•°
-	LCALL	è®¡ç®—Såž‹åŒ€é€Ÿé•¿åº¦
-	CLR	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-	LCALL	è®¡æ•°Såž‹åŠ é€ŸXMM
-	LCALL	è®¡æ•°Såž‹åŒ€é€Ÿè¿è¡Œ
-	LCALL	è®¡æ•°Såž‹å‡é€ŸXMM
-	SETB	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-	SETB	Xè„‰å†²è¾“å‡ºæ ‡è®°
-	SETB	Y1è„‰å†²è¾“å‡ºæ ‡è®°
-	SETB	Y2è„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	ä¸­æ–­è„‰å†²è®¡æ•°ç»“æŸå‘é€
+ ;*****************»úÐµÊÖ¹éÁã**END*************
+	
+;********µç»ú¼Ó¼õËÙÔËÐÐ***¿ªÊ¼***********************
+µç»ú¼Ó¼õËÙÔËÐÐ:
+	LCALL	ÖÐ¶ÏÂö³å¼ÆÊýÇåÁã
+	LCALL	ÅÐ¶ÏÔËÐÐ³¤¶ÈÐ¡ÓÚ¼«ÏÞÖµ
+	JNB	ÊýÖµÐ¡ÓÚ¼«ÏÞÖµ±ê¼Ç	, ÎÞ¼Ó¼õËÙÔËÐÐ
+	LCALL	ÅÐ¶ÏËÙ¶È´óÓÚ×Ü²½Êý
+	LCALL	¼ÆËãSÐÍ²½ÊýËÙ¶È×ÜÏµÊý
+	LCALL	¼ÆËãSÐÍ¼Ó¼õËÙ×Ü²½Êý
+	LCALL	¼ÆËãSÐÍÔÈËÙ³¤¶È
+	CLR	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	LCALL	¼ÆÊýSÐÍ¼ÓËÙXMM
+	LCALL	¼ÆÊýSÐÍÔÈËÙÔËÐÐ
+	LCALL	¼ÆÊýSÐÍ¼õËÙXMM
+	SETB	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	SETB	XÂö³åÊä³ö±ê¼Ç
+	SETB	Y1Âö³åÊä³ö±ê¼Ç
+	SETB	Y2Âö³åÊä³ö±ê¼Ç   
+	LCALL	ÖÐ¶ÏÂö³å¼ÆÊý½áÊø·¢ËÍ
 	RET
-æ— åŠ å‡é€Ÿè¿è¡Œ:
-	MOV	å½“å‰é•¿åº¦H, è¿è¡Œé•¿åº¦H
-	MOV	å½“å‰é•¿åº¦L, è¿è¡Œé•¿åº¦L
-	MOV	è¿è¡Œé€Ÿåº¦H	, #HIGH	è°ƒè¯•æ…¢é€Ÿåº¦
-	MOV	è¿è¡Œé€Ÿåº¦L	, #LOW	è°ƒè¯•æ…¢é€Ÿåº¦
-	MOV	å½“å‰é€Ÿåº¦H	, è¿è¡Œé€Ÿåº¦H
-	MOV	å½“å‰é€Ÿåº¦L	, è¿è¡Œé€Ÿåº¦L
-	LCALL	è®¡ç®—é€Ÿåº¦è½¬å®šæ—¶å™¨å¹¶èµ‹å€¼
-æ— åŠ é€Ÿè¿è¡Œä¸­:
-	CLR	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
+ÎÞ¼Ó¼õËÙÔËÐÐ:
+	MOV	µ±Ç°³¤¶ÈH, ÔËÐÐ³¤¶ÈH
+	MOV	µ±Ç°³¤¶ÈL, ÔËÐÐ³¤¶ÈL
+	MOV	ÔËÐÐËÙ¶ÈH	, #HIGH	ÎÞ¼Ó¼õËÙ¸³ÖµËÙ¶È
+	MOV	ÔËÐÐËÙ¶ÈL	, #LOW	ÎÞ¼Ó¼õËÙ¸³ÖµËÙ¶È
+	MOV	µ±Ç°ËÙ¶ÈH	, ÔËÐÐËÙ¶ÈH
+	MOV	µ±Ç°ËÙ¶ÈL	, ÔËÐÐËÙ¶ÈL
+	LCALL	¼ÆËãµ±Ç°ËÙ¶È×ªT0¸³Öµ
+ÎÞ¼ÓËÙÔËÐÐÖÐ:
+	CLR	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
 	CLR	P4.5
-	JB	T0ä¸­æ–­4æ¬¡æ ‡è®°	, $
+	JB	T0ÖÐ¶Ï4´Î±ê¼Ç	, $
 	SETB	P4.5
-	SETB	T0ä¸­æ–­4æ¬¡æ ‡è®°
-	LCALL	é•¿åº¦å‡ä¸€
-	JB	é•¿åº¦å‡ä¸€æ ‡è®°	, æ— åŠ é€Ÿè¿è¡Œä¸­
-	SETB	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-	SETB	é•¿åº¦å‡ä¸€æ ‡è®°
+	SETB	T0ÖÐ¶Ï4´Î±ê¼Ç
+	LCALL	³¤¶È¼õÒ»
+	JB	³¤¶È¼õÒ»±ê¼Ç	, ÎÞ¼ÓËÙÔËÐÐÖÐ
+	SETB	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	SETB	³¤¶È¼õÒ»±ê¼Ç
 	RET
  ;******************************************************8888
 
 
-ä¸­æ–­è„‰å†²è®¡æ•°ç»“æŸå‘é€:
+ÖÐ¶ÏÂö³å¼ÆÊý½áÊø·¢ËÍ:
 	LCALL	DY5MS
 	MOV	P_SW1	, #01H
 	MOV	A	, DPH	                                               //24H
-	MOV	R0, #0AAH
-	MOVX	@R0	, A
+	MOV	T0Âö³åÊý05H	, A  
 	MOV	A, DPL	                                                ;										25H    
-	MOV	R0, #0ABH
-	MOVX	@R0	, A
-	MOV	P_SW1	, #00H	                                          ; é€‰æ‹©DPTR0	
-	CLR	ä¸²å£1å‘é€ç¼“å†²å‡½æ•°æ ‡è®°
+	MOV	T0Âö³åÊý05L	, A  
+	MOV	P_SW1	, #00H	                                          ; Ñ¡ÔñDPTR0	
+	CLR	´®¿Ú1·¢ËÍ»º³åº¯Êý±ê¼Ç  
+;MOV	·¢ËÍ»º³å¼ÆÊý	, #·¢ËÍ»º³åRAMÊ×Ö·
 	SETB	TI
+	LCALL	DY5MS
 	RET
 
-ä¸­æ–­è„‰å†²è®¡æ•°æ¸…é›¶:
-	MOV	P_SW1	, #01H	                                          ; é€‰æ‹©DPTR0
+ÖÐ¶ÏÂö³å¼ÆÊýÇåÁã:
+	MOV	P_SW1	, #01H	                                          ; Ñ¡ÔñDPTR0
 	MOV	DPTR, #00H
-	MOV	P_SW1	, #00H	                                          ; é€‰æ‹©DPTR1 
-	MOV	å½“å‰æ—¶é—´H, #00H
-	MOV	å½“å‰æ—¶é—´L, #00H
-	MOV	è„‰å†²100ä¸ªè®¡æ•°, #è„‰å†²è®¡æ•°ä¸ªæ•°
-	LCALL	ä½¿èƒ½å®šæ—¶å™¨T1
-	RET
-è®¡æ•°åŒ€é€Ÿè¿è¡Œ:
-;;	LCALL	åŒ€é€Ÿè¿è¡Œé•¿åº¦è®¡æ•°
-	MOV	å½“å‰é•¿åº¦H, åŒ€é€Ÿè¿è¡Œé•¿åº¦H
-	MOV	å½“å‰é•¿åº¦L, åŒ€é€Ÿè¿è¡Œé•¿åº¦L
-	MOV	å½“å‰é€Ÿåº¦H	, è¿è¡Œé€Ÿåº¦H
-	MOV	å½“å‰é€Ÿåº¦L	, è¿è¡Œé€Ÿåº¦L
-	LCALL	è®¡ç®—é€Ÿåº¦è½¬å®šæ—¶å™¨å¹¶èµ‹å€¼
-è¿è¡Œé•¿åº¦åŠ¨ä½œ:	                                              ///
+	MOV	P_SW1	, #00H	                                          ; Ñ¡ÔñDPTR1 
+	MOV	µ±Ç°Ê±¼äH, #00H
+	MOV	µ±Ç°Ê±¼äL, #00H
+MOV		T0Âö³åÊý05H,#0
+MOV		T0Âö³åÊý05L	,#0
+	MOV	Âö³å100¸ö¼ÆÊý, #Âö³å¼ÆÊý¸öÊý
+	LCALL	Ê¹ÄÜ¶¨Ê±Æ÷T1
+	RET  
+
+¼ÆÊýÔÈËÙÔËÐÐ:
+;;	LCALL	ÔÈËÙÔËÐÐ³¤¶È¼ÆÊý
+	MOV	µ±Ç°³¤¶ÈH, ÔÈËÙÔËÐÐ³¤¶ÈH
+	MOV	µ±Ç°³¤¶ÈL, ÔÈËÙÔËÐÐ³¤¶ÈL
+	MOV	µ±Ç°ËÙ¶ÈH	, ÔËÐÐËÙ¶ÈH
+	MOV	µ±Ç°ËÙ¶ÈL	, ÔËÐÐËÙ¶ÈL
+	LCALL	¼ÆËãµ±Ç°ËÙ¶È×ªT0¸³Öµ
+ÔËÐÐ³¤¶È¶¯×÷:	                                              ///
 	CLR	P4.5
-	JB	T0ä¸­æ–­4æ¬¡æ ‡è®°	, $
+	JB	T0ÖÐ¶Ï4´Î±ê¼Ç	, $
 	SETB	P4.5
-	SETB	T0ä¸­æ–­4æ¬¡æ ‡è®°
-	LCALL	é•¿åº¦å‡ä¸€
-	JB	é•¿åº¦å‡ä¸€æ ‡è®°	, è¿è¡Œé•¿åº¦åŠ¨ä½œ
-	SETB	é•¿åº¦å‡ä¸€æ ‡è®°
+	SETB	T0ÖÐ¶Ï4´Î±ê¼Ç
+	LCALL	³¤¶È¼õÒ»
+	JB	³¤¶È¼õÒ»±ê¼Ç	, ÔËÐÐ³¤¶È¶¯×÷
+	SETB	³¤¶È¼õÒ»±ê¼Ç
 	RET
 
- //*********Såž‹åŠ å‡é€Ÿç¼–å†™æµ‹è¯•åŠ¨ä½œå¼€å§‹******************* 
-ç¼–å†™æµ‹è¯•åŠ¨ä½œ:
-	CLR	ç¼“å­˜æ•°æ®ä¸è‡ªåŠ¨è¯»å‡ºæ ‡è®°	                                ; ä¸è‡ªåŠ¨è¯»
-	MOV	æ˜¾ç¤ºç”»é¢, #æµ‹è¯•ç”»é¢1
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-ç¼–å†™æµ‹è¯•åŠ¨ä½œ1:
-	LCALL	æ£€æŸ¥ä¸²æœ‰æ–°æŽ¥æ”¶æ•°æ®å¹¶è¯»å‡º
-	MOV	è¿è¡Œé•¿åº¦H	,Xå‘å³é›¶ä½è‡³ä¸­å¿ƒè·ç¦»H		                           //100:2000
-	MOV	è¿è¡Œé•¿åº¦L	,Xå‘å³é›¶ä½è‡³ä¸­å¿ƒè·ç¦»L
-	MOV	è¿è¡Œé€Ÿåº¦H	, å·¦å³è¿è¡Œé€Ÿåº¦H
-	MOV	è¿è¡Œé€Ÿåº¦L	, å·¦å³è¿è¡Œé€Ÿåº¦L
-	setb	Xè½´æ–¹å‘
-	CLR	Xè„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	ç”µæœºåŠ å‡é€Ÿè¿è¡Œ
-	LCALL	DY500MS
-	cpl	Xè½´æ–¹å‘
-	CLR	Xè„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	ç”µæœºåŠ å‡é€Ÿè¿è¡Œ
-	LCALL	æ£€æŸ¥ä¸²æœ‰æ–°æŽ¥æ”¶æ•°æ®å¹¶è¯»å‡º
-	LCALL	DY500MS
+ //*********SÐÍ¼Ó¼õËÙ±àÐ´²âÊÔ¶¯×÷¿ªÊ¼******************* 
+±àÐ´²âÊÔ¶¯×÷:
+	CLR	»º´æÊý¾Ý²»×Ô¶¯¶Á³ö±ê¼Ç	                                ; ²»×Ô¶¯¶Á
+	MOV	ÏÔÊ¾»­Ãæ, #²âÊÔ»­Ãæ1
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+±àÐ´²âÊÔ¶¯×÷1:
+	MOV	ÔËÐÐ³¤¶ÈH	, XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëH	                      //100:2000
+	MOV	ÔËÐÐ³¤¶ÈL	, XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëL
+	MOV	ÔËÐÐËÙ¶ÈH	, ×óÓÒÔËÐÐËÙ¶ÈH
+	MOV	ÔËÐÐËÙ¶ÈL	, ×óÓÒÔËÐÐËÙ¶ÈL
+	setb	XÖá·½Ïò
+	CLR	XÂö³åÊä³ö±ê¼Ç
+	LCALL	µç»ú¼Ó¼õËÙÔËÐÐ
+	LCALL	DY100MS
+	cpl	XÖá·½Ïò
+	CLR	XÂö³åÊä³ö±ê¼Ç
+	LCALL	µç»ú¼Ó¼õËÙÔËÐÐ 
 
+	LCALL	DY1S
 
-	JNB	æµ‹è¯•æŒ‰é’®æ ‡è®°, ç¼–å†™æµ‹è¯•åŠ¨ä½œ1
-	MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	SETB	ç¼“å­˜æ•°æ®ä¸è‡ªåŠ¨è¯»å‡ºæ ‡è®°
+	LCALL	¼ì²é´®ÓÐÐÂ½ÓÊÕÊý¾Ý²¢¶Á³ö
+	JNB	²âÊÔ°´Å¥±ê¼Ç, ±àÐ´²âÊÔ¶¯×÷1
+	MOV	ÏÔÊ¾»­Ãæ, #µÈ´ý»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+	SETB	»º´æÊý¾Ý²»×Ô¶¯¶Á³ö±ê¼Ç
 
 	RET
- //*********Såž‹åŠ å‡é€Ÿç¼–å†™æµ‹è¯•åŠ¨ä½œå¼€å§‹******************* 
+ //*********SÐÍ¼Ó¼õËÙ±àÐ´²âÊÔ¶¯×÷¿ªÊ¼******************* 
 
-  //*********Såž‹åŠ å‡é€Ÿå¼€å§‹******************* 
-	MOV	æ­¥æ•°åå€æ”¾å¤§ç³»æ•°	, #30
-	MOV	è¿è¡Œé€Ÿåº¦H	, #HIGH	500
-	MOV	è¿è¡Œé€Ÿåº¦L	, #LOW	500
-	LCALL	åˆ¤æ–­è¿è¡Œé•¿åº¦å°äºŽæžé™å€¼
-	LCALL	åˆ¤æ–­é€Ÿåº¦å¤§äºŽæ€»æ­¥æ•°
-	LCALL	è®¡ç®—Såž‹æ­¥æ•°é€Ÿåº¦æ€»ç³»æ•°
-	LCALL	è®¡ç®—Såž‹åŠ å‡é€Ÿæ€»æ­¥æ•°
+  //*********SÐÍ¼Ó¼õËÙ¿ªÊ¼******************* 
 
-
-
-è®¡æ•°Såž‹åŠ é€ŸXMM:
-	MOV	å½“å‰æ­¥æ•°H, #00
-	MOV	å½“å‰æ­¥æ•°L, #00	                                        ;20
-è®¡æ•°Såž‹åŠ é€ŸXMMä¸­:
-	LCALL	å½“å‰åŠ é€Ÿæ­¥æ•°åŠ ä¸€
-	LCALL	è®¡ç®—Såž‹å½“å‰é€Ÿåº¦å¹¶èµ‹å€¼
+¼ÆÊýSÐÍ¼ÓËÙXMM:
+	MOV	µ±Ç°²½ÊýH, #00
+	MOV	µ±Ç°²½ÊýL, #00	                                        ;20
+¼ÆÊýSÐÍ¼ÓËÙXMMÖÐ:
+	LCALL	µ±Ç°¼ÓËÙ²½Êý¼ÓÒ»
+	LCALL	¼ÆËãSÐÍµ±Ç°ËÙ¶È²¢¸³Öµ
 	CLR	P4.5
-	JB	T0ä¸­æ–­4æ¬¡æ ‡è®°	, $
+	JB	T0ÖÐ¶Ï4´Î±ê¼Ç	, $
 	SETB	P4.5
-	SETB	T0ä¸­æ–­4æ¬¡æ ‡è®°
-	JB	å½“å‰é€Ÿåº¦ä¸ºé›¶æ ‡è®°	, è®¡æ•°Såž‹åŠ é€ŸXMMä¸­
-	SETB	å½“å‰é€Ÿåº¦ä¸ºé›¶æ ‡è®°
+	SETB	T0ÖÐ¶Ï4´Î±ê¼Ç
+	JB	µ±Ç°ËÙ¶ÈÎªÁã±ê¼Ç	, ¼ÆÊýSÐÍ¼ÓËÙXMMÖÐ
+	SETB	µ±Ç°ËÙ¶ÈÎªÁã±ê¼Ç
 	RET
 
 
-è®¡æ•°Såž‹åŒ€é€Ÿè¿è¡Œ:
-;;	LCALL	åŒ€é€Ÿè¿è¡Œé•¿åº¦è®¡æ•°
-	MOV	å½“å‰é•¿åº¦H, åŒ€é€Ÿè¿è¡Œé•¿åº¦H
-	MOV	å½“å‰é•¿åº¦L, åŒ€é€Ÿè¿è¡Œé•¿åº¦L
-;	MOV	å½“å‰é€Ÿåº¦H	, è¿è¡Œé€Ÿåº¦H
-;	MOV	å½“å‰é€Ÿåº¦L	, è¿è¡Œé€Ÿåº¦L
-	;LCALL	è®¡ç®—é€Ÿåº¦è½¬å®šæ—¶å™¨å¹¶èµ‹å€¼
-è¿è¡ŒSåž‹é•¿åº¦åŠ¨ä½œä¸­:	                                         ///
+¼ÆÊýSÐÍÔÈËÙÔËÐÐ:
+;;	LCALL	ÔÈËÙÔËÐÐ³¤¶È¼ÆÊý
+	MOV	µ±Ç°³¤¶ÈH, ÔÈËÙÔËÐÐ³¤¶ÈH
+	MOV	µ±Ç°³¤¶ÈL, ÔÈËÙÔËÐÐ³¤¶ÈL
+;	MOV	µ±Ç°ËÙ¶ÈH	, ÔËÐÐËÙ¶ÈH
+;	MOV	µ±Ç°ËÙ¶ÈL	, ÔËÐÐËÙ¶ÈL
+	;LCALL	¼ÆËãµ±Ç°ËÙ¶È×ªT0¸³Öµ
+ÔËÐÐSÐÍ³¤¶È¶¯×÷ÖÐ:	                                         ///
 	CLR	P4.5
-	JB	T0ä¸­æ–­4æ¬¡æ ‡è®°	, $
+	JB	T0ÖÐ¶Ï4´Î±ê¼Ç	, $
 	SETB	P4.5
-	SETB	T0ä¸­æ–­4æ¬¡æ ‡è®°
-	LCALL	é•¿åº¦å‡ä¸€
-	JB	é•¿åº¦å‡ä¸€æ ‡è®°	, è¿è¡ŒSåž‹é•¿åº¦åŠ¨ä½œä¸­
-	SETB	é•¿åº¦å‡ä¸€æ ‡è®°
+	SETB	T0ÖÐ¶Ï4´Î±ê¼Ç
+	LCALL	³¤¶È¼õÒ»
+	JB	³¤¶È¼õÒ»±ê¼Ç	, ÔËÐÐSÐÍ³¤¶È¶¯×÷ÖÐ
+	SETB	³¤¶È¼õÒ»±ê¼Ç
 	RET
 
-è®¡æ•°Såž‹å‡é€ŸXMM:
-	MOV	å½“å‰æ­¥æ•°H, åŠ å‡é€Ÿæ€»æ­¥æ•°H
-	MOV	å½“å‰æ­¥æ•°L, åŠ å‡é€Ÿæ€»æ­¥æ•°L
-è®¡æ•°Såž‹å‡é€ŸXMMä¸­:
-	LCALL	è®¡ç®—Såž‹å½“å‰é€Ÿåº¦å¹¶èµ‹å€¼
+¼ÆÊýSÐÍ¼õËÙXMM:
+	MOV	µ±Ç°²½ÊýH, ¼Ó¼õËÙ×Ü²½ÊýH
+	MOV	µ±Ç°²½ÊýL, ¼Ó¼õËÙ×Ü²½ÊýL
+¼ÆÊýSÐÍ¼õËÙXMMÖÐ:
+	LCALL	¼ÆËãSÐÍµ±Ç°ËÙ¶È²¢¸³Öµ
 	CLR	P4.5
-	JB	T0ä¸­æ–­4æ¬¡æ ‡è®°	, $
+	JB	T0ÖÐ¶Ï4´Î±ê¼Ç	, $
 	SETB	P4.5
-	SETB	T0ä¸­æ–­4æ¬¡æ ‡è®°
-	LCALL	å½“å‰å‡é€Ÿæ­¥æ•°å‡ä¸€
-	JB	å½“å‰é€Ÿåº¦ä¸ºé›¶æ ‡è®°	, è®¡æ•°Såž‹å‡é€ŸXMMä¸­
-	SETB	å½“å‰é€Ÿåº¦ä¸ºé›¶æ ‡è®°
+	SETB	T0ÖÐ¶Ï4´Î±ê¼Ç
+	LCALL	µ±Ç°¼õËÙ²½Êý¼õÒ»
+	JB	µ±Ç°ËÙ¶ÈÎªÁã±ê¼Ç	, ¼ÆÊýSÐÍ¼õËÙXMMÖÐ
+	SETB	µ±Ç°ËÙ¶ÈÎªÁã±ê¼Ç
 	RET
 
-;********************æœ€å°æ­¥æ•°è®¡ç®—æžé™å€¼ ************************888888
+;********************×îÐ¡²½Êý¼ÆËã¼«ÏÞÖµ ************************888888
 
-åˆ¤æ–­è¿è¡Œé•¿åº¦å°äºŽæžé™å€¼:
-	MOV	R4, è¿è¡Œé•¿åº¦H
-	MOV	R3, è¿è¡Œé•¿åº¦L
-	MOV	R2, #HIGH	æœ€å°æ­¥æ•°è®¡ç®—æžé™å€¼
-	MOV	R1, #LOW	æœ€å°æ­¥æ•°è®¡ç®—æžé™å€¼
+ÅÐ¶ÏÔËÐÐ³¤¶ÈÐ¡ÓÚ¼«ÏÞÖµ:
+	MOV	R4, ÔËÐÐ³¤¶ÈH
+	MOV	R3, ÔËÐÐ³¤¶ÈL
+	MOV	R2, #HIGH	×îÐ¡²½Êý¼ÆËã¼«ÏÞÖµ
+	MOV	R1, #LOW	×îÐ¡²½Êý¼ÆËã¼«ÏÞÖµ
 //R4R3-R2,R1=R3R2R1
-	LCALL	åå…­å‡åå…­æ­£è´Ÿæ ‡è®°
-	JB	æ•°å€¼æ­£è´Ÿæ ‡è®°	, æ•°å€¼æ­£å¸¸æžé™å†…
-	CLR	æ•°å€¼å°äºŽæžé™å€¼æ ‡è®°	                                    ;æ•°å€¼å°äºŽæžé™	
+	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç
+	JB	ÊýÖµÕý¸º±ê¼Ç	, ÊýÖµÕý³£¼«ÏÞÄÚ
+	CLR	ÊýÖµÐ¡ÓÚ¼«ÏÞÖµ±ê¼Ç	                                    ;ÊýÖµÐ¡ÓÚ¼«ÏÞ	
 	RET
-æ•°å€¼æ­£å¸¸æžé™å†…:
-	SETB	æ•°å€¼å°äºŽæžé™å€¼æ ‡è®°
+ÊýÖµÕý³£¼«ÏÞÄÚ:
+	SETB	ÊýÖµÐ¡ÓÚ¼«ÏÞÖµ±ê¼Ç
 	RET
 
-;*************åˆ¤æ–­é€Ÿåº¦æ”¾å¤§ç³»æ•°æ€»æ­¥æ•°*****************************************
-åˆ¤æ–­é€Ÿåº¦å¤§äºŽæ€»æ­¥æ•°:
-	MOV	R4, è¿è¡Œé€Ÿåº¦H	                                         ;  æœ€é«˜é€Ÿåº¦
-	MOV	R3, è¿è¡Œé€Ÿåº¦L
-	MOV	R2, æ­¥æ•°åå€æ”¾å¤§ç³»æ•°	                                  //*2
+;*************ÅÐ¶ÏËÙ¶È·Å´óÏµÊý×Ü²½Êý*****************************************
+ÅÐ¶ÏËÙ¶È´óÓÚ×Ü²½Êý:
+;ÏÈÅÐ¶ÏÔËÐÐ³¤¶ÈÐ¡ÓÚ¼«ÏÞÖµ
+	MOV	R4, ÔËÐÐËÙ¶ÈH	                                         ;  ×î¸ßËÙ¶È
+	MOV	R3, ÔËÐÐËÙ¶ÈL
+	MOV	R2, ²½ÊýÊ®±¶·Å´óÏµÊý	                                  //*2
 //	R4R3*R2	=R4R3R2<R7R6R5>
-	LCALL	åå…­ä¹˜å…«
+	LCALL	Ê®Áù³Ë°Ë
 	MOV	R5, #0
 	MOV	R7, #0
 	MOV	R6, #5	                                                ;10 
-;è¢«é™¤æ•°	R5,R4,R3.R2.	é™¤æ•°R7,R6				å•†R3,R2	ä½™æ•°R5,R4 
-	LCALL	ä¸‰åäºŒé™¤åå…­
+;±»³ýÊý	R5,R4,R3.R2.	³ýÊýR7,R6				ÉÌR3,R2	ÓàÊýR5,R4 
+	LCALL	ÈýÊ®¶þ³ýÊ®Áù
 	MOV	A, R2
 	MOV	R1, A
 	MOV	A, R3
 	MOV	R2, A
 
-	MOV	R4, è¿è¡Œé•¿åº¦H
-	MOV	R3, è¿è¡Œé•¿åº¦L
+	MOV	R4, ÔËÐÐ³¤¶ÈH
+	MOV	R3, ÔËÐÐ³¤¶ÈL
 //R4R3-R2,R1=R3R2R1
-	LCALL	åå…­å‡åå…­æ­£è´Ÿæ ‡è®°
-	JNB	æ•°å€¼æ­£è´Ÿæ ‡è®°	, ä¸´æ—¶æ›´æ”¹å‚æ•°
-	JNB	æ•°å€¼ä¸ºé›¶æ ‡è®°	, ä¸´æ—¶æ›´æ”¹å‚æ•°
-	LJMP	è¿è¡Œé€Ÿåº¦å†™å…¥
+	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç
+	JNB	ÊýÖµÕý¸º±ê¼Ç	, ÁÙÊ±¸ü¸Ä²ÎÊý
+	JNB	ÊýÖµÎªÁã±ê¼Ç	, ÁÙÊ±¸ü¸Ä²ÎÊý
+	LJMP	ÔËÐÐËÙ¶ÈÐ´Èë
 	RET
-ä¸´æ—¶æ›´æ”¹å‚æ•°:
-   ; è¿è¡Œé€Ÿåº¦= è¿è¡Œé•¿åº¦*10/ æ­¥æ•°åå€æ”¾å¤§ç³»æ•°/2æ¬¡ï¼ˆåŠ å‡é€Ÿï¼‰
-			;									= è¿è¡Œé•¿åº¦*9/ æ­¥æ•°åå€æ”¾å¤§ç³»æ•°/2
-	MOV	R4, è¿è¡Œé•¿åº¦H
-	MOV	R3, è¿è¡Œé•¿åº¦L
-	MOV	R2, #9	                                                ;å½“æ­£æ•°æ—¶æ—   	
+ÁÙÊ±¸ü¸Ä²ÎÊý:
+   ; ÔËÐÐËÙ¶È= ÔËÐÐ³¤¶È*10/ ²½ÊýÊ®±¶·Å´óÏµÊý/2´Î£¨¼Ó¼õËÙ£©
+			;									= ÔËÐÐ³¤¶È*9/ ²½ÊýÊ®±¶·Å´óÏµÊý/2
+	MOV	R4, ÔËÐÐ³¤¶ÈH
+	MOV	R3, ÔËÐÐ³¤¶ÈL
+	MOV	R2, #9	                                                ;µ±ÕýÊýÊ±ÎÞ  	
 //	R4R3*R2	=R4R3R2<R7R6R5>
-	LCALL	åå…­ä¹˜å…«
+	LCALL	Ê®Áù³Ë°Ë
 	MOV	R5, #0
-	MOV	A, æ­¥æ•°åå€æ”¾å¤§ç³»æ•°
+	MOV	A, ²½ÊýÊ®±¶·Å´óÏµÊý
 	RL	A	                                                      ;A*2
 	MOV	R7, #0
 	MOV	R6, A
-//MOV	å½“å‰æ­¥æ•°åå€æ”¾å¤§ç³»æ•°     ï¼Œæ­¥æ•°åå€æ”¾å¤§ç³»æ•°
-;è¢«é™¤æ•°	R5,R4,R3.R2.	é™¤æ•°R7,R6				å•†R3,R2	ä½™æ•°R5,R4 
-	LCALL	ä¸‰åäºŒé™¤åå…­
-	MOV	è¿è¡Œé€Ÿåº¦H	, R3	                                        ;  æœ€é«˜é€Ÿåº¦
-	MOV	è¿è¡Œé€Ÿåº¦L	, R2
-è¿è¡Œé€Ÿåº¦å†™å…¥:
-	MOV	A	, è¿è¡Œé€Ÿåº¦H	                                         //24H
+//MOV	µ±Ç°²½ÊýÊ®±¶·Å´óÏµÊý     £¬²½ÊýÊ®±¶·Å´óÏµÊý
+;±»³ýÊý	R5,R4,R3.R2.	³ýÊýR7,R6				ÉÌR3,R2	ÓàÊýR5,R4 
+	LCALL	ÈýÊ®¶þ³ýÊ®Áù
+	MOV	ÔËÐÐËÙ¶ÈH	, R3	                                        ;  ×î¸ßËÙ¶È
+	MOV	ÔËÐÐËÙ¶ÈL	, R2
+ÔËÐÐËÙ¶ÈÐ´Èë:
+	MOV	A	, ÔËÐÐËÙ¶ÈH	                                         //24H
 	MOV	R0, #0ACH
 	MOVX	@R0	, A
-	MOV	A, è¿è¡Œé€Ÿåº¦L	                                          ;										25H    
+	MOV	A, ÔËÐÐËÙ¶ÈL	                                          ;										25H    
 	MOV	R0, #0ADH
 	MOVX	@R0	, A
 	RET
 
 
 
-  //*********Såž‹åŠ å‡é€Ÿå­å‡½æ•°*******************   
+  //*********SÐÍ¼Ó¼õËÙ×Óº¯Êý*******************   
 
-	//	3. æ³¨æ„ ;  è¿è¡Œé•¿åº¦å°äºŽ åŠ é€Ÿæ­¥æ•°.å‡é€Ÿæ­¥æ•°çš„å’Œæ—¶  ,åŒ€é€Ÿè¿è¡Œæ­¥æ•°ä¸ºè´Ÿæ•°é€ æˆé”™è¯¯ 
-	//4.      è¿è¡Œé€Ÿåº¦è®¾ç½®ä¸º  è¿è¡Œé•¿åº¦çš„1/2 ,åŒ€é€Ÿè¿è¡Œé•¿åº¦ =  ä½Žé€Ÿ#2
+	//	3. ×¢Òâ ;  ÔËÐÐ³¤¶ÈÐ¡ÓÚ ¼ÓËÙ²½Êý.¼õËÙ²½ÊýµÄºÍÊ±  ,ÔÈËÙÔËÐÐ²½ÊýÎª¸ºÊýÔì³É´íÎó 
+	//4.      ÔËÐÐËÙ¶ÈÉèÖÃÎª  ÔËÐÐ³¤¶ÈµÄ1/2 ,ÔÈËÙÔËÐÐ³¤¶È =  µÍËÙ#2
 
-è®¡ç®—Såž‹å½“å‰é€Ÿåº¦å¹¶èµ‹å€¼:
-;1.å½“å‰æ­¥æ•°é€Ÿåº¦=å½“å‰æ­¥æ•°/æ­¥æ•°é€Ÿåº¦æ€»ç³»æ•°<å½“å‰ï¼ˆæœ€é«˜ï¼‰é€Ÿåº¦/100(æ­£å¼¦å€¼ç­‰åˆ†æ•°)* æ­¥æ•°åå€æ”¾å¤§ç³»æ•° >
+¼ÆËãSÐÍµ±Ç°ËÙ¶È²¢¸³Öµ:
+;1.µ±Ç°²½ÊýËÙ¶È=µ±Ç°²½Êý/²½ÊýËÙ¶È×ÜÏµÊý<µ±Ç°£¨×î¸ß£©ËÙ¶È/100(ÕýÏÒÖµµÈ·ÖÊý)* ²½ÊýÊ®±¶·Å´óÏµÊý >
 	 //21*10	/(400/100)*20
 	
-	MOV	R4, å½“å‰æ­¥æ•°H
-	MOV	R3, å½“å‰æ­¥æ•°L
+	MOV	R4, µ±Ç°²½ÊýH
+	MOV	R3, µ±Ç°²½ÊýL
 	MOV	R2, #10
 //	R4R3*R2	=R4R3R2<R7R6R5>
-	LCALL	åå…­ä¹˜å…«
+	LCALL	Ê®Áù³Ë°Ë
 	MOV	R5, #0
-//MOV R4,         ; è¢«é™¤æ•°é«˜8ä½ 
-//MOV R3,         ; è¢«é™¤æ•°ä¸­8ä½ 
-//MOV R2,         ; è¢«é™¤æ•°ä½Ž8ä½  
+//MOV R4,         ; ±»³ýÊý¸ß8Î» 
+//MOV R3,         ; ±»³ýÊýÖÐ8Î» 
+//MOV R2,         ; ±»³ýÊýµÍ8Î»  
 	MOV	R7, #0
-	MOV	R6, æ­¥æ•°é€Ÿåº¦æ€»ç³»æ•°
-;è¢«é™¤æ•°	R5,R4,R3.R2.	é™¤æ•°R7,R6				å•†R3,R2	ä½™æ•°R5,R4 
-	LCALL	ä¸‰åäºŒé™¤åå…­
- ;è¢«é™¤æ•°R3.R2.	é™¤æ•°R1				å•†R3,R2	ä½™æ•°R1   
-//MOV R4,   #0      ; è¢«é™¤æ•°é«˜8ä½
-//MOV	R1, æ­¥æ•°é€Ÿåº¦æ€»ç³»æ•°
-//LCALL	åå…­é™¤å…«é”™è¯¯
+	MOV	R6, ²½ÊýËÙ¶È×ÜÏµÊý
+;±»³ýÊý	R5,R4,R3.R2.	³ýÊýR7,R6				ÉÌR3,R2	ÓàÊýR5,R4 
+	LCALL	ÈýÊ®¶þ³ýÊ®Áù
+ ;±»³ýÊýR3.R2.	³ýÊýR1				ÉÌR3,R2	ÓàÊýR1   
+//MOV R4,   #0      ; ±»³ýÊý¸ß8Î»
+//MOV	R1, ²½ÊýËÙ¶È×ÜÏµÊý
+//LCALL	Ê®Áù³ý°Ë´íÎó
 	MOV	A	, R2
-	;æŸ¥è¡¨   
-	MOV	DPTR	, #æ­£å¼¦å€¼TAB
+	;²é±í   
+	MOV	DPTR	, #ÕýÏÒÖµTAB
 	MOVC	A, @A+DPTR
-  ;276320*100/è¿è¡Œé€Ÿåº¦/æ­£å¼¦å€¼   
-;=276320*100/(è¿è¡Œé€Ÿåº¦*æ­£å¼¦å€¼)
-	MOV	R4, è¿è¡Œé€Ÿåº¦H
-	MOV	R3, è¿è¡Œé€Ÿåº¦L
+  ;276320*100/ÔËÐÐËÙ¶È/ÕýÏÒÖµ   
+;=276320*100/(ÔËÐÐËÙ¶È*ÕýÏÒÖµ)
+	MOV	R4, ÔËÐÐËÙ¶ÈH
+	MOV	R3, ÔËÐÐËÙ¶ÈL
 	MOV	R2, A
 //	R4R3*R2	=R4R3R2<R7R6R5> 
-;	å› é€Ÿåº¦655*100=FFFFä¸‹é¢ä½¿ç”¨å‡½æ•°ä¸‰åäºŒé™¤åå…­é™¤æ•°ä¸èƒ½å¤§äºŽ16ä½
-// æ‰€ä»¥é€Ÿåº¦ä¸èƒ½å¤§äºŽ655
-	LCALL	åå…­ä¹˜å…«
-;276320*100/(è¿è¡Œé€Ÿåº¦*æ­£å¼¦å€¼)
-//é™¤æ•°R7,R6
+;	ÒòËÙ¶È655*100=FFFFÏÂÃæÊ¹ÓÃº¯ÊýÈýÊ®¶þ³ýÊ®Áù³ýÊý²»ÄÜ´óÓÚ16Î»
+// ËùÒÔËÙ¶È²»ÄÜ´óÓÚ655
+	LCALL	Ê®Áù³Ë°Ë
+;276320*100/(ÔËÐÐËÙ¶È*ÕýÏÒÖµ)
+//³ýÊýR7,R6
 	MOV	A, R3
 	MOV	R7, A
 	MOV	A, R2
@@ -1856,8 +2216,8 @@ XYé‡æ–°æ‰¾é›¶åˆ¤æ–­:
 	MOV	R3, #0D0H
 	MOV	R2, #0C0H
    */
-;è¢«é™¤æ•°	R5,R4,R3.R2.	é™¤æ•°R7,R6				å•†R3,R2	ä½™æ•°R5,R4 
-	LCALL	ä¸‰åäºŒé™¤åå…­
+;±»³ýÊý	R5,R4,R3.R2.	³ýÊýR7,R6				ÉÌR3,R2	ÓàÊýR5,R4 
+	LCALL	ÈýÊ®¶þ³ýÊ®Áù
 	MOV	A	, R3
 	MOV	B	, R2
 	MOV	R4, #0FFH
@@ -1865,81 +2225,94 @@ XYé‡æ–°æ‰¾é›¶åˆ¤æ–­:
 	MOV	R2, A
 	MOV	R1, B
 ;R4R3-R2,R1=R3R2R1
-	LCALL	åå…­å‡åå…­
-	MOV	TH0, R2	                                               ;è®¾ç½®å®šæ—¶åˆå€¼
-	MOV	TL0, R1	                                               ;è®¾ç½®å®šæ—¶åˆå€¼
+	LCALL	Ê®Áù¼õÊ®Áù
+	MOV	TH0, R2	                                               ;ÉèÖÃ¶¨Ê±³õÖµ
+	MOV	TL0, R1	                                               ;ÉèÖÃ¶¨Ê±³õÖµ
 	RET
         
 
-è®¡ç®—Såž‹åŠ å‡é€Ÿæ€»æ­¥æ•°:
-	MOV	R4, è¿è¡Œé€Ÿåº¦H	                                         ;  æœ€é«˜é€Ÿåº¦
-	MOV	R3, è¿è¡Œé€Ÿåº¦L
-	MOV	R2, æ­¥æ•°åå€æ”¾å¤§ç³»æ•°
+¼ÆËãSÐÍ¼Ó¼õËÙ×Ü²½Êý:
+	MOV	R4, ÔËÐÐËÙ¶ÈH	                                         ;  ×î¸ßËÙ¶È
+	MOV	R3, ÔËÐÐËÙ¶ÈL
+	MOV	R2, ²½ÊýÊ®±¶·Å´óÏµÊý
 //	R4R3*R2	=R4R3R2<R7R6R5>
-	LCALL	åå…­ä¹˜å…«
+	LCALL	Ê®Áù³Ë°Ë
 	MOV	R5, #00
 	;R4R3R2
-	MOV	R7, #0	                                                ; é™¤æ•°
+	MOV	R7, #0	                                                ; ³ýÊý
 	MOV	R6, #10
-;è¢«é™¤æ•°	R5,R4,R3.R2.	é™¤æ•°R7,R6				å•†R3,R2	ä½™æ•°R5,R4   
+;±»³ýÊý	R5,R4,R3.R2.	³ýÊýR7,R6				ÉÌR3,R2	ÓàÊýR5,R4   
    ;500/100*10
-	LCALL	ä¸‰åäºŒé™¤åå…­
-	MOV	åŠ å‡é€Ÿæ€»æ­¥æ•°H, R3
-	MOV	åŠ å‡é€Ÿæ€»æ­¥æ•°L, R2
+	LCALL	ÈýÊ®¶þ³ýÊ®Áù
+	MOV	¼Ó¼õËÙ×Ü²½ÊýH, R3
+	MOV	¼Ó¼õËÙ×Ü²½ÊýL, R2
 	RET
 
 
-	//	1.è®¡æ•°åŒ€é€Ÿè¿è¡Œ = è¿è¡Œé•¿åº¦-  è®¡æ•°åŠ é€ŸXMM- è®¡æ•°å‡é€ŸXMM 
-è®¡ç®—Såž‹åŒ€é€Ÿé•¿åº¦:
-	MOV	R4, åŠ å‡é€Ÿæ€»æ­¥æ•°H
-	MOV	R3, åŠ å‡é€Ÿæ€»æ­¥æ•°L
+	//	1.¼ÆÊýÔÈËÙÔËÐÐ = ÔËÐÐ³¤¶È-  ¼ÆÊý¼ÓËÙXMM- ¼ÆÊý¼õËÙXMM 
+¼ÆËãSÐÍÔÈËÙ³¤¶È:
+	MOV	R4, ¼Ó¼õËÙ×Ü²½ÊýH
+	MOV	R3, ¼Ó¼õËÙ×Ü²½ÊýL
 	MOV	R2	, #2
-;ï¼›				R4R3*R2	=R7R6R5
-	LCALL	åå…­ä¹˜å…«
-	MOV	R4, è¿è¡Œé•¿åº¦H
-	MOV	R3, è¿è¡Œé•¿åº¦L
+;£»				R4R3*R2	=R7R6R5
+	LCALL	Ê®Áù³Ë°Ë
+	MOV	R4, ÔËÐÐ³¤¶ÈH
+	MOV	R3, ÔËÐÐ³¤¶ÈL
 	MOV	A	, R6
 	MOV	R2, A
 	MOV	A	, R5
 	MOV	R1, A
 //R4R3-R2,R1=R3R2R1
-	LCALL	åå…­å‡åå…­æ­£è´Ÿæ ‡è®°
-	MOV	åŒ€é€Ÿè¿è¡Œé•¿åº¦H, R2
-	MOV	åŒ€é€Ÿè¿è¡Œé•¿åº¦L, R1
+	LCALL	Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç
+	MOV	ÔÈËÙÔËÐÐ³¤¶ÈH, R2
+	MOV	ÔÈËÙÔËÐÐ³¤¶ÈL, R1
 	RET
 
 
-è®¡ç®—Såž‹æ­¥æ•°é€Ÿåº¦æ€»ç³»æ•°:
-	;MOV	 è¿è¡Œé€Ÿåº¦H	, #HIGH		450;  æœ€é«˜é€Ÿåº¦
-	;MOV		 è¿è¡Œé€Ÿåº¦L, #LOW			450  	
- ;MOV  æ­¥æ•°åå€æ”¾å¤§ç³»æ•° , #20   
+¼ÆËãSÐÍ²½ÊýËÙ¶È×ÜÏµÊý:
+	;MOV	 ÔËÐÐËÙ¶ÈH	, #HIGH		450;  ×î¸ßËÙ¶È
+	;MOV		 ÔËÐÐËÙ¶ÈL, #LOW			450  	
+ ;MOV  ²½ÊýÊ®±¶·Å´óÏµÊý , #20   
 
-;æ­¥æ•°é€Ÿåº¦æ€»ç³»æ•°=å½“å‰ï¼ˆæœ€é«˜ï¼‰é€Ÿåº¦/100(æ­£å¼¦å€¼ç­‰åˆ†æ•°)* æ­¥æ•°åå€æ”¾å¤§ç³»æ•°   
-	;= 400MM/Sé™¤100ä¹˜1.2     
-	;= 400MM/Sä¹˜12 é™¤100  = 48 (å¤š10å€
-	MOV	R4, è¿è¡Œé€Ÿåº¦H	                                         ;  æœ€é«˜é€Ÿåº¦
-	MOV	R3, è¿è¡Œé€Ÿåº¦L
-	MOV	R2, æ­¥æ•°åå€æ”¾å¤§ç³»æ•°
+;²½ÊýËÙ¶È×ÜÏµÊý=µ±Ç°£¨×î¸ß£©ËÙ¶È/100(ÕýÏÒÖµµÈ·ÖÊý)* ²½ÊýÊ®±¶·Å´óÏµÊý   
+	;= 400MM/S³ý100³Ë1.2     
+	;= 400MM/S³Ë12 ³ý100  = 48 (¶à10±¶
+	MOV	R4, ÔËÐÐËÙ¶ÈH	                                         ;  ×î¸ßËÙ¶È
+	MOV	R3, ÔËÐÐËÙ¶ÈL
+	MOV	R2, ²½ÊýÊ®±¶·Å´óÏµÊý
 //	R4R3*R2	=R4R3R2<R7R6R5>
-	LCALL	åå…­ä¹˜å…«
+	LCALL	Ê®Áù³Ë°Ë
 	MOV	R5, #00H
 	;MOV	R4, #00H
 	;MOV	R3,  
 	;MOV	R2,  
-	MOV	R7, #HIGH	æ­£å¼¦å€¼ç­‰åˆ†æ•°
-	MOV	R6, #LOW	æ­£å¼¦å€¼ç­‰åˆ†æ•°
-;è¢«é™¤æ•°	R5,R4,R3.R2.	é™¤æ•°R7,R6				å•†R3,R2	ä½™æ•°R5,R4   
+	MOV	R7, #HIGH	ÕýÏÒÖµµÈ·ÖÊý
+	MOV	R6, #LOW	ÕýÏÒÖµµÈ·ÖÊý
+;±»³ýÊý	R5,R4,R3.R2.	³ýÊýR7,R6				ÉÌR3,R2	ÓàÊýR5,R4   
    ;500/100*10
-	LCALL	ä¸‰åäºŒé™¤åå…­
+	LCALL	ÈýÊ®¶þ³ýÊ®Áù
 ;	MOV	 		X,R3
-	MOV	æ­¥æ•°é€Ÿåº¦æ€»ç³»æ•°, R2
+	MOV	²½ÊýËÙ¶È×ÜÏµÊý, R2
 	RET
 
 
-æ­£å¼¦å€¼TAB:
+ÕýÏÒÖµTAB:
+	DB	0EH, 0EH, 0EH, 0EH, 0EH, 0FH, 0FH, 0FH, 0FH, 010H
+	DB	010H, 011H, 011H, 012H, 012H, 013H, 013H, 014H, 015H, 015H
+	DB	016H, 017H, 018H, 019H, 01AH, 01BH, 01CH, 01DH, 01EH, 01FH
+	DB	020H, 021H, 022H, 023H, 024H, 025H, 027H, 028H, 029H, 02AH
+	DB	02CH, 02DH, 02EH, 030H, 031H, 032H, 034H, 035H, 036H, 038H
+	DB	039H, 03AH, 03CH, 03DH, 03EH, 040H, 041H, 042H, 044H, 045H
+	DB	046H, 048H, 049H, 04AH, 04BH, 04DH, 04EH, 04FH, 050H, 051H
+	DB	052H, 053H, 054H, 055H, 056H, 057H, 058H, 059H, 05AH, 05BH
+	DB	05CH, 05DH, 05DH, 05EH, 05FH, 05FH, 060H, 060H, 061H, 061H
+	DB	062H, 062H, 063H, 063H, 063H, 063H, 064H, 064H, 064H, 064H
+	DB	064H, 064H, 064H, 064H, 064H, 063H, 063H, 063H, 063H, 062H
 
-	DB	05H, 05H, 06H, 07H, 08H, 09H, 0AH, 0BH, 0CH, 0CH
-	DB	0CH, 0DH, 0DH, 0EH, 0EH, 0FH, 010H, 010H, 011H, 012H
+
+
+	DB	007H, 007H, 007H, 007H, 007H, 009H, 00AH, 00BH, 00CH, 00CH
+	DB	00CH, 00DH, 00DH, 00EH, 00EH, 00FH, 010H, 010H, 011H, 012H
 	DB	013H, 013H, 014H, 015H, 016H, 017H, 018H, 019H, 01AH, 01BH
 	DB	01DH, 01EH, 01FH, 020H, 021H, 023H, 024H, 025H, 026H, 028H
 	DB	029H, 02AH, 02CH, 02DH, 02FH, 030H, 031H, 033H, 034H, 036H
@@ -1950,350 +2323,337 @@ XYé‡æ–°æ‰¾é›¶åˆ¤æ–­:
 	DB	062H, 062H, 063H, 063H, 063H, 063H, 064H, 064H, 064H, 064H
 	DB	064H, 064H, 064H, 064H, 064H, 064H, 064H, 064H, 064H, 064H
 	DB	064H, 064H, 064H, 064H, 064H, 064H, 064H, 064H, 064H, 064H
-å½“å‰åŠ é€Ÿæ­¥æ•°åŠ ä¸€:
-//*****åŠ ä¸€*****
-	MOV	R1, å½“å‰æ­¥æ•°L
-	MOV	R2, å½“å‰æ­¥æ•°H
+µ±Ç°¼ÓËÙ²½Êý¼ÓÒ»:
+//*****¼ÓÒ»*****
+	MOV	R1, µ±Ç°²½ÊýL
+	MOV	R2, µ±Ç°²½ÊýH
 ;R2,R1+1=R3R2R1
-	LCALL	åå…­åŠ ä¸€
-	MOV	å½“å‰æ­¥æ•°L, R1
-	MOV	å½“å‰æ­¥æ•°H, R2
-//*****æ¯”è¾ƒ****
-	MOV	A, å½“å‰æ­¥æ•°H
-;A=(å€¼)é¡ºåºæ‰§è¡Œ<CY=0>	,A>(å€¼)è·³è½¬<CY=0>,A<(å€¼)	è·³è½¬<CY=1>
-	CJNE	A, åŠ å‡é€Ÿæ€»æ­¥æ•°H, åŠ é€Ÿæ­¥æ•°æ¯”è¾ƒHç»“æžœä¸ç›¸åŒ
-åŠ é€Ÿæ­¥æ•°æ¯”è¾ƒHç»“æžœç›¸åŒ:
-	MOV	A, å½“å‰æ­¥æ•°L
-;A=(å€¼)é¡ºåºæ‰§è¡Œ<CY=0>	,A>(å€¼)è·³è½¬<CY=0>,A<(å€¼)	è·³è½¬<CY=1>
-	CJNE	A, åŠ å‡é€Ÿæ€»æ­¥æ•°L, åŠ é€Ÿæ­¥æ•°æ¯”è¾ƒLç»“æžœä¸ç›¸åŒ
-åŠ é€Ÿæ­¥æ•°æ¯”è¾ƒLç»“æžœç›¸åŒ:
-	CLR	å½“å‰æ­¥æ•°ä¸ºé›¶æ ‡è®°
+	LCALL	Ê®Áù¼ÓÒ»
+	MOV	µ±Ç°²½ÊýL, R1
+	MOV	µ±Ç°²½ÊýH, R2
+//*****±È½Ï****
+	MOV	A, µ±Ç°²½ÊýH
+;A=(Öµ)Ë³ÐòÖ´ÐÐ<CY=0>	,A>(Öµ)Ìø×ª<CY=0>,A<(Öµ)	Ìø×ª<CY=1>
+	CJNE	A, ¼Ó¼õËÙ×Ü²½ÊýH, ¼ÓËÙ²½Êý±È½ÏH½á¹û²»ÏàÍ¬
+¼ÓËÙ²½Êý±È½ÏH½á¹ûÏàÍ¬:
+	MOV	A, µ±Ç°²½ÊýL
+;A=(Öµ)Ë³ÐòÖ´ÐÐ<CY=0>	,A>(Öµ)Ìø×ª<CY=0>,A<(Öµ)	Ìø×ª<CY=1>
+	CJNE	A, ¼Ó¼õËÙ×Ü²½ÊýL, ¼ÓËÙ²½Êý±È½ÏL½á¹û²»ÏàÍ¬
+¼ÓËÙ²½Êý±È½ÏL½á¹ûÏàÍ¬:
+	CLR	µ±Ç°²½ÊýÎªÁã±ê¼Ç
 	RET
-åŠ é€Ÿæ­¥æ•°æ¯”è¾ƒHç»“æžœä¸ç›¸åŒ:
-åŠ é€Ÿæ­¥æ•°æ¯”è¾ƒLç»“æžœä¸ç›¸åŒ:
-	RET
-
-
-å½“å‰å‡é€Ÿæ­¥æ•°å‡ä¸€:
-//*****å‡ä¸€*****
-	MOV	R1, å½“å‰æ­¥æ•°L
-	MOV	R2, å½“å‰æ­¥æ•°H
-	LCALL	åå…­å‡ä¸€
-	MOV	å½“å‰æ­¥æ•°L, R1
-	MOV	å½“å‰æ­¥æ•°H, R2
-//*****æ¯”è¾ƒ****
-	MOV	A, å½“å‰æ­¥æ•°H
-;A=(å€¼)é¡ºåºæ‰§è¡Œ<CY=0>	,A>(å€¼)è·³è½¬<CY=0>,A<(å€¼)	è·³è½¬<CY=1>
-	CJNE	A, #00, å‡é€Ÿæ­¥æ•°æ¯”è¾ƒHç»“æžœä¸ç›¸åŒ
-å‡é€Ÿæ­¥æ•°æ¯”è¾ƒHç»“æžœç›¸åŒ:
-	MOV	A, å½“å‰æ­¥æ•°L
-;A=(å€¼)é¡ºåºæ‰§è¡Œ<CY=0>	,A>(å€¼)è·³è½¬<CY=0>,A<(å€¼)	è·³è½¬<CY=1>
-	CJNE	A, #00, å‡é€Ÿæ­¥æ•°æ¯”è¾ƒLç»“æžœä¸ç›¸åŒ	                      //	20
-å‡é€Ÿæ­¥æ•°æ¯”è¾ƒLç»“æžœç›¸åŒ:
-	CLR	å½“å‰æ­¥æ•°ä¸ºé›¶æ ‡è®°
-	CLR	å½“å‰é€Ÿåº¦ä¸ºé›¶æ ‡è®°
-	RET
-å‡é€Ÿæ­¥æ•°æ¯”è¾ƒHç»“æžœä¸ç›¸åŒ:
-å‡é€Ÿæ­¥æ•°æ¯”è¾ƒLç»“æžœä¸ç›¸åŒ:
-//SETB		å½“å‰é€Ÿåº¦ä¸ºé›¶æ ‡è®°
+¼ÓËÙ²½Êý±È½ÏH½á¹û²»ÏàÍ¬:
+¼ÓËÙ²½Êý±È½ÏL½á¹û²»ÏàÍ¬:
 	RET
 
 
+µ±Ç°¼õËÙ²½Êý¼õÒ»:
+//*****¼õÒ»*****
+	MOV	R1, µ±Ç°²½ÊýL
+	MOV	R2, µ±Ç°²½ÊýH
+	LCALL	Ê®Áù¼õÒ»
+	MOV	µ±Ç°²½ÊýL, R1
+	MOV	µ±Ç°²½ÊýH, R2
+//*****±È½Ï****
+	MOV	A, µ±Ç°²½ÊýH
+;A=(Öµ)Ë³ÐòÖ´ÐÐ<CY=0>	,A>(Öµ)Ìø×ª<CY=0>,A<(Öµ)	Ìø×ª<CY=1>
+	CJNE	A, #00, ¼õËÙ²½Êý±È½ÏH½á¹û²»ÏàÍ¬
+¼õËÙ²½Êý±È½ÏH½á¹ûÏàÍ¬:
+	MOV	A, µ±Ç°²½ÊýL
+;A=(Öµ)Ë³ÐòÖ´ÐÐ<CY=0>	,A>(Öµ)Ìø×ª<CY=0>,A<(Öµ)	Ìø×ª<CY=1>
+	CJNE	A, #00, ¼õËÙ²½Êý±È½ÏL½á¹û²»ÏàÍ¬	                      //	20
+¼õËÙ²½Êý±È½ÏL½á¹ûÏàÍ¬:
+	CLR	µ±Ç°²½ÊýÎªÁã±ê¼Ç
+	CLR	µ±Ç°ËÙ¶ÈÎªÁã±ê¼Ç
+	RET
+¼õËÙ²½Êý±È½ÏH½á¹û²»ÏàÍ¬:
+¼õËÙ²½Êý±È½ÏL½á¹û²»ÏàÍ¬:
+//SETB		µ±Ç°ËÙ¶ÈÎªÁã±ê¼Ç
+	RET
 
-//*********Såž‹åŠ å‡é€Ÿç»“æŸ******************* 
-å½“å‰åŠ é€Ÿé€Ÿåº¦åŠ ä¸€:
-//*****åŠ ä¸€*****
-	MOV	R1, å½“å‰é€Ÿåº¦L
-	MOV	R2, å½“å‰é€Ÿåº¦H
+
+
+//*********SÐÍ¼Ó¼õËÙ½áÊø******************* 
+µ±Ç°¼ÓËÙËÙ¶È¼ÓÒ»:
+//*****¼ÓÒ»*****
+	MOV	R1, µ±Ç°ËÙ¶ÈL
+	MOV	R2, µ±Ç°ËÙ¶ÈH
 ;R2,R1+1=R3R2R1
-	LCALL	åå…­åŠ ä¸€
-	MOV	å½“å‰é€Ÿåº¦L, R1
-	MOV	å½“å‰é€Ÿåº¦H, R2
-//*****æ¯”è¾ƒ****
-	MOV	A, å½“å‰é€Ÿåº¦H
-;A=(å€¼)é¡ºåºæ‰§è¡Œ<CY=0>	,A>(å€¼)è·³è½¬<CY=0>,A<(å€¼)	è·³è½¬<CY=1>
-	CJNE	A, è¿è¡Œé€Ÿåº¦H, åŠ é€Ÿæ¯”è¾ƒHç»“æžœä¸ç›¸åŒ
-åŠ é€Ÿæ¯”è¾ƒHç»“æžœç›¸åŒ:
-	MOV	A, å½“å‰é€Ÿåº¦L
-;A=(å€¼)é¡ºåºæ‰§è¡Œ<CY=0>	,A>(å€¼)è·³è½¬<CY=0>,A<(å€¼)	è·³è½¬<CY=1>
-	CJNE	A, è¿è¡Œé€Ÿåº¦L, åŠ é€Ÿæ¯”è¾ƒLç»“æžœä¸ç›¸åŒ
-åŠ é€Ÿæ¯”è¾ƒLç»“æžœç›¸åŒ:
-	CLR	å½“å‰é€Ÿåº¦ä¸ºé›¶æ ‡è®°
+	LCALL	Ê®Áù¼ÓÒ»
+	MOV	µ±Ç°ËÙ¶ÈL, R1
+	MOV	µ±Ç°ËÙ¶ÈH, R2
+//*****±È½Ï****
+	MOV	A, µ±Ç°ËÙ¶ÈH
+;A=(Öµ)Ë³ÐòÖ´ÐÐ<CY=0>	,A>(Öµ)Ìø×ª<CY=0>,A<(Öµ)	Ìø×ª<CY=1>
+	CJNE	A, ÔËÐÐËÙ¶ÈH, ¼ÓËÙ±È½ÏH½á¹û²»ÏàÍ¬
+¼ÓËÙ±È½ÏH½á¹ûÏàÍ¬:
+	MOV	A, µ±Ç°ËÙ¶ÈL
+;A=(Öµ)Ë³ÐòÖ´ÐÐ<CY=0>	,A>(Öµ)Ìø×ª<CY=0>,A<(Öµ)	Ìø×ª<CY=1>
+	CJNE	A, ÔËÐÐËÙ¶ÈL, ¼ÓËÙ±È½ÏL½á¹û²»ÏàÍ¬
+¼ÓËÙ±È½ÏL½á¹ûÏàÍ¬:
+	CLR	µ±Ç°ËÙ¶ÈÎªÁã±ê¼Ç
 	RET
-åŠ é€Ÿæ¯”è¾ƒHç»“æžœä¸ç›¸åŒ:
-åŠ é€Ÿæ¯”è¾ƒLç»“æžœä¸ç›¸åŒ:
+¼ÓËÙ±È½ÏH½á¹û²»ÏàÍ¬:
+¼ÓËÙ±È½ÏL½á¹û²»ÏàÍ¬:
 	RET
 
-è®¡ç®—é€Ÿåº¦è½¬å®šæ—¶å™¨å¹¶èµ‹å€¼:
-	;ç»†åˆ†2000/è½¬,5M*20é½¿=100MM/è½¬,	è„‰å†²æ•°=2000
-	;è¿è¡Œé€Ÿåº¦10MM/S=>200è„‰å†²æ•°/S=>å®šæ—¶å€¼10/20/2(é«˜ä½Žç”µå¹³ï¼‰=2500US
-	;å®šæ—¶å™¨èµ‹å€¼				65536-2500*11.0592=65536-276480
-	;è®¡ç®—è¿è¡Œé€Ÿåº¦30MM/Sæ—¶	=>65536-(276480/30)
-//A,MOV					å½“å‰é€Ÿåº¦	,è¿è¡Œé€Ÿåº¦		(3CM/S)
-//B,èµ‹å€¼	65536-27648/é€Ÿåº¦(1CM/S)
-//C,èµ‹å€¼	FFFF-	(276480(43800H)/é€Ÿåº¦)
+¼ÆËãµ±Ç°ËÙ¶È×ªT0¸³Öµ:	                                      ;ÎÞ¼Ó¼õËÙÔËÐÐÊ±Ó¦ÓÃ
+	;Ï¸·Ö2000/×ª,5M*20³Ý=100MM/×ª,	Âö³åÊý=2000
+	;ÔËÐÐËÙ¶È10MM/S=>200Âö³åÊý/S=>¶¨Ê±Öµ10/20/2(¸ßµÍµçÆ½£©=2500US
+	;¶¨Ê±Æ÷¸³Öµ				65536-2500*11.0592=65536-276480
+	;¼ÆËãÔËÐÐËÙ¶È30MM/SÊ±	=>65536-(276480/30)
+//A,MOV					µ±Ç°ËÙ¶È	,ÔËÐÐËÙ¶È		(300MM/S)
+//B,¸³Öµ	65536-27648/ËÙ¶È(300MM/S)
+//C,¸³Öµ	FFFF-	(276480(43800H)/ËÙ¶È)
 	MOV	R5, #00H
 	MOV	R4, #04H
 	MOV	R3, #38H
 	MOV	R2, #00H
-//é™¤æ•°R7,R6  
-	MOV	R7, å½“å‰é€Ÿåº¦H
-	MOV	R6, å½“å‰é€Ÿåº¦L
-;è¢«é™¤æ•°	R5,R4,R3.R2.	é™¤æ•°R7,R6				å•†R3,R2	ä½™æ•°R5,R4
-	LCALL	ä¸‰åäºŒé™¤åå…­
-	MOV	A	, R3	                                                ;è®¾ç½®å®šæ—¶åˆå€¼
-	MOV	B, R2	                                                 ;è®¾ç½®å®šæ—¶åˆå€¼
+//³ýÊýR7,R6  
+	MOV	R7, µ±Ç°ËÙ¶ÈH
+	MOV	R6, µ±Ç°ËÙ¶ÈL
+;±»³ýÊý	R5,R4,R3.R2.	³ýÊýR7,R6				ÉÌR3,R2	ÓàÊýR5,R4
+	LCALL	ÈýÊ®¶þ³ýÊ®Áù
+	MOV	A	, R3	                                                ;ÉèÖÃ¶¨Ê±³õÖµ
+	MOV	B, R2	                                                 ;ÉèÖÃ¶¨Ê±³õÖµ
 	
 	MOV	R4, #0FFH
 	MOV	R3, #0FFH
 	MOV	R2, A
 	MOV	R1, B
 ;R4R3-R2,R1=R3R2R1
-	LCALL	åå…­å‡åå…­
-	MOV	TH0, R2	                                               ;è®¾ç½®å®šæ—¶åˆå€¼
-	MOV	TL0, R1	                                               ;è®¾ç½®å®šæ—¶åˆå€¼
-
+	LCALL	Ê®Áù¼õÊ®Áù
+	MOV	TH0, R2	                                               ;ÉèÖÃ¶¨Ê±³õÖµ
+	MOV	TL0, R1	                                               ;ÉèÖÃ¶¨Ê±³õÖµ
 	RET
 
 
 
-é•¿åº¦å‡ä¸€:
-//*****å‡ä¸€*****
-	MOV	R1, å½“å‰é•¿åº¦L
-	MOV	R2, å½“å‰é•¿åº¦H
-	LCALL	åå…­å‡ä¸€
-	MOV	å½“å‰é•¿åº¦L, R1
-	MOV	å½“å‰é•¿åº¦H, R2
-//*****æ¯”è¾ƒ****
-	MOV	A, å½“å‰é•¿åº¦H
-;A=(å€¼)é¡ºåºæ‰§è¡Œ<CY=0>	,A>(å€¼)è·³è½¬<CY=0>,A<(å€¼)	è·³è½¬<CY=1>
-	CJNE	A, #0, æ¯”è¾ƒHç»“æžœä¸ç›¸åŒ
-æ¯”è¾ƒHç»“æžœç›¸åŒ:
-	MOV	A, å½“å‰é•¿åº¦L
-;A=(å€¼)é¡ºåºæ‰§è¡Œ<CY=0>	,A>(å€¼)è·³è½¬<CY=0>,A<(å€¼)	è·³è½¬<CY=1>
-	CJNE	A, #0, æ¯”è¾ƒLç»“æžœä¸ç›¸åŒ
-æ¯”è¾ƒLç»“æžœç›¸åŒ:
-	CLR	é•¿åº¦å‡ä¸€æ ‡è®°
+³¤¶È¼õÒ»:
+//*****¼õÒ»*****
+	MOV	R1, µ±Ç°³¤¶ÈL
+	MOV	R2, µ±Ç°³¤¶ÈH
+	LCALL	Ê®Áù¼õÒ»
+	MOV	µ±Ç°³¤¶ÈL, R1
+	MOV	µ±Ç°³¤¶ÈH, R2
+//*****±È½Ï****
+	MOV	A, µ±Ç°³¤¶ÈH
+;A=(Öµ)Ë³ÐòÖ´ÐÐ<CY=0>	,A>(Öµ)Ìø×ª<CY=0>,A<(Öµ)	Ìø×ª<CY=1>
+	CJNE	A, #0, ±È½ÏH½á¹û²»ÏàÍ¬
+±È½ÏH½á¹ûÏàÍ¬:
+	MOV	A, µ±Ç°³¤¶ÈL
+;A=(Öµ)Ë³ÐòÖ´ÐÐ<CY=0>	,A>(Öµ)Ìø×ª<CY=0>,A<(Öµ)	Ìø×ª<CY=1>
+	CJNE	A, #0, ±È½ÏL½á¹û²»ÏàÍ¬
+±È½ÏL½á¹ûÏàÍ¬:
+	CLR	³¤¶È¼õÒ»±ê¼Ç
 	RET
-æ¯”è¾ƒHç»“æžœä¸ç›¸åŒ:
-æ¯”è¾ƒLç»“æžœä¸ç›¸åŒ:
+±È½ÏH½á¹û²»ÏàÍ¬:
+±È½ÏL½á¹û²»ÏàÍ¬:
 	RET
 
+;********************************************8
 
 
 
 
-
-EEPROMåˆå§‹åŒ–:
-	MOV	æ˜¾ç¤ºç”»é¢, #æ•°æ®åˆå§‹åŒ–ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
+EEPROM³õÊ¼»¯:
+	MOV	ÏÔÊ¾»­Ãæ, #Êý¾Ý³õÊ¼»¯»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
 	LCALL	DY500MS
-;	0010
-	//MOV	ä»˜æ¿è¿”å›žé€šè®¯æ•°æ®0010H	 ,#HIGH	00 ;	20H
-//	MOV	ä»˜æ¿è¿”å›žä¿¡å·æ ‡è®°0010L	 ,#HIGH	00 ;	21H	                             //ä»˜æ¿P1å£OUTæ ‡è®°
+;5A	A5	15(#3+X)	82	00	00	0001 0203 0405 0607	
+
+	MOV	·¢ËÍÖ¡Í·5A	, #05AH                                     ;EQU	10H
+	MOV	·¢ËÍÖ¡Í·A5	, #0A5H                                     ;EQU	11H
+	MOV	·¢ËÍÊý¾Ý¸öÊý	, #17;#13                                     ;EQU	12H
+	MOV	·¢ËÍÖ¸Áî82	, #82H                                      ;EQU	13H
+	MOV	·¢ËÍÊý¾ÝÊ×Ö·H, #HIGH	00H	                              ;	EQU	14H
+	MOV	·¢ËÍÊý¾ÝÊ×Ö·L, #LOW	0BH	                               ;EQU	15H
+   ;  000BH
+	MOV	T0Âö³åÊý05H	, #0H                                      ;EQU	16H
+	MOV	T0Âö³åÊý05L	, #0H                                      ;EQU	17H
+     ;000C  
+	MOV	µ±Ç°Ê±¼äH	, #0H                                        ;EQU	18H
+	MOV	µ±Ç°Ê±¼äL	, #0H                                        ;EQU	19H
+		    ;000D   
+	MOV	ÔËÐÐËÙ¶ÈH	, #0H                                        ;EQU	1AH
+	MOV	ÔËÐÐËÙ¶ÈL, #0H                                         ;	EQU		1BH
+  ;000E	                 		
+	;Í¨Ñ¶Âö³åÊýH	EQU    1CH
+ ;Í¨Ñ¶Âö³åÊýL	EQU  	 1DH
+	;000F
+	MOV	ÔËÐÐ³¤¶ÈH	, #0H                                        ;EQU	1EH
+	MOV	ÔËÐÐ³¤¶ÈL	, #0H                                        ;EQU		1FH
+;	*************************************88
+
+;0010
+	;	EQU	20H
+	;	EQU	21H
 ;0011
-	MOV	ä¼ æ„Ÿå™¨ä¿¡å·æ ‡è®°H	, #HIGH	0FFFFH	                        ;	22H
-	MOV	ä¼ æ„Ÿå™¨ä¿¡å·æ ‡è®°L	, #LOW	0FFFFH	                         ;		23H	                                   //	ä¸»æ¿P1å£OUTæ ‡è®°
+	MOV	´«¸ÐÆ÷±ê¼Ç11H	, #HIGH	0FFFFH	                        ;	22H
+	MOV	´«¸ÐÆ÷±ê¼Ç11L	, #LOW	0FFFFH	                         ;		23H	                                   //	Ö÷°åP1¿ÚOUT±ê¼Ç
 ;0012
-	MOV	å½“å‰æ•°å€¼H	, #HIGH	0FFFFH	                              ;	24H
-	MOV	å½“å‰æ•°å€¼L	, #LOW	0FFFFH	                               ;	25H
+	MOV	ÁÙÊ±±ê¼Ç12H	, #HIGH	0FFFFH	                              ;	24H
+	MOV	ÁÙÊ±±ê¼Ç12L	, #LOW	0FFFFH
+ ;**************************************
 ;0013
-	MOV	è°ƒè¯•Hæ ‡è®°13H	, #HIGH	0FFFFH	                           ;	26H
-	MOV	è„‰å†²Lè¾“å‡ºæ ‡è®°13L	, #LOW	0FFFFH	                        ;	27H
+	MOV	ÁÙÊ±±ê¼Ç13H	, #HIGH	0FFFFH
+	MOV	ÁÙÊ±±ê¼Ç13L	, #LOW	0FFFFH
 ;0014
-	MOV	ä¸´æ—¶æ ‡è®°14H	, #HIGH	0FFFFH	                            ;	28H
-	MOV	ä¸´æ—¶æ ‡è®°14L	, #LOW	0FFFFH	                             ;	29H
+	MOV	°´Å¤±ê¼Ç14H	, #HIGH	0FFFFH	                              ;	2CH	                                         //			¿ª»ú²»ÖÃ1
+	MOV	°´Å¤±ê¼Ç14L, #LOW	0FFFFH
 ;0015
-	MOV	æŒ‰æ‰­æ ‡è®°15H	, #HIGH	0FFFFH	                            ;	2AH
-	MOV	æŒ‰æ‰­æ ‡è®°15L	, #LOW	0FFFFH	                             ;	2BH   
-
+	MOV	±£´æ±ê¼Ç15H	, #HIGH	0FFFFH	                            ;	2AH
+	MOV	±£´æ±ê¼Ç15L		, #LOW	0FFFFH
+	//	ÒÔÏÂ±£´æ²ÎÊý     
 ;0016
-	MOV	ä¿å­˜æ ‡è®°H	, #HIGH	0FFFFH	                              ;	2CH	                                         //			å¼€æœºä¸ç½®1
-	MOV	ä¿å­˜æ ‡è®°L	, #LOW	0FFFFH	                               ;	2DH
+	MOV	XÏòÓÒÁãÎ»H, #HIGH	300                                   ;	EQU	2CH	                                         //			¿ª»ú²»ÖÃ1
+	MOV	XÏòÓÒÁãÎ»L	, #LOW	300                                   ;		EQU	2DH
 ;0017
-	//	 ,#HIGH	00 ;	2EH
-	//	 ,#LOW	00 ;	2FH
-
-/*	----C260-(--------B320------<.....A180........
-------------D580------- -------E100-->...F70...>   */
-//	X1=A+B			X2=A+B+C		 
-    
-	//	ä»¥ä¸‹ä¿å­˜å‚æ•°
+	MOV	YÏòÈ¡ÎïÁÏ³¤¾àÀëH	, #HIGH	800                           ;EQU	2EH
+	MOV	YÏòÈ¡ÎïÁÏ³¤¾àÀëL	, #LOW	800                            ;	EQU	2FH
 ;0018     Y3
-	MOV	Yå‘ä¸¤å¤´å–æ”¾è·ç¦»H	, #HIGH	1000	                         ;	30H     	
-	MOV	Yå‘ä¸¤å¤´å–æ”¾è·ç¦»L	, #LOW	1000	                          ;	31H
+	MOV	YÏòÁ½Í·È¡·Å¾àÀëH	, #HIGH	800	                          ;	30H     	
+	MOV	YÏòÁ½Í·È¡·Å¾àÀëL	, #LOW	800	                           ;	31H
 ;0019     Y4	
-	MOV	Yå‘ä¸­é—´æŠ“Vè·ç¦»H	, #HIGH	4000	                          ;	32H
-	MOV	Yå‘ä¸­é—´æŠ“Vè·ç¦»L	, #LOW	4000	                           ;	33H
+	MOV	YÏòÖÐ¼ä×¥V¾àÀëH	, #HIGH	4000	                          ;	32H
+	MOV	YÏòÖÐ¼ä×¥V¾àÀëL	, #LOW	4000	                           ;	33H
 ;001A     X1   	
-	MOV	Xå‘å³é›¶ä½è‡³ä¸­å¿ƒè·ç¦»H	, #HIGH	5000	                     ;	34H	                                            
-	MOV	Xå‘å³é›¶ä½è‡³ä¸­å¿ƒè·ç¦»L	, #LOW	5000	                      ;	35H	                                        
+	MOV	XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëH	, #HIGH	5000	                     ;	34H	                                            
+	MOV	XÏòÓÒÁãÎ»ÖÁÖÐÐÄ¾àÀëL	, #LOW	5000	                      ;	35H	                                        
 ;001B     X2 	
-	MOV	Xå‘å³é›¶ä½è‡³å·¦é›¶ä½è·ç¦»H	, #HIGH	7600	                   ;	36H       
-	MOV	Xå‘å³é›¶ä½è‡³å·¦é›¶ä½è·ç¦»L	, #LOW	7600	                    ;	37H         	
+	MOV	XÏòÓÒÁãÎ»ÖÁ×óÁãÎ»¾àÀëH	, #HIGH	7600	                   ;	36H       
+	MOV	XÏòÓÒÁãÎ»ÖÁ×óÁãÎ»¾àÀëL	, #LOW	7600	                    ;	37H         	
 ;001C
-	MOV	å·¦å³è¿è¡Œé€Ÿåº¦H	, #HIGH	400	                             ;	38H
-	MOV	å·¦å³è¿è¡Œé€Ÿåº¦L	, #LOW	400	                              ;	39H
+	MOV	×óÓÒÔËÐÐËÙ¶ÈH	, #HIGH	400	                             ;	38H
+	MOV	×óÓÒÔËÐÐËÙ¶ÈL	, #LOW	400	                              ;	39H
 ;001D
-	MOV	ä¸Šä¸‹è¿è¡Œé€Ÿåº¦H	, #HIGH	450	                             ;	3AH
-	MOV	ä¸Šä¸‹è¿è¡Œé€Ÿåº¦L	, #LOW	450	                              ;	3BH
+	MOV	ÉÏÏÂÔËÐÐËÙ¶ÈH	, #HIGH	450	                             ;	3AH
+	MOV	ÉÏÏÂÔËÐÐËÙ¶ÈL	, #LOW	450	                              ;	3BH
 ;001E
-	//MOV	ä½Žé€ŸH	, #HIGH	20	                                      ;	3CH
-	MOV	æ­¥æ•°åå€æ”¾å¤§ç³»æ•°	, #15	                                ;	3DH
+	//MOV	µÍËÙH	, #HIGH	20	                                      ;	3CH
+	MOV	²½ÊýÊ®±¶·Å´óÏµÊý	, #15	                                ;	3DH
 ;001F
-	MOV	æ£€æµ‹é€Ÿåº¦H	, #HIGH	40	                                  ;	3EH
-	MOV	æ£€æµ‹é€Ÿåº¦L	, #LOW	40	                                   ;	3FH
+	MOV	¼ì²âËÙ¶ÈH	, #HIGH	40	                                  ;	3EH
+	MOV	¼ì²âËÙ¶ÈL	, #LOW	40	                                   ;	3FH
 ;0020
-	MOV	å·¥ä»¶ç«¯é¢è‡³ä¸­å¿ƒè·ç¦»H	, #HIGH	700	                       ;	40H
-	MOV	å·¥ä»¶ç«¯é¢è‡³ä¸­å¿ƒè·ç¦»L	, #LOW	700	                        ;		41H
+	MOV	¹¤¼þ¶ËÃæÖÁÖÐÐÄ¾àÀëH	, #HIGH	700	                       ;	40H
+	MOV	¹¤¼þ¶ËÃæÖÁÖÐÐÄ¾àÀëL	, #LOW	700	                        ;		41H
 ;0021
-	MOV	å·¥ä»¶é“èŠ¯ç›´å¾„H	, #HIGH	400	                             ;	42H
-	MOV	å·¥ä»¶é“èŠ¯ç›´å¾„L	, #LOW	400	                              ;	43H
+	MOV	¹¤¼þÌúÐ¾Ö±¾¶H	, #HIGH	400	                             ;	42H
+	MOV	¹¤¼þÌúÐ¾Ö±¾¶L	, #LOW	400	                              ;	43H
 ;0022
-	MOV	åž‹å·æ›´æ”¹å€¼	, #2	                                       ;	44H
-	MOV	åž‹å·å½“å‰å€¼	, #2	                                       ;	45H
+	MOV	ÐÍºÅ¸ü¸ÄÖµ	, #2                                       ;	44H
+	MOV	ÐÍºÅµ±Ç°Öµ	, #2                                  ;	45H
 ;0023
-	MOV	å¤‡ç”¨23H	, #HIGH	00	                                    ;	46H
-	MOV	å¤‡ç”¨23L	, #LOW	00	                                     ;	47H 
-;0024	
-/*
-MOV		å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼H	 ,#HIGH	00 ;	48H
-MOV		å·¦å³Xæ–¹å‘æŽ¥æ”¶æ•°å€¼L	 ,#LOW	00 ;	49H
-;0025
-MOV		ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼H	 ,#HIGH	00 ;	4AH
-MOV		ä¸Šä¸‹Yæ–¹å‘æŽ¥æ”¶æ•°å€¼L	 ,#LOW	00 ;	4BH
-;0026
-MOV		å·¦å³Xæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H	 ,#HIGH	00 ;	4CH
-MOV		å·¦å³Xæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼	 ,#LOW	00 ;	4DH
-;0027
-MOV	ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼H		 ,#HIGH	00 ;	4EH
-MOV		ä¸Šä¸‹Yæ–¹å‘ä¸Šä¸€æ¬¡æŽ¥æ”¶æ•°å€¼L	 ,#LOW	00 ;	4FH     
-
-;0028
-	A180H 	 ,#HIGH	00 ;	50H
-	A180L 	 ,#LOW	00 ;	51H
-;0029
-	B320H 	 ,#HIGH	00 ;	52H
-	B320L 	 ,#LOW	00 ;	53H
-;002A
-	C260H 	 ,#HIGH	00 ;	54H	                                          
-	C260L 	 ,#LOW	00 ;	55H	                                        
-;002B
-	D580H 	 ,#HIGH	00 ;	56H
-	D580L 	 ,#LOW	00 ;	57H
-;002C
-	E100H 	 ,#HIGH	00 ;	58H
-	E100L 	 ,#LOW	00 ;	59H
-;002D
-	F80H 		 ,#HIGH	00 ;	5AH
-	F80L 		 ,#LOW	00 ;	5BH
-;002E
- ;		 ,#HIGH	00 ;	5CH
-	; 	 ,#LOW	00 ;	5DH
-;003F
-	; 	 ,#HIGH	00 ;	5EH
-	; 	 ,#LOW	00 ;	5FH
-;0040
-	     
-       */
+	MOV	±¸ÓÃ23H	, #HIGH	00	                                    ;	46H
+	MOV	±¸ÓÃ23L	, #LOW	00	                                     ;	47H 
 
 //***********************
-	LCALL	å†™EEPROM
+	LCALL	Ð´EEPROM
 	LCALL	DY500MS
-	//LCALL	æŽ‰ç”µä¿å­˜æ‰‡åŒºæ“¦é™¤200H
+	//LCALL	µôµç±£´æÉÈÇø²Á³ý200H
 //	LCALL	DY100MS
-	//LCALL	å†™EEPROMæŽ‰ç”µä¿å­˜0200H
-	LCALL	å‘é€20Hè‡³5FHåˆ°è§¦æ‘¸å±
-	MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
+	//LCALL	Ð´EEPROMµôµç±£´æ0200H
+	LCALL	·¢ËÍ20HÖÁ5FHµ½´¥ÃþÆÁ
+	MOV	ÏÔÊ¾»­Ãæ, #µÈ´ý»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
 	RET
-//****ç»“æŸ********EEPROMåˆå§‹åŒ–**********
+//****½áÊø********EEPROM³õÊ¼»¯**********
 
 
 
-//****å¼€å§‹****ä¸­æ–­0**è„‰å†²******
+//****¿ªÊ¼****ÖÐ¶Ï0**Âö³å******
 
-ä½¿èƒ½å®šæ—¶å™¨T0:	                                              ;500å¾®ç§’@11.0592MHZ
-	ORL	AUXR, #80H	                                            ;å®šæ—¶å™¨æ—¶é’Ÿ1Tæ¨¡å¼
-	ANL	TMOD, #0F0H	                                           ;è®¾ç½®å®šæ—¶å™¨æ¨¡å¼
-	MOV	TL0, #066H	                                            ;è®¾ç½®å®šæ—¶åˆå€¼
-	MOV	TH0, #0EAH	                                            ;è®¾ç½®å®šæ—¶åˆå€¼
-	CLR	TF0	                                                   ;æ¸…é™¤TF0æ ‡å¿—
-	SETB	TR0	                                                  ;å®šæ—¶å™¨0å¼€å§‹è®¡æ—¶
-	SETB	ET0	                                                  ;ä½¿èƒ½å®šæ—¶å™¨0ä¸­æ–­
+Ê¹ÄÜ¶¨Ê±Æ÷T0:	                                              ;500Î¢Ãë@11.0592MHZ
+	ORL	AUXR, #80H	                                            ;¶¨Ê±Æ÷Ê±ÖÓ1TÄ£Ê½
+	ANL	TMOD, #0F0H	                                           ;ÉèÖÃ¶¨Ê±Æ÷Ä£Ê½
+	MOV	TL0, #066H	                                            ;ÉèÖÃ¶¨Ê±³õÖµ
+	MOV	TH0, #0EAH	                                            ;ÉèÖÃ¶¨Ê±³õÖµ
+	CLR	TF0	                                                   ;Çå³ýTF0±êÖ¾
+	SETB	TR0	                                                  ;¶¨Ê±Æ÷0¿ªÊ¼¼ÆÊ±
+	SETB	ET0	                                                  ;Ê¹ÄÜ¶¨Ê±Æ÷0ÖÐ¶Ï
 	SETB	EA
-	MOV	è„‰å†²100ä¸ªè®¡æ•°	, #è„‰å†²è®¡æ•°ä¸ªæ•°
-	MOV	T0ä¸­æ–­4æ¬¡è®¡æ•°, #T0ä¸­æ–­è„‰å†²æ¬¡æ•°	                        //4   4å¯¹åº”2000ç»†åˆ†æ•°ï¼Œ8/4000
+	MOV	Âö³å100¸ö¼ÆÊý	, #Âö³å¼ÆÊý¸öÊý
+	MOV	T0ÖÐ¶Ï4´Î¼ÆÊý, #T0ÖÐ¶ÏÂö³å´ÎÊý	                        //4   4¶ÔÓ¦2000Ï¸·ÖÊý£¬8/4000
 	RET
 
 
-ä¸­æ–­T0å¼€:	SETB	ET0
+ÖÐ¶ÏT0¿ª:	SETB	ET0
 	RET
-ä¸­æ–­T0å…³:	CLR	TR0	                                          ;å®šæ—¶å™¨0å¼€å§‹è®¡æ—¶
+ÖÐ¶ÏT0¹Ø:	CLR	TR0	                                          ;¶¨Ê±Æ÷0¿ªÊ¼¼ÆÊ±
 	CLR	ET0
 	RET
 
 
-//  	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°(è‡³1æ—¶X,Y1,Y2,éƒ½ä¸è¾“å‡ºè„‰å†²ï¼‰
-//			X,Y1,Y2è„‰å†²è¾“å‡ºæ ‡è®° ( è‡³0æ—¶å¯¹åº”å•ç‹¬è¾“å‡ºè„‰å†²ï¼‰
-ä¸­æ–­T0:
+//  	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç(ÖÁ1Ê±X,Y1,Y2,¶¼²»Êä³öÂö³å£©
+//			X,Y1,Y2Âö³åÊä³ö±ê¼Ç ( ÖÁ0Ê±¶ÔÓ¦µ¥¶ÀÊä³öÂö³å£©
+ÖÐ¶ÏT0:
 	PUSH	ACC
 	PUSH	PSW
-	ORL	PSW, #00001000	                                        ;R0-R7ç”¨ç¬¬äºŒç»„08H-0FH
-	JB	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°	, ä¸­æ–­T0ç»“æŸ
+	ORL	PSW, #00001000	                                        ;R0-R7ÓÃµÚ¶þ×é08H-0FH
+	JB	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç	, ÖÐ¶ÏT0½áÊø
 TOMCX:
-	JB	Xè„‰å†²è¾“å‡ºæ ‡è®°	, TOMCY1
-	CPL	Xè½´è„‰å†²
+	JB	XÂö³åÊä³ö±ê¼Ç	, TOMCY1
+	CPL	XÖáÂö³å
 TOMCY1:
-	JB	Y1è„‰å†²è¾“å‡ºæ ‡è®°	, TOMCY2
-	CPL	Y1è½´å³è„‰å†²
+	JB	Y1Âö³åÊä³ö±ê¼Ç	, TOMCY2
+	CPL	Y1ÖáÓÒÂö³å
 TOMCY2:
-	JB	Y2è„‰å†²è¾“å‡ºæ ‡è®°	, TOè®¡æ•°4æ¬¡
-	CPL	Y2è½´å·¦è„‰å†²
-TOè®¡æ•°4æ¬¡:
-	DJNZ	T0ä¸­æ–­4æ¬¡è®¡æ•°	, ä¸­æ–­T0ç»“æŸ	                           //4   
-	CLR	T0ä¸­æ–­4æ¬¡æ ‡è®°
-	MOV	T0ä¸­æ–­4æ¬¡è®¡æ•°, #T0ä¸­æ–­è„‰å†²æ¬¡æ•°	                        //4   4å¯¹åº”2000ç»†åˆ†æ•°ï¼Œ8/4000
-TOè„‰å†²è®¡æ•°å¹¶å†™ç¼“å†²å‘é€:
-
-	MOV	P_SW1	, #01H	                                          ; é€‰æ‹©DPTR0
+	JB	Y2Âö³åÊä³ö±ê¼Ç	, TO¼ÆÊý4´Î
+	CPL	Y2Öá×óÂö³å
+TO¼ÆÊý4´Î:  
+	DJNZ	T0ÖÐ¶Ï4´Î¼ÆÊý	, ÖÐ¶ÏT0½áÊø
+	CLR	T0ÖÐ¶Ï4´Î±ê¼Ç	                                         //4 
+	MOV	T0ÖÐ¶Ï4´Î¼ÆÊý, #T0ÖÐ¶ÏÂö³å´ÎÊý	                        //4   4¶ÔÓ¦2000Ï¸·ÖÊý£¬8/4000
+TOÂö³å¼ÆÊý²¢Ð´»º³å·¢ËÍ:
+        
+	MOV	P_SW1	, #01H	                                          ; Ñ¡ÔñDPTR0
 	INC	DPTR
 	MOV	P_SW1	, #00H
-	DJNZ	è„‰å†²100ä¸ªè®¡æ•°	, ä¸­æ–­T0ç»“æŸ
-	MOV	è„‰å†²100ä¸ªè®¡æ•°	, #è„‰å†²è®¡æ•°ä¸ªæ•°
+	DJNZ	Âö³å100¸ö¼ÆÊý	, ÖÐ¶ÏT0½áÊø
+	MOV	Âö³å100¸ö¼ÆÊý	, #Âö³å¼ÆÊý¸öÊý
 
 	MOV	P_SW1	, #01H
-	MOV	A	, DPH	                                               //24H
-	MOV	R0, #0AAH
-	MOVX	@R0	, A
-	MOV	A, DPL	                                                ;										25H    
-	MOV	R0, #0ABH
-	MOVX	@R0	, A
-	MOV	P_SW1	, #00H	                                          ; é€‰æ‹©DPTR0	
+	;MOV	A	, DPH	                                               //24H
+	;MOV	R0, #0AAH
+;	MOVX	@R0	, A   
 
-	CLR	ä¸²å£1å‘é€ç¼“å†²å‡½æ•°æ ‡è®°
+;	MOV	A, DPL	                                                ;										25H    
+	;MOV	R0, #0ABH
+	;MOVX	@R0	, A 
+	
+	MOV	T0Âö³åÊý05H	, DPH   
+	MOV	T0Âö³åÊý05L	, DPL
+	MOV	P_SW1	, #00H	                                          ; Ñ¡ÔñDPTR0	
+
+	CLR	´®¿Ú1·¢ËÍ»º³åº¯Êý±ê¼Ç    
+MOV	·¢ËÍ»º³å¼ÆÊý	, #·¢ËÍ»º³åRAMÊ×Ö·
 	SETB	TI
-  
-ä¸­æ–­T0ç»“æŸ:
+
+ÖÐ¶ÏT0½áÊø:
+     
+
 	POP	PSW
 	POP	ACC
-	RETI
-//  	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°(è‡³1æ—¶X,Y1,Y2,éƒ½ä¸è¾“å‡ºè„‰å†²ï¼‰
-//			X,Y1,Y2è„‰å†²è¾“å‡ºæ ‡è®° ( è‡³0æ—¶å¯¹åº”å•ç‹¬è¾“å‡ºè„‰å†²ï¼‰
 
-	//***å¼€å§‹****ç®—æ•°è¿ç®—*********
+
+	RETI
+//  	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç(ÖÁ1Ê±X,Y1,Y2,¶¼²»Êä³öÂö³å£©
+//			X,Y1,Y2Âö³åÊä³ö±ê¼Ç ( ÖÁ0Ê±¶ÔÓ¦µ¥¶ÀÊä³öÂö³å£©
+
+	//***¿ªÊ¼****ËãÊýÔËËã*********
 
 /*
-åå…­åŠ 1: æ ·
-INC å½“å‰æ—¶é—´L             
-MOV A, å½“å‰æ—¶é—´L          ; å°†R2çš„å€¼åŠ è½½åˆ°ç´¯åŠ å™¨A
-JNZ NOCARRY16       			; å¦‚æžœAä¸ä¸º0,è·³è½¬åˆ°NO_CARRY
-INC å½“å‰æ—¶é—´H            
+Ê®Áù¼Ó1: Ñù
+INC µ±Ç°Ê±¼äL             
+MOV A, µ±Ç°Ê±¼äL          ; ½«R2µÄÖµ¼ÓÔØµ½ÀÛ¼ÓÆ÷A
+JNZ NOCARRY16       			; Èç¹ûA²»Îª0,Ìø×ªµ½NO_CARRY
+INC µ±Ç°Ê±¼äH            
 NOCARRY16:
 RET
    */
 ;R2,R1+1=R3R2R1
-åå…­åŠ ä¸€:
+Ê®Áù¼ÓÒ»:
 	MOV	A, R1
 	ADD	A, #1
 	MOV	R1, A
@@ -2306,7 +2666,7 @@ RET
 	RET
 
 	;R2,R1+R3=R3R2R1
-åå…­åŠ å…«:
+Ê®Áù¼Ó°Ë:
 	MOV	A, R1
 	ADD	A, R3
 	MOV	R1, A
@@ -2318,7 +2678,7 @@ RET
 	MOV	R3, A
 	RET
 ;R2,R1+R4R3=R3R2R1
-åå…­åŠ åå…­:
+Ê®Áù¼ÓÊ®Áù:
 	MOV	A, R1
 	ADD	A, R3
 	MOV	R1, A
@@ -2330,21 +2690,21 @@ RET
 	MOV	R3, A
 	RET
 
-;ï¼›				R4R3*R2	=R7R6R5 
+;£»				R4R3*R2	=R7R6R5 
 	//	R4R3*R2	=R4R3R2<R7R6R5>
-åå…­ä¹˜å…«:
+Ê®Áù³Ë°Ë:
 	MOV	A, R3
 	MOV	B, R2
 	MUL	AB
-	MOV	R5, A	                                                 ;ä½Ž8ä½
-	MOV	R6, B	                                                 ;é«˜8ä½Zæš‚æ—¶
+	MOV	R5, A	                                                 ;µÍ8Î»
+	MOV	R6, B	                                                 ;¸ß8Î»ZÔÝÊ±
 	MOV	A, R4
 	MOV	B, R2
 	MUL	AB
 	ADD	A, R6
-	MOV	R6, A	                                                 ;é«˜8ä½
+	MOV	R6, A	                                                 ;¸ß8Î»
 	MOV	R3, A
-	MOV	A, B	                                                  ;é«˜8ä½Zæš‚æ—¶
+	MOV	A, B	                                                  ;¸ß8Î»ZÔÝÊ±
 	ADDC	A, #0
 	MOV	R7, A
 	MOV	R4, A
@@ -2355,7 +2715,7 @@ RET
 
  
 //R4R3-R2,R1=R3R2R1
-åå…­å‡åå…­:
+Ê®Áù¼õÊ®Áù:
 	ADD	A, #00H
 	MOV	A, R3
 	SUBB	A, R1
@@ -2368,10 +2728,10 @@ RET
 	MOV	R3, A
 	RET
 //*/   
-	//æ•°å€¼æ­£è´Ÿæ ‡è®°
-	//æ•°å€¼ä¸ºé›¶æ ‡è®°
+	//ÊýÖµÕý¸º±ê¼Ç
+	//ÊýÖµÎªÁã±ê¼Ç
 //R4R3-R2,R1=R3R2R1
-åå…­å‡åå…­æ­£è´Ÿæ ‡è®°:
+Ê®Áù¼õÊ®ÁùÕý¸º±ê¼Ç:
 	ADD	A, #00H
 	MOV	A, R3
 	SUBB	A, R1
@@ -2382,46 +2742,46 @@ RET
 	MOV	A, #00H
 	ADDC	A, #00H
 	MOV	R3, A
-	JB	ACC.0, è´Ÿæ ‡è®°
-	SETB	æ•°å€¼æ­£è´Ÿæ ‡è®°
-	LCALL	æ•°å€¼ä¸ºé›¶æ¯”è¾ƒ
+	JB	ACC.0, ¸º±ê¼Ç
+	SETB	ÊýÖµÕý¸º±ê¼Ç
+	LCALL	ÊýÖµÎªÁã±È½Ï
 	RET
-è´Ÿæ ‡è®°:
-	CLR	æ•°å€¼æ­£è´Ÿæ ‡è®°
-	LCALL	æ•°å€¼ä¸ºé›¶æ¯”è¾ƒ
+¸º±ê¼Ç:
+	CLR	ÊýÖµÕý¸º±ê¼Ç
+	LCALL	ÊýÖµÎªÁã±È½Ï
 	RET
 
-æ•°å€¼ä¸ºé›¶æ¯”è¾ƒ:
-;A=(å€¼)é¡ºåºæ‰§è¡Œ<CY=0> ,A>(å€¼)è·³è½¬<CY=0>,A<(å€¼) è·³è½¬<CY=1>
-	CJNE	R2, #0, æ¯”è¾ƒR1R2ç»“æžœä¸ç›¸åŒ
-;A=(å€¼)é¡ºåºæ‰§è¡Œ<CY=0> ,A>(å€¼)è·³è½¬<CY=0>,A<(å€¼) è·³è½¬<CY=1>
-	CJNE	R1, #0, æ¯”è¾ƒR1R2ç»“æžœä¸ç›¸åŒ
-	CLR	æ•°å€¼ä¸ºé›¶æ ‡è®°
+ÊýÖµÎªÁã±È½Ï:
+;A=(Öµ)Ë³ÐòÖ´ÐÐ<CY=0> ,A>(Öµ)Ìø×ª<CY=0>,A<(Öµ) Ìø×ª<CY=1>
+	CJNE	R2, #0, ±È½ÏR1R2½á¹û²»ÏàÍ¬
+;A=(Öµ)Ë³ÐòÖ´ÐÐ<CY=0> ,A>(Öµ)Ìø×ª<CY=0>,A<(Öµ) Ìø×ª<CY=1>
+	CJNE	R1, #0, ±È½ÏR1R2½á¹û²»ÏàÍ¬
+	CLR	ÊýÖµÎªÁã±ê¼Ç
 	RET
-æ¯”è¾ƒR1R2ç»“æžœä¸ç›¸åŒ:
-	SETB	æ•°å€¼ä¸ºé›¶æ ‡è®°
+±È½ÏR1R2½á¹û²»ÏàÍ¬:
+	SETB	ÊýÖµÎªÁã±ê¼Ç
 	RET
 
 ;-R2R2=R2R1
-åå…­ä½è´Ÿæ•°è½¬æ¢æˆæ­£æ•°:
+Ê®ÁùÎ»¸ºÊý×ª»»³ÉÕýÊý:
 	MOV	A, R2
-	JNB	ACC.7, æ¢æˆæ­£æ•°ç»“æŸ
-æ¢æˆæ­£æ•°:
-	MOV	A, R1	                                                 ; åŠ è½½è´Ÿæ•°çš„ä½Žå­—èŠ‚
-	CPL	A	                                                     ; å–å
-	ADD	A, #01H	                                               ; åŠ 1
-	MOV	R1, A	                                                 ; ä¿å­˜ç»“æžœä½Žå­—èŠ‚
+	JNB	ACC.7, »»³ÉÕýÊý½áÊø
+»»³ÉÕýÊý:
+	MOV	A, R1	                                                 ; ¼ÓÔØ¸ºÊýµÄµÍ×Ö½Ú
+	CPL	A	                                                     ; È¡·´
+	ADD	A, #01H	                                               ; ¼Ó1
+	MOV	R1, A	                                                 ; ±£´æ½á¹ûµÍ×Ö½Ú
 
-	MOV	A, R2	                                                 ; åŠ è½½è´Ÿæ•°çš„é«˜å­—èŠ‚
-	CPL	A	                                                     ; å–å
-	ADDC	A, #00H	                                              ; åŠ ä¸Šä½Žå­—èŠ‚çš„è¿›ä½
-	MOV	R2, A	                                                 ; ä¿å­˜ç»“æžœé«˜å­—èŠ‚
-æ¢æˆæ­£æ•°ç»“æŸ:
+	MOV	A, R2	                                                 ; ¼ÓÔØ¸ºÊýµÄ¸ß×Ö½Ú
+	CPL	A	                                                     ; È¡·´
+	ADDC	A, #00H	                                              ; ¼ÓÉÏµÍ×Ö½ÚµÄ½øÎ»
+	MOV	R2, A	                                                 ; ±£´æ½á¹û¸ß×Ö½Ú
+»»³ÉÕýÊý½áÊø:
 	RET
 
 
 	;R2,R1-01=R2R1
-åå…­å‡ä¸€:
+Ê®Áù¼õÒ»:
 ;	MOV	R1,	L
 ;	MOV	R2,	H																														;
 	ADD	A, #00H
@@ -2435,50 +2795,50 @@ RET
 ;	MOV	H	,	R2
 	RET
 
-;MOV R3,         ; è¢«é™¤æ•°é«˜8ä½ 
-;MOV R2,         ; è¢«é™¤æ•°ä½Ž8ä½  
-;MOV R1,         		; é™¤æ•°  
-	;è¢«é™¤æ•°R3.R2.	é™¤æ•°R1				å•†R3,R2	ä½™æ•°R1
-åå…­é™¤å…«:
-	CLR	A	                                                     ; æ¸…é›¶ç´¯åŠ å™¨A
-	MOV	R4, A	                                                 ; æ¸…é›¶ä½™æ•°å¯„å­˜å™¨R4
-	MOV	R5, A	                                                 ; æ¸…é›¶ä¸´æ—¶å¯„å­˜å™¨R5
-	MOV	R6, A	                                                 ; æ¸…é›¶ä¸´æ—¶å¯„å­˜å™¨R6
-	MOV	R0, #16	                                               ; è®¾ç½®å¾ªçŽ¯æ¬¡æ•°ä¸º16ï¼ˆ16ä½é™¤æ³•ï¼‰
+;MOV R3,         ; ±»³ýÊý¸ß8Î» 
+;MOV R2,         ; ±»³ýÊýµÍ8Î»  
+;MOV R1,         		; ³ýÊý  
+	;±»³ýÊýR3.R2.	³ýÊýR1				ÉÌR3,R2	ÓàÊýR1
+Ê®Áù³ý°Ë:
+	CLR	A	                                                     ; ÇåÁãÀÛ¼ÓÆ÷A
+	MOV	R4, A	                                                 ; ÇåÁãÓàÊý¼Ä´æÆ÷R4
+	MOV	R5, A	                                                 ; ÇåÁãÁÙÊ±¼Ä´æÆ÷R5
+	MOV	R6, A	                                                 ; ÇåÁãÁÙÊ±¼Ä´æÆ÷R6
+	MOV	R0, #16	                                               ; ÉèÖÃÑ­»·´ÎÊýÎª16£¨16Î»³ý·¨£©
 DIV168LOOP:
-	CLR	C	                                                     ; æ¸…é™¤è¿›ä½æ ‡å¿—
-	MOV	A, R2	                                                 ; å°†è¢«é™¤æ•°ä½Ž8ä½åŠ è½½åˆ°ç´¯åŠ å™¨
-	RLC	A	                                                     ; å¸¦è¿›ä½å·¦ç§»
-	MOV	R2, A	                                                 ; å­˜å›žè¢«é™¤æ•°ä½Ž8ä½
-	MOV	A, R3	                                                 ; å°†è¢«é™¤æ•°é«˜8ä½åŠ è½½åˆ°ç´¯åŠ å™¨
-	RLC	A	                                                     ; å¸¦è¿›ä½å·¦ç§»
-	MOV	R3, A	                                                 ; å­˜å›žè¢«é™¤æ•°é«˜8ä½
-	MOV	A, R4	                                                 ; å°†ä½™æ•°åŠ è½½åˆ°ç´¯åŠ å™¨
-	RLC	A	                                                     ; å¸¦è¿›ä½å·¦ç§»
-	MOV	R4, A	                                                 ; å­˜å›žä½™æ•°
+	CLR	C	                                                     ; Çå³ý½øÎ»±êÖ¾
+	MOV	A, R2	                                                 ; ½«±»³ýÊýµÍ8Î»¼ÓÔØµ½ÀÛ¼ÓÆ÷
+	RLC	A	                                                     ; ´ø½øÎ»×óÒÆ
+	MOV	R2, A	                                                 ; ´æ»Ø±»³ýÊýµÍ8Î»
+	MOV	A, R3	                                                 ; ½«±»³ýÊý¸ß8Î»¼ÓÔØµ½ÀÛ¼ÓÆ÷
+	RLC	A	                                                     ; ´ø½øÎ»×óÒÆ
+	MOV	R3, A	                                                 ; ´æ»Ø±»³ýÊý¸ß8Î»
+	MOV	A, R4	                                                 ; ½«ÓàÊý¼ÓÔØµ½ÀÛ¼ÓÆ÷
+	RLC	A	                                                     ; ´ø½øÎ»×óÒÆ
+	MOV	R4, A	                                                 ; ´æ»ØÓàÊý
 
-	MOV	A, R4	                                                 ; å°†ä½™æ•°åŠ è½½åˆ°ç´¯åŠ å™¨
-	SUBB	A, R1	                                                ; ä½™æ•°å‡åŽ»é™¤æ•°
-	JC	NO_SUB	                                                 ; å¦‚æžœå€Ÿä½ï¼ˆä½™æ•° < é™¤æ•°ï¼‰,è·³è¿‡å‡æ³•
+	MOV	A, R4	                                                 ; ½«ÓàÊý¼ÓÔØµ½ÀÛ¼ÓÆ÷
+	SUBB	A, R1	                                                ; ÓàÊý¼õÈ¥³ýÊý
+	JC	NO_SUB	                                                 ; Èç¹û½èÎ»£¨ÓàÊý < ³ýÊý£©,Ìø¹ý¼õ·¨
 
-	MOV	R4, A	                                                 ; å­˜å›žæ–°çš„ä½™æ•°
-	INC	R2	                                                    ; å•†ä½Ž8ä½åŠ 1
-	MOV	A, R2	                                                 ; æ£€æŸ¥ä½Ž8ä½æ˜¯å¦æº¢å‡º
-	JNZ	NO_CARRY	                                              ; å¦‚æžœæ²¡æœ‰æº¢å‡º,è·³è¿‡
-	INC	R3	                                                    ; å•†é«˜8ä½åŠ 1ï¼ˆå¤„ç†ä½Ž8ä½æº¢å‡ºï¼‰
+	MOV	R4, A	                                                 ; ´æ»ØÐÂµÄÓàÊý
+	INC	R2	                                                    ; ÉÌµÍ8Î»¼Ó1
+	MOV	A, R2	                                                 ; ¼ì²éµÍ8Î»ÊÇ·ñÒç³ö
+	JNZ	NO_CARRY	                                              ; Èç¹ûÃ»ÓÐÒç³ö,Ìø¹ý
+	INC	R3	                                                    ; ÉÌ¸ß8Î»¼Ó1£¨´¦ÀíµÍ8Î»Òç³ö£©
 NO_CARRY:
 NO_SUB:
-	DJNZ	R0, DIV168LOOP	                                       ; å¾ªçŽ¯16æ¬¡
-; å°†ä½™æ•°å­˜å›žR1
-	MOV	A, R4	                                                 ; å°†ä½™æ•°åŠ è½½åˆ°ç´¯åŠ å™¨
-	MOV	R1, A	                                                 ; å­˜å›žR1
+	DJNZ	R0, DIV168LOOP	                                       ; Ñ­»·16´Î
+; ½«ÓàÊý´æ»ØR1
+	MOV	A, R4	                                                 ; ½«ÓàÊý¼ÓÔØµ½ÀÛ¼ÓÆ÷
+	MOV	R1, A	                                                 ; ´æ»ØR1
 END_LOOP:
 	RET
 
 
 
-								;è¢«é™¤æ•°	R5,R4,R3.R2.	é™¤æ•°R7,R6				å•†R3,R2	ä½™æ•°R5,R4
-ä¸‰åäºŒé™¤åå…­:
+								;±»³ýÊý	R5,R4,R3.R2.	³ýÊýR7,R6				ÉÌR3,R2	ÓàÊýR5,R4
+ÈýÊ®¶þ³ýÊ®Áù:
 	MOV	A, R6
 	JNZ	START
 	MOV	A, R7
@@ -2526,16 +2886,16 @@ LOOP4:	SETB	PSW.5
 ERR:
 	MOV	R3, #0
 	MOV	R2, #0
-	//	LJMP	$																																																	;æŠ¥è­¦å£°
-//	LCALL	EEPROMåˆå§‹åŒ–
+	//	LJMP	$																																																	;±¨¾¯Éù
+//	LCALL	EEPROM³õÊ¼»¯
 	RET
 
-//***ç»“æŸ****ç®—æ•°è¿ç®—*********
+//***½áÊø****ËãÊýÔËËã*********
 
 
 
-//*****å¼€å§‹******è½¯ä»¶å»¶æ—¶**********
-//@11.0592MHZ				æ— åˆ†é¢‘
+//*****¿ªÊ¼******Èí¼þÑÓÊ±**********
+//@11.0592MHZ				ÎÞ·ÖÆµ
 
 DY1MS:	                                                     ;@11.0592MHZ
 	NOP
@@ -2673,53 +3033,53 @@ NEXT40:
 	DJNZ	DY2, NEXT40
 	DJNZ	DY1, NEXT40
 	RET
-//*****ç»“æŸ******è½¯ä»¶å»¶æ—¶**********           
+//*****½áÊø******Èí¼þÑÓÊ±**********           
 
 
-;å†™åž‹å·IAPEEPROM
-;è¯»åž‹å·IAPEEPROM
-//3.015W4K48S2<EEPROMåœ°å€IAP/0000H-27FFH(MOVC/C000H-E7FFH) 20ä¸ªæ‰‡åŒº 1-0000H-02FFH	2-0300H-04FFH....
-//3.11 ç¬¬1æ‰‡åŒº å­˜å‚¨;åž‹å·0å½“å‰ä½¿ç”¨å‚æ•°ï¼Œç¬¬2æ‰‡åŒº å­˜å‚¨åž‹å·1ä½¿ç”¨å‚æ•°,2-2,3-3 .....ã€‚
-	;åž‹å·0  	ç¬¬1æ‰‡åŒº   	 IAP/0000H      		MOVC 0C000H
-	;åž‹å·1 	 ç¬¬2æ‰‡åŒº     IAP/0200H 	      MOVC 0C200H		
-	;åž‹å·2   ç¬¬3æ‰‡åŒº     IAP/0400H        MOVC 0C400H 		
-	;åž‹å·3   ç¬¬4æ‰‡åŒº     IAP/0600H        MOVC 0C600H 	
+;Ð´ÐÍºÅIAPEEPROM
+;¶ÁÐÍºÅIAPEEPROM
+//3.015W4K48S2<EEPROMµØÖ·IAP/0000H-27FFH(MOVC/C000H-E7FFH) 20¸öÉÈÇø 1-0000H-02FFH	2-0300H-04FFH....
+//3.11 µÚ1ÉÈÇø ´æ´¢;ÐÍºÅ0µ±Ç°Ê¹ÓÃ²ÎÊý£¬µÚ2ÉÈÇø ´æ´¢ÐÍºÅ1Ê¹ÓÃ²ÎÊý,2-2,3-3 .....¡£
+	;ÐÍºÅ0  	µÚ1ÉÈÇø   	 IAP/0000H      		MOVC 0C000H
+	;ÐÍºÅ1 	 µÚ2ÉÈÇø     IAP/0200H 	      MOVC 0C200H		
+	;ÐÍºÅ2   µÚ3ÉÈÇø     IAP/0400H        MOVC 0C400H 		
+	;ÐÍºÅ3   µÚ4ÉÈÇø     IAP/0600H        MOVC 0C600H 	
 
 
-// åž‹å·IAPåœ°å€ =   (åž‹å·*2)H ,00L
-// åž‹å·MOVCåœ°å€ =  <(åž‹å·*2)+C0>H ,00L
-è¯»8åž‹å·IAPEEPROMåˆå§‹åŒ–æµ‹è¯•:
-MOV		åž‹å·å½“å‰å€¼,#8
-è¯»8åž‹å·:
-LCALL		è¯»åž‹å·IAPEEPROM  
-LCALL	å‘é€2CHè‡³4FHåˆ°è§¦æ‘¸å±
-LCALL		DY100MS
-LCALL	å‘é€å½“å‰åž‹å·æ³¨è§£ 
-LCALL	DY1S  
-DJNZ	åž‹å·å½“å‰å€¼,	 è¯»8åž‹å· 
-   RET
-å†™åž‹å·IAPEEPROMåˆå§‹åŒ–æµ‹è¯•:
-å†™åž‹å·IAPEEPROMåˆå§‹åŒ–:
-MOV		åž‹å·å½“å‰å€¼,#0  
-MOV		åž‹å·æ›´æ”¹å€¼,	åž‹å·å½“å‰å€¼
-å†™8åž‹å·:     
-INC	å·¥ä»¶ç«¯é¢è‡³ä¸­å¿ƒè·ç¦»L
-INC		åž‹å·å½“å‰å€¼  
-MOV		åž‹å·æ›´æ”¹å€¼,	åž‹å·å½“å‰å€¼
-LCALL			å†™åž‹å·IAPEEPROM
-MOV	A,	åž‹å·å½“å‰å€¼
-CJNE	A, #8, å†™8åž‹å· 
-RET        
+// ÐÍºÅIAPµØÖ· =   (ÐÍºÅ*2)H ,00L
+// ÐÍºÅMOVCµØÖ· =  <(ÐÍºÅ*2)+C0>H ,00L
+¶Á8ÐÍºÅIAPEEPROM³õÊ¼»¯²âÊÔ:
+	MOV	ÐÍºÅµ±Ç°Öµ, #8
+¶Á8ÐÍºÅ:
+	LCALL	¶ÁÐÍºÅIAPEEPROM
+	LCALL	·¢ËÍ2CHÖÁ4FHµ½´¥ÃþÆÁ
+	LCALL	DY100MS
+	LCALL	·¢ËÍµ±Ç°ÐÍºÅ×¢½â
+	LCALL	DY1S
+	DJNZ	ÐÍºÅµ±Ç°Öµ, ¶Á8ÐÍºÅ
+	RET
+Ð´ÐÍºÅIAPEEPROM³õÊ¼»¯²âÊÔ:
+Ð´ÐÍºÅIAPEEPROM³õÊ¼»¯:
+	MOV	ÐÍºÅµ±Ç°Öµ, #0
+	MOV	ÐÍºÅ¸ü¸ÄÖµ, ÐÍºÅµ±Ç°Öµ
+Ð´8ÐÍºÅ:
+	INC	¹¤¼þ¶ËÃæÖÁÖÐÐÄ¾àÀëL
+	INC	ÐÍºÅµ±Ç°Öµ
+	MOV	ÐÍºÅ¸ü¸ÄÖµ, ÐÍºÅµ±Ç°Öµ
+	LCALL	Ð´ÐÍºÅIAPEEPROM
+	MOV	A, ÐÍºÅµ±Ç°Öµ
+	CJNE	A, #8, Ð´8ÐÍºÅ
+	RET
 
 
-è¯»åž‹å·IAPEEPROM:
-;	MOV	DPTR	, #IAPä¿å­˜é¦–å€   
-//  åž‹å·IAPé¦–å€ = 00H+(åž‹å·*2),00L=0(2X)00H
-	LCALL	åž‹å·IAPé¦–å€è½¬æ¢
-	MOV	R0, #å¾…å­˜é¦–å€
-	MOV	R2, #ä¿å­˜ä¸ªæ•°
+¶ÁÐÍºÅIAPEEPROM:
+;	MOV	DPTR	, #IAP±£´æÊ×Ö·   
+//  ÐÍºÅIAPÊ×Ö· = 00H+(ÐÍºÅ*2),00L=0(2X)00H
+	LCALL	ÐÍºÅIAPÊ×Ö·×ª»»
+	MOV	R0, #´ý´æÊ×Ö·
+	MOV	R2, #±£´æ¸öÊý
 IAPEEPROM2:
-	LCALL	è¯»IAPæ•°æ®
+	LCALL	¶ÁIAPÊý¾Ý
 	MOV	@R0	, A
 	INC	R0
 	INC	DPTR
@@ -2728,126 +3088,126 @@ IAPEEPROM2:
 
 
 
-;è¯»åž‹å·IAPEEPROM
+;¶ÁÐÍºÅIAPEEPROM
 
-å†™åž‹å·IAPEEPROM:
-;	MOV	DPTR	, #IAPä¿å­˜é¦–å€   
-//  åž‹å·IAPé¦–å€ =   (åž‹å·*2)H+00H ,00L
-	LCALL	åž‹å·IAPé¦–å€è½¬æ¢
-	LCALL	æ‰‡åŒºæ“¦é™¤	                                            //æ‰‡åŒºæ“¦é™¤
+Ð´ÐÍºÅIAPEEPROM:
+;	MOV	DPTR	, #IAP±£´æÊ×Ö·   
+//  ÐÍºÅIAPÊ×Ö· =   (ÐÍºÅ*2)H+00H ,00L
+	LCALL	ÐÍºÅIAPÊ×Ö·×ª»»
+	LCALL	ÉÈÇø²Á³ý	                                            //ÉÈÇø²Á³ý
 ;-------------------------------
-;	MOV	DPTR	, #IAPä¿å­˜é¦–å€   
-//  åž‹å·IAPé¦–å€ =   (åž‹å·*2)H+00H ,00L
-	LCALL	åž‹å·IAPé¦–å€è½¬æ¢
-	MOV	R0, #ä¿å­˜ä¸ªæ•°	                                         //16																					//æ£€æµ‹512å­—èŠ‚																													//æ£€æµ‹512å­—èŠ‚
-IAPCHECK1:	                                                 //æ£€æµ‹æ˜¯å¦æ“¦é™¤æˆåŠŸ(å…¨FFæ£€æµ‹)
-	LCALL	è¯»IAPæ•°æ®	                                           //è¯»IAPæ•°æ®
-	CJNE	A, #0FFH, å†™åž‹å·IAPEEPROM                                   //å¦‚æžœå‡ºé”™,åˆ™é€€å‡º
-	INC	DPTR	                                                  //IAPåœ°å€+1
+;	MOV	DPTR	, #IAP±£´æÊ×Ö·   
+//  ÐÍºÅIAPÊ×Ö· =   (ÐÍºÅ*2)H+00H ,00L
+	LCALL	ÐÍºÅIAPÊ×Ö·×ª»»
+	MOV	R0, #±£´æ¸öÊý	                                         //16																					//¼ì²â512×Ö½Ú																													//¼ì²â512×Ö½Ú
+IAPCHECK1:	                                                 //¼ì²âÊÇ·ñ²Á³ý³É¹¦(È«FF¼ì²â)
+	LCALL	¶ÁIAPÊý¾Ý	                                           //¶ÁIAPÊý¾Ý
+	CJNE	A, #0FFH, Ð´ÐÍºÅIAPEEPROM	                            //Èç¹û³ö´í,ÔòÍË³ö
+	INC	DPTR	                                                  //IAPµØÖ·+1
 	DJNZ	R0, IAPCHECK1
-							;æ“¦é™¤æˆåŠŸ
+							;²Á³ý³É¹¦
 ;-------------------------------
-;	MOV	DPTR	, #IAPä¿å­˜é¦–å€   
-//  åž‹å·IAPé¦–å€ =   (åž‹å·*2)H+00H ,00L
-	LCALL	åž‹å·IAPé¦–å€è½¬æ¢
-	MOV	R0, #ä¿å­˜ä¸ªæ•°	                                         //16																							//ç¼–ç¨‹512å­—èŠ‚
-	MOV	R1, #å¾…å­˜é¦–å€	                                         ;;;;;;;;---------------
-IAPNEXTZ:	MOV	A, @R1	                                       //å‡†å¤‡æ•°æ®
-	LCALL	å­—èŠ‚ç¼–ç¨‹	                                            //å­—èŠ‚ç¼–ç¨‹
-	INC	DPTR	                                                  //IAPåœ°å€+1
-	INC	R1	                                                    //ä¿®æ”¹ä¿å­˜æ•°æ®
+;	MOV	DPTR	, #IAP±£´æÊ×Ö·   
+//  ÐÍºÅIAPÊ×Ö· =   (ÐÍºÅ*2)H+00H ,00L
+	LCALL	ÐÍºÅIAPÊ×Ö·×ª»»
+	MOV	R0, #±£´æ¸öÊý	                                         //16																							//±à³Ì512×Ö½Ú
+	MOV	R1, #´ý´æÊ×Ö·	                                         ;;;;;;;;---------------
+IAPNEXTZ:	MOV	A, @R1	                                       //×¼±¸Êý¾Ý
+	LCALL	×Ö½Ú±à³Ì	                                            //×Ö½Ú±à³Ì
+	INC	DPTR	                                                  //IAPµØÖ·+1
+	INC	R1	                                                    //ÐÞ¸Ä±£´æÊý¾Ý
 	DJNZ	R0, IAPNEXTZ
-	RET     
+	RET
 
 	;*******************************************************
-//  åž‹å·IAPé¦–å€ =   (åž‹å·*2)H+00H ,00L
-åž‹å·IAPé¦–å€è½¬æ¢:
-	MOV	A, åž‹å·å½“å‰å€¼    
-	MOV	B	,#2   
-	MUL		AB
-	MOV DPH	, A  ; #HIGH	IAPä¿å­˜é¦–å€ 
- MOV	DPL	, #LOW	IAPä¿å­˜é¦–å€
+//  ÐÍºÅIAPÊ×Ö· =   (ÐÍºÅ*2)H+00H ,00L
+ÐÍºÅIAPÊ×Ö·×ª»»:
+	MOV	A, ÐÍºÅµ±Ç°Öµ
+	MOV	B	, #2
+	MUL	AB
+	MOV	DPH	, A	                                               ; #HIGH	IAP±£´æÊ×Ö· 
+	MOV	DPL	, #LOW	IAP±£´æÊ×Ö·
 	RET
 ;******************************************************  
 
    
-åž‹å·æ³¨è§£ç¬¬10æ‰‡åŒºè¯»å‡ºä¿å­˜æµ‹è¯•:
-LCALL		è¯»å˜é‡åœ°å€0100hæ•°æ®  //2503   
-LCALL	DY100MS
-LCALL	åž‹å·æ³¨è§£SRAMä¿å­˜åˆ°ç¬¬10æ‰‡åŒº   
+ÐÍºÅ×¢½âµÚ10ÉÈÇø¶Á³ö±£´æ²âÊÔ:
+	LCALL	¶Á±äÁ¿µØÖ·0100hÊý¾Ý	                                 //2503   
 	LCALL	DY100MS
-LCALL	åž‹å·æ³¨è§£ç¬¬10æ‰‡åŒºè¯»å‡ºåˆ°SRAM
+	LCALL	ÐÍºÅ×¢½âSRAM±£´æµ½µÚ10ÉÈÇø
 	LCALL	DY100MS
-	LCALL	å‘é€åž‹å·è¡¨æ ¼æ³¨è§£ 
+	LCALL	ÐÍºÅ×¢½âµÚ10ÉÈÇø¶Á³öµ½SRAM
 	LCALL	DY100MS
-LCALL		å‘é€å½“å‰åž‹å·æ³¨è§£ 
-     RET
+	LCALL	·¢ËÍÐÍºÅ±í¸ñ×¢½â
+	LCALL	DY100MS
+	LCALL	·¢ËÍµ±Ç°ÐÍºÅ×¢½â
+	RET
 
 
 
-;åž‹å·æ³¨è§£SRAMä¿å­˜åˆ°ç¬¬10æ‰‡åŒº
-åž‹å·æ³¨è§£ç¬¬10æ‰‡åŒºè¯»å‡ºåˆ°SRAM:
-	;åž‹å·æ³¨è§£IAPé¦–å€ =100+åž‹å·IAPé¦–å€<(åž‹å·*2)H+00H ,00L >
-;è¯»EEPORM		DPTR  	
+;ÐÍºÅ×¢½âSRAM±£´æµ½µÚ10ÉÈÇø
+ÐÍºÅ×¢½âµÚ10ÉÈÇø¶Á³öµ½SRAM:
+	;ÐÍºÅ×¢½âIAPÊ×Ö· =100+ÐÍºÅIAPÊ×Ö·<(ÐÍºÅ*2)H+00H ,00L >
+;¶ÁEEPORM		DPTR  	
 	MOV	P_SW1	, #01H
-	MOV	DPTR	,#1200H   ;(EEPROMåœ°å€0100H)IAPåž‹å·æ³¨è§£ä¿å­˜é¦–å€
-;ä¿å­˜SRAM	DPTR      
+	MOV	DPTR	, #1200H	                                         ;(EEPROMµØÖ·0100H)IAPÐÍºÅ×¢½â±£´æÊ×Ö·
+;±£´æSRAM	DPTR      
 	MOV	P_SW1	, #00H
-	MOV	DPTR, #100H; #åž‹å·æ³¨è§£SRAMä¿å­˜é¦–å€
+	MOV	DPTR, #100H	                                           ; #ÐÍºÅ×¢½âSRAM±£´æÊ×Ö·
 	MOV	P_SW1	, #01H
-	MOV	R0, #8FH                                               ;#ä¿å­˜ä¸ªæ•°	
-åž‹å·æ³¨è§£è¯»åˆ°SRAM:          	
-	LCALL	è¯»IAPæ•°æ®
+	MOV	R0, #8FH	                                              ;#±£´æ¸öÊý	
+ÐÍºÅ×¢½â¶Áµ½SRAM:
+	LCALL	¶ÁIAPÊý¾Ý
 	MOV	P_SW1	, #00H
 	MOVX	@DPTR, A
 	INC	DPTR
 	MOV	P_SW1	, #01H
 	INC	DPTR
-	DJNZ	R0, åž‹å·æ³¨è§£è¯»åˆ°SRAM
+	DJNZ	R0, ÐÍºÅ×¢½â¶Áµ½SRAM
 	RET
 
 
-åž‹å·æ³¨è§£SRAMä¿å­˜åˆ°ç¬¬10æ‰‡åŒº:    
-	MOV	DPTR, #1200H      
-	LCALL	æ‰‡åŒºæ“¦é™¤ 
+ÐÍºÅ×¢½âSRAM±£´æµ½µÚ10ÉÈÇø:
+	MOV	DPTR, #1200H
+	LCALL	ÉÈÇø²Á³ý
 
-;æ£€æµ‹æ˜¯å¦æ“¦é™¤æˆåŠŸ(å…¨FFæ£€æµ‹)
-	MOV	DPTR, #1200H  
-	MOV	R0, #8FH	                                         //16																					//æ£€æµ‹512å­—èŠ‚																													//æ£€æµ‹512å­—èŠ‚
-IAPCHECK10:	                                                 //æ£€æµ‹æ˜¯å¦æ“¦é™¤æˆåŠŸ(å…¨FFæ£€æµ‹)
-	LCALL	è¯»IAPæ•°æ®	                                           //è¯»IAPæ•°æ®
-	CJNE	A, #0FFH,åž‹å·æ³¨è§£SRAMä¿å­˜åˆ°ç¬¬10æ‰‡åŒº                                   //å¦‚æžœå‡ºé”™,åˆ™é€€å‡º
-	INC	DPTR	                                                  //IAPåœ°å€+1
+;¼ì²âÊÇ·ñ²Á³ý³É¹¦(È«FF¼ì²â)
+	MOV	DPTR, #1200H
+	MOV	R0, #8FH	                                              //16																					//¼ì²â512×Ö½Ú																													//¼ì²â512×Ö½Ú
+IAPCHECK10:	                                                //¼ì²âÊÇ·ñ²Á³ý³É¹¦(È«FF¼ì²â)
+	LCALL	¶ÁIAPÊý¾Ý	                                           //¶ÁIAPÊý¾Ý
+	CJNE	A, #0FFH, ÐÍºÅ×¢½âSRAM±£´æµ½µÚ10ÉÈÇø	                 //Èç¹û³ö´í,ÔòÍË³ö
+	INC	DPTR	                                                  //IAPµØÖ·+1
 	DJNZ	R0, IAPCHECK10
      
-	;åž‹å·æ³¨è§£IAPé¦–å€ =100+åž‹å·IAPé¦–å€<(åž‹å·*2)H+00H ,00L >
-;ä¿å­˜EEPORM		DPTR  	 
+	;ÐÍºÅ×¢½âIAPÊ×Ö· =100+ÐÍºÅIAPÊ×Ö·<(ÐÍºÅ*2)H+00H ,00L >
+;±£´æEEPORM		DPTR  	 
 	MOV	P_SW1	, #01H
-	MOV	DPTR ,#1200H  // #IAPåž‹å·æ³¨è§£ä¿å­˜é¦–å€
-;è¯»SRAM	DPTR      
+	MOV	DPTR	, #1200H	                                         // #IAPÐÍºÅ×¢½â±£´æÊ×Ö·
+;¶ÁSRAM	DPTR      
 	MOV	P_SW1	, #00H
-	MOV	DPTR,  #100H ;	 #åž‹å·æ³¨è§£SRAMä¿å­˜é¦–å€
+	MOV	DPTR, #100H	                                           ;	 #ÐÍºÅ×¢½âSRAM±£´æÊ×Ö·
 	MOV	P_SW1	, #01H
-	MOV	R0, #8FH                                               ;#ä¿å­˜ä¸ªæ•°	
-åž‹å·æ³¨è§£å†™å…¥EEPROM:
+	MOV	R0, #8FH	                                              ;#±£´æ¸öÊý	
+ÐÍºÅ×¢½âÐ´ÈëEEPROM:
 	MOV	P_SW1	, #00H
 	MOVX	A	, @DPTR
 	INC	DPTR
 	MOV	P_SW1	, #01H
-	LCALL	å­—èŠ‚ç¼–ç¨‹
+	LCALL	×Ö½Ú±à³Ì
 	INC	DPTR
-	DJNZ	R0, åž‹å·æ³¨è§£å†™å…¥EEPROM
+	DJNZ	R0, ÐÍºÅ×¢½âÐ´ÈëEEPROM
 	RET
 
 
 	;************************************** 
 
-//***å¼€å§‹*****å†™EEPROMè¯»EEPROM	******
-è¯»EEPROM:
-	MOV	DPTR	, #MOVCä¿å­˜é¦–å€	                                  //#0F000H
-	MOV	R0, #å¾…å­˜é¦–å€
+//***¿ªÊ¼*****Ð´EEPROM¶ÁEEPROM	******
+¶ÁEEPROM:
+	MOV	DPTR	, #MOVC±£´æÊ×Ö·	                                  //#0F000H
+	MOV	R0, #´ý´æÊ×Ö·
 	MOV	R1, #0
-	MOV	R2, #ä¿å­˜ä¸ªæ•°
+	MOV	R2, #±£´æ¸öÊý
 TEEPROM2:	MOV	A, R1
 	MOVC	A, @A+DPTR
 	MOV	@R0	, A
@@ -2857,196 +3217,194 @@ TEEPROM2:	MOV	A, R1
 	RET
 
 ;---------------------
-å†™EEPROM:
-	MOV	DPTR, #IAPä¿å­˜é¦–å€	                                    //è®¾ç½®ISP/IAP/EEPROMåœ°å€
-	LCALL	æ‰‡åŒºæ“¦é™¤	                                            //æ‰‡åŒºæ“¦é™¤
+Ð´EEPROM:
+	MOV	DPTR, #IAP±£´æÊ×Ö·	                                    //ÉèÖÃISP/IAP/EEPROMµØÖ·
+	LCALL	ÉÈÇø²Á³ý	                                            //ÉÈÇø²Á³ý
 ;-------------------------------
-	MOV	DPTR, #IAPä¿å­˜é¦–å€	                                    //è®¾ç½®ISP/IAP/EEPROMåœ°å€
-	MOV	R0, #ä¿å­˜ä¸ªæ•°	                                         //16																					//æ£€æµ‹512å­—èŠ‚																													//æ£€æµ‹512å­—èŠ‚
-CHECK1:	                                                    //æ£€æµ‹æ˜¯å¦æ“¦é™¤æˆåŠŸ(å…¨FFæ£€æµ‹)
-	LCALL	è¯»IAPæ•°æ®	                                           //è¯»IAPæ•°æ®
-	CJNE	A, #0FFH, å†™EEPROM	                                   //å¦‚æžœå‡ºé”™,åˆ™é€€å‡º
-	INC	DPTR	                                                  //IAPåœ°å€+1
+	MOV	DPTR, #IAP±£´æÊ×Ö·	                                    //ÉèÖÃISP/IAP/EEPROMµØÖ·
+	MOV	R0, #±£´æ¸öÊý	                                         //16																					//¼ì²â512×Ö½Ú																													//¼ì²â512×Ö½Ú
+CHECK1:	                                                    //¼ì²âÊÇ·ñ²Á³ý³É¹¦(È«FF¼ì²â)
+	LCALL	¶ÁIAPÊý¾Ý	                                           //¶ÁIAPÊý¾Ý
+	CJNE	A, #0FFH, Ð´EEPROM	                                   //Èç¹û³ö´í,ÔòÍË³ö
+	INC	DPTR	                                                  //IAPµØÖ·+1
 	DJNZ	R0, CHECK1
-							;æ“¦é™¤æˆåŠŸ
+							;²Á³ý³É¹¦
 ;-------------------------------
-	MOV	DPTR, #IAPä¿å­˜é¦–å€	                                    //è®¾ç½®ISP/IAP/EEPROMåœ°å€
-	MOV	R0, #ä¿å­˜ä¸ªæ•°	                                         //16																							//ç¼–ç¨‹512å­—èŠ‚
-	MOV	R1, #å¾…å­˜é¦–å€	                                         ;;;;;;;;---------------
-NEXTZ:	MOV	A, @R1	                                          //å‡†å¤‡æ•°æ®
-	LCALL	å­—èŠ‚ç¼–ç¨‹	                                            //å­—èŠ‚ç¼–ç¨‹
-	INC	DPTR	                                                  //IAPåœ°å€+1
-	INC	R1	                                                    //ä¿®æ”¹ä¿å­˜æ•°æ®
+	MOV	DPTR, #IAP±£´æÊ×Ö·	                                    //ÉèÖÃISP/IAP/EEPROMµØÖ·
+	MOV	R0, #±£´æ¸öÊý	                                         //16																							//±à³Ì512×Ö½Ú
+	MOV	R1, #´ý´æÊ×Ö·	                                         ;;;;;;;;---------------
+NEXTZ:	MOV	A, @R1	                                          //×¼±¸Êý¾Ý
+	LCALL	×Ö½Ú±à³Ì	                                            //×Ö½Ú±à³Ì
+	INC	DPTR	                                                  //IAPµØÖ·+1
+	INC	R1	                                                    //ÐÞ¸Ä±£´æÊý¾Ý
 	DJNZ	R0, NEXTZ
 	RET
-//***å¼€å§‹***EEPROMæŽ‰ç”µä¿å­˜0200H*******
-//è¯»EEPROMæŽ‰ç”µä¿å­˜0200H
-//å†™EEPROMæŽ‰ç”µä¿å­˜0200H:
-æŽ‰ç”µä¿å­˜æ‰‡åŒºæ“¦é™¤200H:
-	MOV	DPTR, #0200H	                                          //ä¿å­˜åœ°å€//è®¾ç½®ISP/IAP/EEPROMåœ°å€
-	LCALL	æ‰‡åŒºæ“¦é™¤	                                            //æ‰‡åŒºæ“¦é™¤
+//***¿ªÊ¼***EEPROMµôµç±£´æ0200H*******
+//¶ÁEEPROMµôµç±£´æ0200H
+//Ð´EEPROMµôµç±£´æ0200H:
+µôµç±£´æÉÈÇø²Á³ý200H:
+	MOV	DPTR, #0200H	                                          //±£´æµØÖ·//ÉèÖÃISP/IAP/EEPROMµØÖ·
+	LCALL	ÉÈÇø²Á³ý	                                            //ÉÈÇø²Á³ý
 ;-------------------------------
-	MOV	DPTR, #0200H	                                          //ä¿å­˜åœ°å€//è®¾ç½®ISP/IAP/EEPROMåœ°å€
-	MOV	R0, #4	                                                //æ£€æµ‹512å­—èŠ‚
-CHECK11:	                                                   //æ£€æµ‹æ˜¯å¦æ“¦é™¤æˆåŠŸ(å…¨FFæ£€æµ‹)
-	LCALL	è¯»IAPæ•°æ®	                                           //è¯»IAPæ•°æ®
-	CJNE	A, #0FFH, æŽ‰ç”µä¿å­˜æ‰‡åŒºæ“¦é™¤200H	                       //å¦‚æžœå‡ºé”™,åˆ™é€€å‡º
-	INC	DPTR	                                                  //IAPåœ°å€+1
+	MOV	DPTR, #0200H	                                          //±£´æµØÖ·//ÉèÖÃISP/IAP/EEPROMµØÖ·
+	MOV	R0, #4	                                                //¼ì²â512×Ö½Ú
+CHECK11:	                                                   //¼ì²âÊÇ·ñ²Á³ý³É¹¦(È«FF¼ì²â)
+	LCALL	¶ÁIAPÊý¾Ý	                                           //¶ÁIAPÊý¾Ý
+	CJNE	A, #0FFH, µôµç±£´æÉÈÇø²Á³ý200H	                       //Èç¹û³ö´í,ÔòÍË³ö
+	INC	DPTR	                                                  //IAPµØÖ·+1
 	DJNZ	R0, CHECK11
 	RET
 ;-------------------------------
-	;;æŽ‰ç”µä¿å­˜æ‰‡åŒºæ“¦é™¤200H:
-å†™EEPROMæŽ‰ç”µä¿å­˜0200H:
-	MOV	DPTR, #0200H	                                          //ä¿å­˜åœ°å€//è®¾ç½®ISP/IAP/EEPROMåœ°å€
-	MOV	R0, #æŽ‰ç”µä¿å­˜ä¸ªæ•°	                                     //ç¼–ç¨‹512å­—èŠ‚
-	MOV	R1, #æŽ‰ç”µä¿å­˜åœ°å€
-NEXTZ1:	MOV	A, @R1	                                         //å‡†å¤‡æ•°æ®
-	LCALL	å­—èŠ‚ç¼–ç¨‹	                                            //å­—èŠ‚ç¼–ç¨‹
-	INC	DPTR	                                                  //IAPåœ°å€+1
-	INC	R1	                                                    //ä¿®æ”¹ä¿å­˜æ•°æ®
+	;;µôµç±£´æÉÈÇø²Á³ý200H:
+Ð´EEPROMµôµç±£´æ0200H:
+	MOV	DPTR, #0200H	                                          //±£´æµØÖ·//ÉèÖÃISP/IAP/EEPROMµØÖ·
+	MOV	R0, #µôµç±£´æ¸öÊý	                                     //±à³Ì512×Ö½Ú
+	MOV	R1, #µôµç±£´æµØÖ·
+NEXTZ1:	MOV	A, @R1	                                         //×¼±¸Êý¾Ý
+	LCALL	×Ö½Ú±à³Ì	                                            //×Ö½Ú±à³Ì
+	INC	DPTR	                                                  //IAPµØÖ·+1
+	INC	R1	                                                    //ÐÞ¸Ä±£´æÊý¾Ý
 	DJNZ	R0, NEXTZ1
 	RET
 
 
 
-è¯»0200HæŽ‰ç”µä¿å­˜åˆ°2E2F:
-;	JB	å¼€æœºæ ‡è®°	,	ä¸è¯»æŽ‰ç”µä¿å­˜
+¶Á0200Hµôµç±£´æµ½2E2F:
+;	JB	¿ª»ú±ê¼Ç	,	²»¶Áµôµç±£´æ
 	MOV	DPTR	, #0F200H
-	MOV	R0, #æŽ‰ç”µä¿å­˜åœ°å€
+	MOV	R0, #µôµç±£´æµØÖ·
 	MOV	R1, #0
-	MOV	R2, #æŽ‰ç”µä¿å­˜ä¸ªæ•°
-è¯»TEEPROM200:	MOV	A, R1
+	MOV	R2, #µôµç±£´æ¸öÊý
+¶ÁTEEPROM200:	MOV	A, R1
 	MOVC	A, @A+DPTR
 	MOV	@R0	, A
 	INC	R0
 	INC	R1
-	DJNZ	R2, è¯»TEEPROM200
-;ä¸è¯»æŽ‰ç”µä¿å­˜:
+	DJNZ	R2, ¶ÁTEEPROM200
+;²»¶Áµôµç±£´æ:
 	RET
 
 /*-----*/
-å…³é—­IAP:
-	MOV	æŽ§åˆ¶å¯„å­˜å™¨, #0	                                        //å…³é—­IAPåŠŸèƒ½
-	MOV	å‘½ä»¤å¯„å­˜å™¨, #0	                                        //æ¸…é™¤å‘½ä»¤å¯„å­˜å™¨
-	MOV	å‘½ä»¤è§¦å‘å¯„å­˜å™¨, #0	                                    //æ¸…é™¤è§¦å‘å¯„å­˜å™¨
-	MOV	åœ°å€å¯„å­˜å™¨é«˜å­—, #80H	                                  //å°†åœ°å€è®¾ç½®åˆ°éžIAPåŒºåŸŸ
-	MOV	åœ°å€å¯„å­˜å™¨ä½Žå­—, #0
+¹Ø±ÕIAP:
+	MOV	¿ØÖÆ¼Ä´æÆ÷, #0	                                        //¹Ø±ÕIAP¹¦ÄÜ
+	MOV	ÃüÁî¼Ä´æÆ÷, #0	                                        //Çå³ýÃüÁî¼Ä´æÆ÷
+	MOV	ÃüÁî´¥·¢¼Ä´æÆ÷, #0	                                    //Çå³ý´¥·¢¼Ä´æÆ÷
+	MOV	µØÖ·¼Ä´æÆ÷¸ß×Ö, #80H	                                  //½«µØÖ·ÉèÖÃµ½·ÇIAPÇøÓò
+	MOV	µØÖ·¼Ä´æÆ÷µÍ×Ö, #0
 	RET
 
 /*----------------------------
-ä»ŽISP/IAP/EEPROMåŒºåŸŸè¯»å–ä¸€å­—èŠ‚
+´ÓISP/IAP/EEPROMÇøÓò¶ÁÈ¡Ò»×Ö½Ú
 ----------------------------*/
-è¯»IAPæ•°æ®:
-	MOV	æŽ§åˆ¶å¯„å­˜å™¨, #82H	                                      //ä½¿èƒ½IAP
-	MOV	å‘½ä»¤å¯„å­˜å™¨, #01B	                                      ;å­—èŠ‚è¯»å‘½ä»¤									//è®¾ç½®IAPå‘½ä»¤
-	MOV	åœ°å€å¯„å­˜å™¨ä½Žå­—, DPL	                                   //è®¾ç½®IAPä½Žåœ°å€
-	MOV	åœ°å€å¯„å­˜å™¨é«˜å­—, DPH	                                   //è®¾ç½®IAPé«˜åœ°å€
-	MOV	å‘½ä»¤è§¦å‘å¯„å­˜å™¨, #5AH	                                  //å†™è§¦å‘å‘½ä»¤(0X5A)
-	MOV	å‘½ä»¤è§¦å‘å¯„å­˜å™¨, #0A5H	                                 //å†™è§¦å‘å‘½ä»¤(0XA5)
-	NOP	                                                       //ç­‰å¾…ISP/IAP/EEPROMæ“ä½œå®Œæˆ
-	MOV	A, æ•°æ®å¯„å­˜å™¨	                                         //åº¦IAPæ•°æ®
-	LCALL	å…³é—­IAP	                                             //å…³é—­IAPåŠŸèƒ½
+¶ÁIAPÊý¾Ý:
+	MOV	¿ØÖÆ¼Ä´æÆ÷, #82H	                                      //Ê¹ÄÜIAP
+	MOV	ÃüÁî¼Ä´æÆ÷, #01B	                                      ;×Ö½Ú¶ÁÃüÁî									//ÉèÖÃIAPÃüÁî
+	MOV	µØÖ·¼Ä´æÆ÷µÍ×Ö, DPL	                                   //ÉèÖÃIAPµÍµØÖ·
+	MOV	µØÖ·¼Ä´æÆ÷¸ß×Ö, DPH	                                   //ÉèÖÃIAP¸ßµØÖ·
+	MOV	ÃüÁî´¥·¢¼Ä´æÆ÷, #5AH	                                  //Ð´´¥·¢ÃüÁî(0X5A)
+	MOV	ÃüÁî´¥·¢¼Ä´æÆ÷, #0A5H	                                 //Ð´´¥·¢ÃüÁî(0XA5)
+	NOP	                                                       //µÈ´ýISP/IAP/EEPROM²Ù×÷Íê³É
+	MOV	A, Êý¾Ý¼Ä´æÆ÷	                                         //¶ÈIAPÊý¾Ý
+	LCALL	¹Ø±ÕIAP	                                             //¹Ø±ÕIAP¹¦ÄÜ
 	RET
 
 /*----------------------------
-å†™ä¸€å­—èŠ‚æ•°æ®åˆ°ISP/IAP/EEPROMåŒºåŸŸ
+Ð´Ò»×Ö½ÚÊý¾Ýµ½ISP/IAP/EEPROMÇøÓò
 ----------------------------*/
-å­—èŠ‚ç¼–ç¨‹:
-	MOV	æŽ§åˆ¶å¯„å­˜å™¨, #82H	                                      //ä½¿èƒ½IAP
-	MOV	å‘½ä»¤å¯„å­˜å™¨, #10B	                                      ;å­—èŠ‚ç¼–ç¨‹å‘½ä»¤					//è®¾ç½®IAPå‘½ä»¤
-	MOV	åœ°å€å¯„å­˜å™¨ä½Žå­—, DPL	                                   //è®¾ç½®IAPä½Žåœ°å€
-	MOV	åœ°å€å¯„å­˜å™¨é«˜å­—, DPH	                                   //è®¾ç½®IAPé«˜åœ°å€
-	MOV	æ•°æ®å¯„å­˜å™¨, A	                                         //å†™IAPæ•°æ®
-	MOV	å‘½ä»¤è§¦å‘å¯„å­˜å™¨, #5AH	                                  //å†™è§¦å‘å‘½ä»¤(0X5A)
-	MOV	å‘½ä»¤è§¦å‘å¯„å­˜å™¨, #0A5H	                                 //å†™è§¦å‘å‘½ä»¤(0XA5)
-	NOP	                                                       //ç­‰å¾…ISP/IAP/EEPROMæ“ä½œå®Œæˆ
-	LCALL	å…³é—­IAP	                                             //å…³é—­IAPåŠŸèƒ½
+×Ö½Ú±à³Ì:
+	MOV	¿ØÖÆ¼Ä´æÆ÷, #82H	                                      //Ê¹ÄÜIAP
+	MOV	ÃüÁî¼Ä´æÆ÷, #10B	                                      ;×Ö½Ú±à³ÌÃüÁî					//ÉèÖÃIAPÃüÁî
+	MOV	µØÖ·¼Ä´æÆ÷µÍ×Ö, DPL	                                   //ÉèÖÃIAPµÍµØÖ·
+	MOV	µØÖ·¼Ä´æÆ÷¸ß×Ö, DPH	                                   //ÉèÖÃIAP¸ßµØÖ·
+	MOV	Êý¾Ý¼Ä´æÆ÷, A	                                         //Ð´IAPÊý¾Ý
+	MOV	ÃüÁî´¥·¢¼Ä´æÆ÷, #5AH	                                  //Ð´´¥·¢ÃüÁî(0X5A)
+	MOV	ÃüÁî´¥·¢¼Ä´æÆ÷, #0A5H	                                 //Ð´´¥·¢ÃüÁî(0XA5)
+	NOP	                                                       //µÈ´ýISP/IAP/EEPROM²Ù×÷Íê³É
+	LCALL	¹Ø±ÕIAP	                                             //¹Ø±ÕIAP¹¦ÄÜ
 	RET
 
 /*----------------------------
-æ‰‡åŒºæ“¦é™¤
+ÉÈÇø²Á³ý
 ----------------------------*/
-æ‰‡åŒºæ“¦é™¤:
-	MOV	æŽ§åˆ¶å¯„å­˜å™¨, #82H	                                      //ä½¿èƒ½IAP
-	MOV	å‘½ä»¤å¯„å­˜å™¨, #11B	                                      ;æ‰‡åŒºæ“¦é™¤å‘½ä»¤							//è®¾ç½®IAPå‘½ä»¤
-	MOV	åœ°å€å¯„å­˜å™¨ä½Žå­—, DPL	                                   //è®¾ç½®IAPä½Žåœ°å€
-	MOV	åœ°å€å¯„å­˜å™¨é«˜å­—, DPH	                                   //è®¾ç½®IAPé«˜åœ°å€
-	MOV	å‘½ä»¤è§¦å‘å¯„å­˜å™¨, #5AH	                                  //å†™è§¦å‘å‘½ä»¤(0X5A)
-	MOV	å‘½ä»¤è§¦å‘å¯„å­˜å™¨, #0A5H	                                 //å†™è§¦å‘å‘½ä»¤(0XA5)
-	NOP	                                                       //ç­‰å¾…ISP/IAP/EEPROMæ“ä½œå®Œæˆ
-	LCALL	å…³é—­IAP	                                             //å…³é—­IAPåŠŸèƒ½
+ÉÈÇø²Á³ý:
+	MOV	¿ØÖÆ¼Ä´æÆ÷, #82H	                                      //Ê¹ÄÜIAP
+	MOV	ÃüÁî¼Ä´æÆ÷, #11B	                                      ;ÉÈÇø²Á³ýÃüÁî							//ÉèÖÃIAPÃüÁî
+	MOV	µØÖ·¼Ä´æÆ÷µÍ×Ö, DPL	                                   //ÉèÖÃIAPµÍµØÖ·
+	MOV	µØÖ·¼Ä´æÆ÷¸ß×Ö, DPH	                                   //ÉèÖÃIAP¸ßµØÖ·
+	MOV	ÃüÁî´¥·¢¼Ä´æÆ÷, #5AH	                                  //Ð´´¥·¢ÃüÁî(0X5A)
+	MOV	ÃüÁî´¥·¢¼Ä´æÆ÷, #0A5H	                                 //Ð´´¥·¢ÃüÁî(0XA5)
+	NOP	                                                       //µÈ´ýISP/IAP/EEPROM²Ù×÷Íê³É
+	LCALL	¹Ø±ÕIAP	                                             //¹Ø±ÕIAP¹¦ÄÜ
 	RET
 
-//****å¼€å§‹	***ä¸­æ–­INT0,P3.æ€¥åœ****
+//****¿ªÊ¼	***ÖÐ¶ÏINT0,P3.¼±Í£****
 
-ä½¿èƒ½INT0ä¸­æ–­:	SETB	IT0	                                     //è®¾ç½®INT0çš„ä¸­æ–­ç±»åž‹	(1:ä»…ä¸‹é™æ²¿	0:ä¸Šå‡æ²¿å’Œä¸‹é™æ²¿)
-	SETB	EX0	                                                  //ä½¿èƒ½INT0ä¸­æ–­
-	SETB	EA	                                                   ;	å…è®¸å…¨å±€ä¸­æ–­
-	SETB	ES	                                                   ;	å…è®¸ä¸­æ–­
-	SETB	REN	                                                  ;	ä¸²å£å…è®¸æŽ¥æ”¶
+Ê¹ÄÜINT0ÖÐ¶Ï:	SETB	IT0	                                     //ÉèÖÃINT0µÄÖÐ¶ÏÀàÐÍ	(1:½öÏÂ½µÑØ	0:ÉÏÉýÑØºÍÏÂ½µÑØ)
+	SETB	EX0	                                                  //Ê¹ÄÜINT0ÖÐ¶Ï
+	SETB	EA	                                                   ;	ÔÊÐíÈ«¾ÖÖÐ¶Ï
+	SETB	ES	                                                   ;	ÔÊÐíÖÐ¶Ï
+	SETB	REN	                                                  ;	´®¿ÚÔÊÐí½ÓÊÕ
 	RET
 
-ä¸­æ–­INT0:
+ÖÐ¶ÏINT0:
 	LCALL	DY50MS
-	;SETB	å°¾åº§æ°”ç¼¸é€€
+	;SETB	Î²×ùÆø¸×ÍË
 ;	LCALL	DY200MS
-;	CLR	å°¾åº§æ°”ç¼¸é€€
+;	CLR	Î²×ùÆø¸×ÍË
 	JNB	P3.2, $
-	//LCALL	å†™EEPROMæŽ‰ç”µä¿å­˜0200H
-	MOV	æŽ§åˆ¶å¯„å­˜å™¨, #20H
+	//LCALL	Ð´EEPROMµôµç±£´æ0200H
+	MOV	¿ØÖÆ¼Ä´æÆ÷, #20H
 	RETI
 
-				//****ç»“æŸ***ä¸­æ–­INT0,P3.æ€¥åœ****
+				//****½áÊø***ÖÐ¶ÏINT0,P3.¼±Í£****
 
-//****å¼€å§‹	***ä¸­æ–­INT1,P3.3å…‰æ …ä¿¡å·****
-å…‰æ …ä½¿èƒ½:
-;å…‰æ …å…³
-ä½¿èƒ½INT1:
+//****¿ªÊ¼	***ÖÐ¶ÏINT1,P3.3¹âÕ¤ÐÅºÅ****
+¹âÕ¤Ê¹ÄÜ:
+;¹âÕ¤¹Ø
+Ê¹ÄÜINT1:
 	CLR	IT1
-	;SETB	IT1	//è®¾ç½®INT1çš„ä¸­æ–­ç±»åž‹	(1:ä»…ä¸‹é™æ²¿	0:ä¸Šå‡æ²¿å’Œä¸‹é™æ²¿)
-	SETB	EX1	                                                  //ä½¿èƒ½INT1ä¸­æ–­
+	;SETB	IT1	//ÉèÖÃINT1µÄÖÐ¶ÏÀàÐÍ	(1:½öÏÂ½µÑØ	0:ÉÏÉýÑØºÍÏÂ½µÑØ)
+	SETB	EX1	                                                  //Ê¹ÄÜINT1ÖÐ¶Ï
 	SETB	EA
 	RET
 
-å…‰æ …å…³:
-INT1å…³:
-	CLR	EX1	                                                   ;å…‰æ …å…³
+¹âÕ¤¹Ø:
+INT1¹Ø:
+	CLR	EX1	                                                   ;¹âÕ¤¹Ø
 	RET
-;å…‰æ …
-ä¸­æ–­INT1:	                                                  //åŽŸä½ç½®æŒ‡ç¤º//è¿è¡Œä¸­æŒ‡ç¤º//
-//	LCALL	å†™EEPROMæŽ‰ç”µä¿å­˜0200H
-	MOV	æŽ§åˆ¶å¯„å­˜å™¨, #20H
-//	MOV	æ˜¾ç¤ºç”»é¢,	#å…‰æ …æŠ¥è­¦ç”»é¢
-//	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
+;¹âÕ¤
+ÖÐ¶ÏINT1:	                                                  //Ô­Î»ÖÃÖ¸Ê¾//ÔËÐÐÖÐÖ¸Ê¾//
+//	LCALL	Ð´EEPROMµôµç±£´æ0200H
+	MOV	¿ØÖÆ¼Ä´æÆ÷, #20H
+//	MOV	ÏÔÊ¾»­Ãæ,	#¹âÕ¤±¨¾¯»­Ãæ
+//	LCALL	DGUSÇÐ»»Í¼Æ¬
 TUE:	RETI
-//****å¼€å§‹	***ä¸­æ–­INT1,P3.3å…‰æ …ä¿¡å·****
+//****¿ªÊ¼	***ÖÐ¶ÏINT1,P3.3¹âÕ¤ÐÅºÅ****
 
 
 
 //******
-ä½Žç”µåŽ‹LVDä¸­æ–­ä½¿èƒ½:
-	LCALL	æŽ‰ç”µä¿å­˜æ‰‡åŒºæ“¦é™¤200H
-	ANL	PCON, #NOT	LVDF	                                       //ä¸Šç”µåŽéœ€è¦æ¸…LVDä¸­æ–­æ ‡è®°ä½
-	SETB	ELVD	                                                 //ä½¿èƒ½LVDä¸­æ–­
-	SETB	EA	                                                   //æ‰“å¼€æ€»ä¸­æ–­å¼€å…³
-	MOV	IP, #00100000B	                                        //						PLVD			LVDä¸­æ–­é«˜ä¼˜å…ˆçº§
+µÍµçÑ¹LVDÖÐ¶ÏÊ¹ÄÜ:
+	LCALL	µôµç±£´æÉÈÇø²Á³ý200H
+	ANL	PCON, #NOT	LVDF	                                       //ÉÏµçºóÐèÒªÇåLVDÖÐ¶Ï±ê¼ÇÎ»
+	SETB	ELVD	                                                 //Ê¹ÄÜLVDÖÐ¶Ï
+	SETB	EA	                                                   //´ò¿ª×ÜÖÐ¶Ï¿ª¹Ø
+	MOV	IP, #00100000B	                                        //						PLVD			LVDÖÐ¶Ï¸ßÓÅÏÈ¼¶
 	RET
 
-ä½Žç”µåŽ‹LVDä¸­æ–­:
-//LCALL	æŽ‰ç”µä¿å­˜æ‰‡åŒºæ“¦é™¤200H
-	LCALL	å†™EEPROMæŽ‰ç”µä¿å­˜0200H
-	ANL	PCON, #NOT	LVDF	                                       //å‘PCON.5å†™0æ¸…LVDä¸­æ–­
-	MOV	æ˜¾ç¤ºç”»é¢, #ä½Žç”µåŽ‹ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
+µÍµçÑ¹LVDÖÐ¶Ï:
+//LCALL	µôµç±£´æÉÈÇø²Á³ý200H
+	LCALL	Ð´EEPROMµôµç±£´æ0200H
+	ANL	PCON, #NOT	LVDF	                                       //ÏòPCON.5Ð´0ÇåLVDÖÐ¶Ï
+	MOV	ÏÔÊ¾»­Ãæ, #µÍµçÑ¹»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
 	LJMP	$
 
-	MOV	æŽ§åˆ¶å¯„å­˜å™¨, #20H
+	MOV	¿ØÖÆ¼Ä´æÆ÷, #20H
 	RETI
-//		ORL					PCON,#02H											//è¿›å…¥æŽ‰ç”µæ¨¡å¼
+//		ORL					PCON,#02H											//½øÈëµôµçÄ£Ê½
 
-//****ç»“æŸ****ä¸­æ–­********
-
-
+//****½áÊø****ÖÐ¶Ï********
 
 
 
@@ -3054,9 +3412,11 @@ TUE:	RETI
 
 
 
-//***å¼€å§‹****è®¾ç½®IOå£**202409*****
-è®¾ç½®ä¸ºå‡†åŒå‘å£:
-;	P0M1.N,P0M0.N		=00->å¼±ä¸Šæ‹‰200UA,	01->å¼ºä¸Šæ‹‰	20MA	=10->é«˜é˜»,		11->å¼€æ¼
+
+
+//***¿ªÊ¼****ÉèÖÃIO¿Ú**202409*****
+ÉèÖÃÎª×¼Ë«Ïò¿Ú:
+;	P0M1.N,P0M0.N		=00->ÈõÉÏÀ­200UA,	01->Ç¿ÉÏÀ­	20MA	=10->¸ß×è,		11->¿ªÂ©
 	MOV	0X93, #00000000B
 	MOV	0X94, #11111111B	                                      ;
 ;	P1M1.N,P1M0.N		=00->STANDARD,				01->PUSH-PULL		10->PURE	INPUT,		11->OPEN	DRAIN
@@ -3075,114 +3435,147 @@ TUE:	RETI
 	MOV	0XC9, #00000000B
 	MOV	0XCA, #00000000B
 	RET
-//***ç»“æŸ****è®¾ç½®IOå£	*******
+//***½áÊø****ÉèÖÃIO¿Ú	*******
 
 
-æ€¥åœå¼€å…³æ£€æŸ¥:
-	JB	æ€¥åœå¼€å…³, æ€¥åœå¼€å…³æ­£å¸¸
-	MOV	DPTR, #æ€¥åœå¼€å…³TAB
-	LCALL	å‘é€æç¤ºå­—ç¬¦
-	MOV	æ˜¾ç¤ºç”»é¢, #ä¼ æ„Ÿå™¨æŠ¥è­¦ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
+¼±Í£¿ª¹Ø¼ì²é:
+	JB	¼±Í£¿ª¹Ø, ¼±Í£¿ª¹ØÕý³£
+	MOV	DPTR, #¼±Í£¿ª¹ØTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
+	MOV	ÏÔÊ¾»­Ãæ, #´«¸ÐÆ÷±¨¾¯»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
 	LCALL	DY1S
-	JB	æ€¥åœå¼€å…³, æ€¥åœå¼€å…³æ­£å¸¸
-	MOV	æ˜¾ç¤ºç”»é¢, #ä¼ æ„Ÿå™¨æŠ¥è­¦ç”»é¢çº¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
+	JB	¼±Í£¿ª¹Ø, ¼±Í£¿ª¹ØÕý³£
+	MOV	ÏÔÊ¾»­Ãæ, #´«¸ÐÆ÷±¨¾¯»­Ãæºì
+	LCALL	DGUSÇÐ»»Í¼Æ¬
 	LCALL	DY1S
-	LJMP	æ€¥åœå¼€å…³æ£€æŸ¥
-æ€¥åœå¼€å…³æ­£å¸¸:
-	MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
+	LJMP	¼±Í£¿ª¹Ø¼ì²é
+¼±Í£¿ª¹ØÕý³£:
+	MOV	ÏÔÊ¾»­Ãæ, #µÈ´ý»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
 	RET
 
 
-//***å¼€å§‹*****@11.0592MHZä¸²å£å‚æ•°*****
-ä¸²å£1åˆå§‹åŒ–:
+//***¿ªÊ¼*****@11.0592MHZ´®¿Ú²ÎÊý*****
+´®¿Ú1³õÊ¼»¯:
 UART1_INIT:	                                                ;57600BPS@11.0592MHZ
-	MOV	SCON, #50H	                                            ;8ä½æ•°æ®,å¯å˜æ³¢ç‰¹çŽ‡
-	ORL	AUXR, #01H	                                            ;ä¸²å£1é€‰æ‹©å®šæ—¶å™¨2ä¸ºæ³¢ç‰¹çŽ‡å‘ç”Ÿå™¨
-	ORL	AUXR, #04H	                                            ;å®šæ—¶å™¨æ—¶é’Ÿ1Tæ¨¡å¼
-	MOV	T2L, #0D0H	                                            ;è®¾ç½®å®šæ—¶åˆå§‹å€¼
-	MOV	T2H, #0FFH	                                            ;è®¾ç½®å®šæ—¶åˆå§‹å€¼
-	ORL	AUXR, #10H	                                            ;å®šæ—¶å™¨2å¼€å§‹è®¡æ—¶
-	SETB	REN	                                                  ;	å…è®¸æŽ¥æ”¶
-	SETB	ES	                                                   ;	å…è®¸ä¸­æ–­
+	MOV	SCON, #50H	                                            ;8Î»Êý¾Ý,¿É±ä²¨ÌØÂÊ
+	ORL	AUXR, #01H	                                            ;´®¿Ú1Ñ¡Ôñ¶¨Ê±Æ÷2Îª²¨ÌØÂÊ·¢ÉúÆ÷
+	ORL	AUXR, #04H	                                            ;¶¨Ê±Æ÷Ê±ÖÓ1TÄ£Ê½
+	MOV	T2L, #0D0H	                                            ;ÉèÖÃ¶¨Ê±³õÊ¼Öµ
+	MOV	T2H, #0FFH	                                            ;ÉèÖÃ¶¨Ê±³õÊ¼Öµ
+	ORL	AUXR, #10H	                                            ;¶¨Ê±Æ÷2¿ªÊ¼¼ÆÊ±
+	SETB	REN	                                                  ;	ÔÊÐí½ÓÊÕ
+	SETB	ES	                                                   ;	ÔÊÐíÖÐ¶Ï
 	SETB	EA
 	   
-
-	MOV	æŽ¥æ”¶è®¡æ•°, #0
-	MOV	å‘é€ç¼“å†²è®¡æ•°	, #å‘é€ç¼“å†²SRAMé¦–å€
-	MOV	ä¸²å£2æŽ¥æ”¶è®¡æ•°	, #0
-	RET                   												
+SETB		´®¿Ú1·¢ËÍ»º³åº¯Êý±ê¼Ç
+	MOV	½ÓÊÕ¼ÆÊý, #0
+	;MOV	·¢ËÍ»º³å¼ÆÊý	, #·¢ËÍ»º³åSRAMÊ×Ö·  
+	MOV	·¢ËÍ»º³å¼ÆÊý	, #·¢ËÍ»º³åRAMÊ×Ö·
+	MOV	´®¿Ú2½ÓÊÕ¼ÆÊý	, #0
+	RET
 /*
 																																												;9600BPS@11.0592MHZ
-		MOV	T2L,	#0E0H																																													;è®¾ç½®å®šæ—¶åˆå§‹å€¼
-	MOV	T2H,	#0FEH																																													;è®¾ç½®å®šæ—¶åˆå§‹å€¼
+		MOV	T2L,	#0E0H																																													;ÉèÖÃ¶¨Ê±³õÊ¼Öµ
+	MOV	T2H,	#0FEH																																													;ÉèÖÃ¶¨Ê±³õÊ¼Öµ
    */
-ä¸²å£2åˆå§‹åŒ–:
-	ORL	AUXR, #10H	                                            //T2ä¸º1Tæ¨¡å¼, å¹¶å¯åŠ¨å®šæ—¶å™¨2
+´®¿Ú2³õÊ¼»¯:
+	ORL	AUXR, #10H	                                            //T2Îª1TÄ£Ê½, ²¢Æô¶¯¶¨Ê±Æ÷2
 	SETB	EA
-	ORL	IE2, #01H	                                             //ä½¿èƒ½ä¸²å£2ä¸­æ–­
-	CLR	ä¸²å£2TIå‘é€å¿™æ ‡è®°
+	ORL	IE2, #01H	                                             //Ê¹ÄÜ´®¿Ú2ÖÐ¶Ï
+	CLR	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç
 	RET
 
-  ;*********************	UART1ä¸­æ–­å‡½æ•°************************
-UART1ä¸²å£ä¸­æ–­:
+  ;*********************	UART1ÖÐ¶Ïº¯Êý************************
+UART1´®¿ÚÖÐ¶Ï:
 	PUSH	PSW
 	PUSH	ACC
-	ORL	PSW, #00001000	                                        ;R0-R7ç”¨ç¬¬äºŒç»„08H-0FH
-UART1æŽ¥æ”¶å¿™æ£€æŸ¥:
-	JNB	RI, UART1å‘é€å¿™æ£€æŸ¥
+	ORL	PSW, #00001000	                                        ;R0-R7ÓÃµÚ¶þ×é08H-0FH
+UART1½ÓÊÕÃ¦¼ì²é:
+	JNB	RI, UART1·¢ËÍÃ¦¼ì²é
 	CLR	RI
-	MOV	A, #æŽ¥æ”¶ç¼“å†²SRAMé¦–å€
-	ADD	A, æŽ¥æ”¶è®¡æ•°
+	MOV	A, #½ÓÊÕ»º³åSRAMÊ×Ö·
+	ADD	A, ½ÓÊÕ¼ÆÊý
 	MOV	R0, A
-	MOV	A, SBUF	                                               ;ä¿å­˜ä¸€ä¸ªå­—èŠ‚
+	MOV	A, SBUF	                                               ;±£´æÒ»¸ö×Ö½Ú
 	MOVX	@R0, A
-	INC	æŽ¥æ”¶è®¡æ•°
-	LCALL	ä¸²å£æŽ¥æ”¶å¼€å§‹è®¡æ—¶
-UART1å‘é€å¿™æ£€æŸ¥:
-	JNB	TI, ç»“æŸUART1ä¸­æ–­
+	INC	½ÓÊÕ¼ÆÊý
+	LCALL	´®¿Ú½ÓÊÕ¿ªÊ¼¼ÆÊ±
+UART1·¢ËÍÃ¦¼ì²é:
+	JNB	TI, ½áÊøUART1ÖÐ¶Ï
 	CLR	TI
-	CLR	å‘é€å¿™æ ‡å¿—	                                            ;	æ¸…é™¤å‘é€å¿™æ ‡å¿—
-;æ¯æ¬¡CLR	ä¸²å£1å‘é€ç¼“å†²å‡½æ•°æ ‡è®°SETB	TI  å¯åŠ¨å‘é€
-	JB	ä¸²å£1å‘é€ç¼“å†²å‡½æ•°æ ‡è®°	, ç»“æŸUART1ä¸­æ–­
-ç¼“å­˜A0æ•°æ®è¯»å‡ºå‘é€:
-	MOV	R1, å‘é€ç¼“å†²è®¡æ•°
-	MOVX	A, @R1	                                               ;GET CURRENT CHAR
-	MOV	SBUF, A	                                               ;å‘é€ä¸€ä¸ªå­—èŠ‚                           
-	INC	å‘é€ç¼“å†²è®¡æ•°
-	MOV	A, R1
-	CJNE	A, å‘é€ç¼“å†²æ•°æ®æ€»ä¸ªæ•°	, ç»“æŸUART1ä¸­æ–­
-	MOV	å‘é€ç¼“å†²è®¡æ•°, #å‘é€ç¼“å†²SRAMé¦–å€
-	SETB	ä¸²å£1å‘é€ç¼“å†²å‡½æ•°æ ‡è®°
+	CLR	·¢ËÍÃ¦±êÖ¾	                                            ;	Çå³ý·¢ËÍÃ¦±êÖ¾
+;Ã¿´ÎCLR	´®¿Ú1·¢ËÍ»º³åº¯Êý±ê¼ÇSETB	TI  Æô¶¯·¢ËÍ  
 
-ç»“æŸUART1ä¸­æ–­:
+;
+	JB	´®¿Ú1·¢ËÍ»º³åº¯Êý±ê¼Ç	, ½áÊøUART1ÖÐ¶Ï
+»º´æA0Êý¾Ý¶Á³ö·¢ËÍ:
+	MOV	R1, ·¢ËÍ»º³å¼ÆÊý	                                      ; #·¢ËÍ»º³åRAMÊ×Ö·++
+	MOV	A, @R1
+	MOV	SBUF, A	                                               ;·¢ËÍÒ»¸ö×Ö½Ú                           
+	INC	·¢ËÍ»º³å¼ÆÊý
+	MOV	A, R1
+	CJNE	A, ·¢ËÍ»º³åÊý¾Ý×Ü¸öÊý	, ½áÊøUART1ÖÐ¶Ï
+	MOV	·¢ËÍ»º³å¼ÆÊý, #·¢ËÍ»º³åRAMÊ×Ö·
+	SETB	´®¿Ú1·¢ËÍ»º³åº¯Êý±ê¼Ç
+
+½áÊøUART1ÖÐ¶Ï:
 	POP	ACC
 	POP	PSW
 	RETI
+;**************·¢ËÍ»º³åµØÖ·Êý¾Ý****************
+ 
+·¢ËÍRAM10H»º³åÇøÖ¡Í·³õÊ¼»¯:
+	MOV	·¢ËÍÖ¡Í·5A	, #5AH
+	MOV	·¢ËÍÖ¡Í·A5	, #0A5H
+	MOV	·¢ËÍÊý¾Ý¸öÊý, #17;#13
+	MOV	·¢ËÍÖ¸Áî82	, #82H
+	MOV	·¢ËÍÊý¾ÝÊ×Ö·H	, #00H
+	MOV	·¢ËÍÊý¾ÝÊ×Ö·L	, #0BH                                   ;16H    
+;		MOV	·¢ËÍ»º³åÊý¾Ý×Ü¸öÊý	= #15+#·¢ËÍ»º³åRAMÊ×Ö·
+	MOV	A	, #·¢ËÍ»º³åRAMÊ×Ö·
+	MOV	R1, ·¢ËÍÊý¾Ý¸öÊý
+	ADD	A, R1
+	ADD	A, #2	                                                 //(6-1)    
+	MOV	·¢ËÍ»º³åÊý¾Ý×Ü¸öÊý	, A  
+	MOV	·¢ËÍ»º³å¼ÆÊý	, #·¢ËÍ»º³åRAMÊ×Ö·
+	RET
+;*****RAM10H/SRAMA0H***¶þÑ¡Ò»********** 
+;******UART1´®¿ÚÖÐ¶Ï×Ô¶¯·¢ËÍÓÃ   
+/*  
+	; ÓÉÓÚ ·¢ËÍ»º³å¼ÆÊý´Ó#·¢ËÍ»º³åRAMÊ×Ö·£¨Öµ£©¿ªÊ¼¼ÓÊý
+;	ËùÒÔ	·¢ËÍ»º³åÊý¾Ý×Ü¸öÊý =  ·¢ËÍ»º³åRAMÊ×Ö·+2+·¢ËÍÊý¾Ý¸öÊý
+	JB	´®¿Ú1·¢ËÍ»º³åº¯Êý±ê¼Ç	, ½áÊøUART1ÖÐ¶Ï
+»º´æA0Êý¾Ý¶Á³ö·¢ËÍ:
+	MOV	R1, ·¢ËÍ»º³å¼ÆÊý
+	MOVX	A, @R1	   ;ÓÃSRAMµØÖ·Ê±ÓÃ 
+	MOV	SBUF, A	                                               ;·¢ËÍÒ»¸ö×Ö½Ú                           
+	INC	·¢ËÍ»º³å¼ÆÊý
+	MOV	A, R1
+	CJNE	A, ·¢ËÍ»º³åÊý¾Ý×Ü¸öÊý	, ½áÊøUART1ÖÐ¶Ï
+	MOV	·¢ËÍ»º³å¼ÆÊý, #·¢ËÍ»º³åSRAMÊ×Ö·
+	SETB	´®¿Ú1·¢ËÍ»º³åº¯Êý±ê¼Ç
+;½áÊøUART1ÖÐ¶Ï:
+;	POP	ACC
+;	POP	PSW
+;	RETI
+;******SRAMA0H--SRAMBF******** 
+;5A	A5	15(#3+X)	82	00	00	0001 0203 0405 0607	 
 
-;**************å‘é€ç¼“å†²åœ°å€æ•°æ®**************** 
-;å‘é€ç¼“å†²SRAMé¦–å€ ,
-;å‘é€ç¼“å†²æ•°æ®ä¸ªæ•° ,
-;STCæ•°æ®é¦–å€L ,
-;å‘é€ç¼“å†²æ•°æ®æ€»ä¸ªæ•°, UART1ä¸²å£ä¸­æ–­,UART1å‘é€è®¡æ•°ç”¨
 
-
-;5A	A5	15(#3+X)	82	00	00	0001 0203 0405 0607	
-æŒ‡ä»¤æ•°æ®ä¸²å†™å…¥å‘é€ç¼“å†²:
-				;	MOV			STCæ•°æ®é¦–å€L	,#00H
-					;MOV			å‘é€ç¼“å†²æ•°æ®ä¸ªæ•°,#8   
-			; MOV	   å‘é€ç¼“å†²SRAMé¦–å€   #0A0H
-				;LCALL		  æŒ‡ä»¤æ•°æ®ä¸²å†™å…¥å‘é€ç¼“å†²
-	MOV	R0, #å‘é€ç¼“å†²SRAMé¦–å€
+//MOV	STCÊý¾ÝÊ×Ö·L	, #20H
+//MOV	·¢ËÍ»º³åÊý¾Ý¸öÊý, #8H
+·¢ËÍSRAM0A0H»º³åÇøÊý¾ÝÖ¡Í·³õÊ¼»¯:
+	;·¢ËÍ»º³åSRAMÊ×Ö·  DATA	 #0A0H  
+	MOV	R0, #·¢ËÍ»º³åSRAMÊ×Ö·
 	MOV	A	, #5AH
 	MOVX	@R0, A
 	INC	R0
 	MOV	A, #0A5H
 	MOVX	@R0, A
 	INC	R0
-	MOV	A	, å‘é€ç¼“å†²æ•°æ®ä¸ªæ•°
+	MOV	A	, ·¢ËÍ»º³åÊý¾Ý¸öÊý
 	ADD	A, #3
 	MOVX	@R0, A
 	INC	R0
@@ -3192,156 +3585,152 @@ UART1å‘é€å¿™æ£€æŸ¥:
 	MOV	A, #00H
 	MOVX	@R0, A
 	INC	R0
-	MOV	A, STCæ•°æ®é¦–å€L
+	MOV	A, STCÊý¾ÝÊ×Ö·L
 	RR	A	                                                      //40/2=0020
-	MOVX	@R0, A	                                               ;å˜é‡é¦–å€																																									//#00H
+	MOVX	@R0, A	                                               ;±äÁ¿Ê×Ö·																																									//#00H
 	INC	R0
-	MOV	R1, STCæ•°æ®é¦–å€L	                                      ;å‘é€åœ°å€20H
-	MOV	A, å‘é€ç¼“å†²æ•°æ®ä¸ªæ•°	                                   ;å‘é€é•¿åº¦16
+	MOV	R1, STCÊý¾ÝÊ×Ö·L	                                      ;·¢ËÍµØÖ·20H
+	MOV	A, ·¢ËÍ»º³åÊý¾Ý¸öÊý	                                   ;·¢ËÍ³¤¶È16
 	ADD	A, #3
 	MOV	R2, A
-å†™XXå˜é‡å‘é€ç¼“å†²:
+Ð´XX±äÁ¿·¢ËÍ»º³å:
 	MOV	A, @R1
 	MOVX	@R0, A
 	INC	R1
 	INC	R0
-	DJNZ	R2, å†™XXå˜é‡å‘é€ç¼“å†²
+	DJNZ	R2, Ð´XX±äÁ¿·¢ËÍ»º³å
 	
-å‘é€ç¼“å†²æ•°æ®æ€»ä¸ªæ•°è®¡ç®—:
-	MOV	A	, #å‘é€ç¼“å†²SRAMé¦–å€
-	MOV	R1, å‘é€ç¼“å†²æ•°æ®ä¸ªæ•°
+·¢ËÍ»º³åÊý¾Ý×Ü¸öÊý¼ÆËã:
+	MOV	A	, #·¢ËÍ»º³åSRAMÊ×Ö·
+	MOV	R1, ·¢ËÍ»º³åÊý¾Ý¸öÊý
 	ADD	A, R1
 	ADD	A, #5	                                                 //(6-1)    
-	MOV	å‘é€ç¼“å†²æ•°æ®æ€»ä¸ªæ•°	, A
-	RET
-	
-;*********************	UART2ä¸­æ–­å‡½æ•°************************ 
+	MOV	·¢ËÍ»º³åÊý¾Ý×Ü¸öÊý	, A
+	RET  
+	*
+	*/
+;******RAM10H/SRAMA0H***¶þÑ¡Ò»********** 
 
-UART2ä¸²å£ä¸­æ–­:
+
+;*********************	UART2ÖÐ¶Ïº¯Êý************************ 
+
+UART2´®¿ÚÖÐ¶Ï:
 	PUSH	PSW
 	PUSH	ACC
-	ORL	PSW, #00001000	                                        ;R0-R7ç”¨ç¬¬äºŒç»„08H-0FH
-UART2æŽ¥æ”¶å¿™æ£€æŸ¥:
-	MOV	A, S2CON	                                              ;è¯»å–UART2æŽ§åˆ¶å¯„å­˜å™¨
-	JNB	ACC.0, UART2å‘é€å¿™æ£€æŸ¥	                                ;æ£€æµ‹S2RIä½
-	ANL	S2CON, #NOT	S2RI	                                      ;æ¸…é™¤S2RIä½
-	CLR	ä¸²å£2RIæŽ¥æ”¶å¿™æ ‡è®°
-	MOV	A, #ä¸²å£2æŽ¥æ”¶ç¼“å†²SRAMé¦–å€
-	ADD	A, ä¸²å£2æŽ¥æ”¶è®¡æ•°
+	ORL	PSW, #00001000	                                        ;R0-R7ÓÃµÚ¶þ×é08H-0FH
+UART2½ÓÊÕÃ¦¼ì²é:
+	MOV	A, S2CON	                                              ;¶ÁÈ¡UART2¿ØÖÆ¼Ä´æÆ÷
+	JNB	ACC.0, UART2·¢ËÍÃ¦¼ì²é	                                ;¼ì²âS2RIÎ»
+	ANL	S2CON, #NOT	S2RI	                                      ;Çå³ýS2RIÎ»
+	CLR	´®¿Ú2RI½ÓÊÕÃ¦±ê¼Ç
+	MOV	A, #´®¿Ú2½ÓÊÕ»º³åSRAMÊ×Ö·
+	ADD	A, ´®¿Ú2½ÓÊÕ¼ÆÊý
 	MOV	R0, A
-	MOV	A, S2BUF	                                              ;ä¸²å£æ•°æ®ä¿å­˜
+	MOV	A, S2BUF	                                              ;´®¿ÚÊý¾Ý±£´æ
 	MOVX	@R0, A
-	INC	ä¸²å£2æŽ¥æ”¶è®¡æ•°
-	LCALL	ä¸²å£2æŽ¥æ”¶å¼€å§‹è®¡æ—¶
-UART2å‘é€å¿™æ£€æŸ¥:
-	MOV	A, S2CON	                                              ;è¯»å–UART2æŽ§åˆ¶å¯„å­˜å™¨
-	JNB	ACC.1, ç»“æŸUART2ä¸­æ–­	                                  ;æ£€æµ‹S2TIä½
-	ANL	S2CON, #NOT	S2TI	                                      ;æ¸…é™¤S2TIä½
-	CLR	ä¸²å£2TIå‘é€å¿™æ ‡è®°	                                     ;æ¸…å¿™æ ‡å¿—
-ç»“æŸUART2ä¸­æ–­:
+	INC	´®¿Ú2½ÓÊÕ¼ÆÊý
+	LCALL	´®¿Ú2½ÓÊÕ¿ªÊ¼¼ÆÊ±
+UART2·¢ËÍÃ¦¼ì²é:
+	MOV	A, S2CON	                                              ;¶ÁÈ¡UART2¿ØÖÆ¼Ä´æÆ÷
+	JNB	ACC.1, ½áÊøUART2ÖÐ¶Ï	                                  ;¼ì²âS2TIÎ»
+	ANL	S2CON, #NOT	S2TI	                                      ;Çå³ýS2TIÎ»
+	CLR	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç	                                     ;ÇåÃ¦±êÖ¾
+½áÊøUART2ÖÐ¶Ï:
 	POP	ACC
 	POP	PSW
 	RETI
 
-;å®šæ—¶å™¨T1ç”¨äºŽ10æ¯«ç§’ åŠä¸²å£æŽ¥æ”¶ä¸­æ–­åˆ¤æ–­
-ä½¿èƒ½å®šæ—¶å™¨T1:	                                              ;10æ¯«ç§’@11.0592MHZ
-	  ;10æ¯«ç§’@11.0592MHz
-	ANL	AUXR, #0BFH	                                           ;å®šæ—¶å™¨æ—¶é’Ÿ12Tæ¨¡å¼
-	ANL	TMOD, #0FH	                                            ;è®¾ç½®å®šæ—¶å™¨æ¨¡å¼
-	MOV	TL1, #000H	                                            ;è®¾ç½®å®šæ—¶åˆå§‹å€¼
-	MOV	TH1, #0DCH	                                            ;è®¾ç½®å®šæ—¶åˆå§‹å€¼
-	CLR	TF1	                                                   ;æ¸…é™¤TF1æ ‡å¿—
-	SETB	TR1	                                                  ;å®šæ—¶å™¨1å¼€å§‹è®¡æ—¶
+;¶¨Ê±Æ÷T1ÓÃÓÚ10ºÁÃë ¼°´®¿Ú½ÓÊÕÖÐ¶ÏÅÐ¶Ï
+Ê¹ÄÜ¶¨Ê±Æ÷T1:	                                              ;10ºÁÃë@11.0592MHZ
+	  ;10ºÁÃë@11.0592MHz
+	ANL	AUXR, #0BFH	                                           ;¶¨Ê±Æ÷Ê±ÖÓ12TÄ£Ê½
+	ANL	TMOD, #0FH	                                            ;ÉèÖÃ¶¨Ê±Æ÷Ä£Ê½
+	MOV	TL1, #000H	                                            ;ÉèÖÃ¶¨Ê±³õÊ¼Öµ
+	MOV	TH1, #0DCH	                                            ;ÉèÖÃ¶¨Ê±³õÊ¼Öµ
+	CLR	TF1	                                                   ;Çå³ýTF1±êÖ¾
+	SETB	TR1	                                                  ;¶¨Ê±Æ÷1¿ªÊ¼¼ÆÊ±
 	SETB	ET1
-	//MOV	å®šæ—¶1ç§’è®¡æ—¶	, #20  
+	//MOV	¶¨Ê±1Ãë¼ÆÊ±	, #20  
 	RET
 	     
 
-; ä¸²å£æŽ¥æ”¶å¼€å§‹è®¡æ—¶å‡½æ•°å½“ æ¯æ¬¡ä¸²å£æŽ¥æ”¶ä¸­æ–­æ—¶é‡è£…åˆå§‹å€¼å¼€å§‹è®¡æ—¶
-;	æ—  ä¸²å£æŽ¥æ”¶ä¸­æ–­ æ—¶å®šæ—¶å™¨äº§ç”Ÿä¸­æ–­
-ä¸²å£æŽ¥æ”¶å¼€å§‹è®¡æ—¶:
-	ORL	AUXR, #40H	                                            ;å®šæ—¶å™¨æ—¶é’Ÿ1Tæ¨¡å¼
-	ANL	TMOD, #0FH	                                            ;è®¾ç½®å®šæ—¶å™¨æ¨¡å¼
-	CLR	TR1	                                                   ;å®šæ—¶å™¨1åœæ­¢è®¡æ—¶
-	MOV	TL1, #09AH	                                            ;è®¾ç½®å®šæ—¶åˆå§‹å€¼
-	MOV	TH1, #0A9H	                                            ;è®¾ç½®å®šæ—¶åˆå§‹å€¼
-	CLR	ä¸²å£æŽ¥æ”¶ä¸­æ–­æ ‡è®°	                                      //å¼€å§‹T2è®¡æ—¶2MSæ— æŽ¥æ”¶ä¸­æ–­
+; ´®¿Ú½ÓÊÕ¿ªÊ¼¼ÆÊ±º¯Êýµ± Ã¿´Î´®¿Ú½ÓÊÕÖÐ¶ÏÊ±ÖØ×°³õÊ¼Öµ¿ªÊ¼¼ÆÊ±
+;	ÎÞ ´®¿Ú½ÓÊÕÖÐ¶Ï Ê±¶¨Ê±Æ÷²úÉúÖÐ¶Ï
+´®¿Ú½ÓÊÕ¿ªÊ¼¼ÆÊ±:
+	ORL	AUXR, #40H	                                            ;¶¨Ê±Æ÷Ê±ÖÓ1TÄ£Ê½
+	ANL	TMOD, #0FH	                                            ;ÉèÖÃ¶¨Ê±Æ÷Ä£Ê½
+	CLR	TR1	                                                   ;¶¨Ê±Æ÷1Í£Ö¹¼ÆÊ±
+	MOV	TL1, #09AH	                                            ;ÉèÖÃ¶¨Ê±³õÊ¼Öµ
+	MOV	TH1, #0A9H	                                            ;ÉèÖÃ¶¨Ê±³õÊ¼Öµ
+	CLR	´®¿Ú½ÓÊÕÖÐ¶Ï±ê¼Ç	                                      //¿ªÊ¼T2¼ÆÊ±2MSÎÞ½ÓÊÕÖÐ¶Ï
 	SETB	TR1
-	SETB	ET1	                                                  //å…è®¸T1ä¸­æ–­
+	SETB	ET1	                                                  //ÔÊÐíT1ÖÐ¶Ï
 	RET
 
-ä¸²å£2æŽ¥æ”¶å¼€å§‹è®¡æ—¶:
-	ORL	AUXR, #40H	                                            ;å®šæ—¶å™¨æ—¶é’Ÿ1Tæ¨¡å¼
-	ANL	TMOD, #0FH	                                            ;è®¾ç½®å®šæ—¶å™¨æ¨¡å¼
-	CLR	TR1	                                                   ;å®šæ—¶å™¨1åœæ­¢è®¡æ—¶																																					;å®šæ—¶å™¨1å¼€å§‹è®¡æ—¶
-	MOV	TL1, #09AH	                                            ;è®¾ç½®å®šæ—¶åˆå§‹å€¼
-	MOV	TH1, #0A9H	                                            ;è®¾ç½®å®šæ—¶åˆå§‹å€¼
-	CLR	ä¸²å£2æŽ¥æ”¶ä¸­æ–­æ ‡è®°	                                     //å¼€å§‹T2è®¡æ—¶2MSæ— æŽ¥æ”¶ä¸­æ–­
+´®¿Ú2½ÓÊÕ¿ªÊ¼¼ÆÊ±:
+	ORL	AUXR, #40H	                                            ;¶¨Ê±Æ÷Ê±ÖÓ1TÄ£Ê½
+	ANL	TMOD, #0FH	                                            ;ÉèÖÃ¶¨Ê±Æ÷Ä£Ê½
+	CLR	TR1	                                                   ;¶¨Ê±Æ÷1Í£Ö¹¼ÆÊ±																																					;¶¨Ê±Æ÷1¿ªÊ¼¼ÆÊ±
+	MOV	TL1, #09AH	                                            ;ÉèÖÃ¶¨Ê±³õÊ¼Öµ
+	MOV	TH1, #0A9H	                                            ;ÉèÖÃ¶¨Ê±³õÊ¼Öµ
+	CLR	´®¿Ú2½ÓÊÕÖÐ¶Ï±ê¼Ç	                                     //¿ªÊ¼T2¼ÆÊ±2MSÎÞ½ÓÊÕÖÐ¶Ï
 	SETB	TR1
-	SETB	ET1	                                                  //å…è®¸T1ä¸­æ–­
+	SETB	ET1	                                                  //ÔÊÐíT1ÖÐ¶Ï
 	RET
 
-æ£€æŸ¥ä¸²æœ‰æ–°æŽ¥æ”¶æ•°æ®å¹¶è¯»å‡º:
-	JB	ä¸²å£æœ‰æœªè¯»æ•°æ®æ ‡è®°	, æ— æ–°æ”¶æ•°æ®
-	LCALL	æŽ¥æ”¶ç¼“å­˜æ•°æ®è¯»å‡º
-	SETB	ä¸²å£æœ‰æœªè¯»æ•°æ®æ ‡è®°
-			;	æŽ¥æ”¶æ•°æ®è¯»å®Œæ ‡è®°      
-æ— æ–°æ”¶æ•°æ®:
+¼ì²é´®ÓÐÐÂ½ÓÊÕÊý¾Ý²¢¶Á³ö:
+	JB	´®¿ÚÓÐÎ´¶ÁÊý¾Ý±ê¼Ç	, ÎÞÐÂÊÕÊý¾Ý
+	LCALL	½ÓÊÕ»º´æÊý¾Ý¶Á³ö
+	SETB	´®¿ÚÓÐÎ´¶ÁÊý¾Ý±ê¼Ç
+			;	½ÓÊÕÊý¾Ý¶ÁÍê±ê¼Ç      
+ÎÞÐÂÊÕÊý¾Ý:
 	RET
 
 
-ä¸­æ–­T1:
+ÖÐ¶ÏT1:
 	PUSH	PSW
 	PUSH	ACC
 	PUSH	B
-	ORL	PSW, #00001000	                                        ;R0-R7ç”¨ç¬¬äºŒç»„08H-0FH
-ä¸²å£1æŽ¥æ”¶ç»“æŸæ£€æµ‹:
-	JB	ä¸²å£æŽ¥æ”¶ä¸­æ–­æ ‡è®°	, ä¸²å£2æŽ¥æ”¶ç»“æŸæ£€æµ‹
+	ORL	PSW, #00001000	                                        ;R0-R7ÓÃµÚ¶þ×é08H-0FH
+´®¿Ú1½ÓÊÕ½áÊø¼ì²â:
+	JB	´®¿Ú½ÓÊÕÖÐ¶Ï±ê¼Ç	, ´®¿Ú2½ÓÊÕ½áÊø¼ì²â
 	CLR	TR1
-	SETB	ä¸²å£æŽ¥æ”¶ä¸­æ–­æ ‡è®°
-	MOV	æŽ¥æ”¶è®¡æ•°, #0
-	JNB	ç¼“å­˜æ•°æ®ä¸è‡ªåŠ¨è¯»å‡ºæ ‡è®°, ç¼“å­˜æ•°æ®ä¸è‡ªåŠ¨è¯»å‡º
-	LCALL	æŽ¥æ”¶ç¼“å­˜æ•°æ®è¯»å‡º
-ç¼“å­˜æ•°æ®ä¸è‡ªåŠ¨è¯»å‡º:
-	SETB	ä¸²å£æŽ¥æ”¶ä¸­æ–­æ ‡è®°
-	CLR	ä¸²å£æœ‰æœªè¯»æ•°æ®æ ‡è®°	                                    //ç©ºé—²æ—¶  æŽ¥æ”¶ç¼“å­˜æ•°æ®è¯»å‡º    
+	SETB	´®¿Ú½ÓÊÕÖÐ¶Ï±ê¼Ç
+	MOV	½ÓÊÕ¼ÆÊý, #0
+	JNB	»º´æÊý¾Ý²»×Ô¶¯¶Á³ö±ê¼Ç, »º´æÊý¾Ý²»×Ô¶¯¶Á³ö
+	LCALL	½ÓÊÕ»º´æÊý¾Ý¶Á³ö
+»º´æÊý¾Ý²»×Ô¶¯¶Á³ö:
+	SETB	´®¿Ú½ÓÊÕÖÐ¶Ï±ê¼Ç
+	CLR	´®¿ÚÓÐÎ´¶ÁÊý¾Ý±ê¼Ç	                                    //¿ÕÏÐÊ±  ½ÓÊÕ»º´æÊý¾Ý¶Á³ö    
 
 
-ä¸²å£2æŽ¥æ”¶ç»“æŸæ£€æµ‹:
-	JB	ä¸²å£2æŽ¥æ”¶ä¸­æ–­æ ‡è®°	, æŽ¥æ”¶ä¸­æ–­è®¡æ—¶ç»“æŸ
+´®¿Ú2½ÓÊÕ½áÊø¼ì²â:
+	JB	´®¿Ú2½ÓÊÕÖÐ¶Ï±ê¼Ç	, ½ÓÊÕÖÐ¶Ï¼ÆÊ±½áÊø
 	CLR	TR1
-	SETB	ä¸²å£2æŽ¥æ”¶ä¸­æ–­æ ‡è®°
-	MOV	ä¸²å£2æŽ¥æ”¶è®¡æ•°, #0
-	LCALL	ä¸²å£2æŽ¥æ”¶ç¼“å­˜æ•°æ®è¯»å‡º
-	SETB	ä¸²å£2æŽ¥æ”¶ä¸­æ–­æ ‡è®°
-æŽ¥æ”¶ä¸­æ–­è®¡æ—¶ç»“æŸ:
-//	DJNZ	å®šæ—¶1ç§’è®¡æ—¶	, ä¸­æ–­T1ç»“æŸ
-//	MOV		å®šæ—¶1ç§’è®¡æ—¶	, #10 //50MS*20=1S  
-	JB	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°, ä¸­æ–­T1ç»“æŸ
-	;CPL	    T1è®¡æ—¶1Sæ ‡è®°
-;JB	  T1è®¡æ—¶1Sæ ‡è®°, ä¸­æ–­T1ç»“æŸ
-;INC			å®šæ—¶1ç§’è®¡æ—¶
-//	JB	ä¸²å£1å‘é€ç¼“å†²å‡½æ•°æ ‡è®°	, ä¸­æ–­T1ç»“æŸ
+	SETB	´®¿Ú2½ÓÊÕÖÐ¶Ï±ê¼Ç
+	MOV	´®¿Ú2½ÓÊÕ¼ÆÊý, #0
+	LCALL	´®¿Ú2½ÓÊÕ»º´æÊý¾Ý¶Á³ö
+	SETB	´®¿Ú2½ÓÊÕÖÐ¶Ï±ê¼Ç
+½ÓÊÕÖÐ¶Ï¼ÆÊ±½áÊø:
+//	DJNZ	¶¨Ê±1Ãë¼ÆÊ±	, ÖÐ¶ÏT1½áÊø
+//	MOV		¶¨Ê±1Ãë¼ÆÊ±	, #10 //50MS*20=1S  
+	JB	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç, ÖÐ¶ÏT1½áÊø
+	;CPL	    T1¼ÆÊ±1S±ê¼Ç
+;JB	  T1¼ÆÊ±1S±ê¼Ç, ÖÐ¶ÏT1½áÊø
+;INC			¶¨Ê±1Ãë¼ÆÊ±
+//	JB	´®¿Ú1·¢ËÍ»º³åº¯Êý±ê¼Ç	, ÖÐ¶ÏT1½áÊø
 //******************** 
-;åå…­åŠ ä¸€
-;H.L åŠ 1
-	INC	å½“å‰æ—¶é—´L
-	MOV	A, å½“å‰æ—¶é—´L	                                          ; å°†R2çš„å€¼åŠ è½½åˆ°ç´¯åŠ å™¨A
-	JNZ	NOCARRY16	                                             ; å¦‚æžœAä¸ä¸º0,è·³è½¬åˆ°NO_CARRY
-	INC	å½“å‰æ—¶é—´H
+;Ê®Áù¼ÓÒ»
+;H.L ¼Ó1
+	INC	µ±Ç°Ê±¼äL
+	MOV	A, µ±Ç°Ê±¼äL	                                          ; ½«R2µÄÖµ¼ÓÔØµ½ÀÛ¼ÓÆ÷A
+	JNZ	NOCARRY16	                                             ; Èç¹ûA²»Îª0,Ìø×ªµ½NO_CARRY
+	INC	µ±Ç°Ê±¼äH
 NOCARRY16:
-//******************** 
-	MOV	A, å½“å‰æ—¶é—´H
-	MOV	R0, #0A8H
-	MOVX	@R0	, A
-	MOV	A, å½“å‰æ—¶é—´L
-	MOV	R0, #0A9H
-	MOVX	@R0	, A
-//	SETB	TI
-; CPL P2.6
-ä¸­æ–­T1ç»“æŸ:
 
+ÖÐ¶ÏT1½áÊø:
 	SETB	TR1
+
 	POP	B
 	POP	ACC
 	POP	PSW
@@ -3349,271 +3738,197 @@ NOCARRY16:
 
 
 
-	/*
-è§¦æ‘¸æŒ‰é”®è¿”å›žåˆ°ä¸²å£æ•°æ®ï¼ˆ0X83ï¼‰
-5AA5	06	83	1001	01	0002
-5AA5	è¡¨ç¤ºï¼šå¸§å¤´
-06	è¡¨ç¤ºï¼šæ•°æ®é•¿åº¦
-83	è¡¨ç¤ºï¼šè¯»å˜é‡å­˜å‚¨å™¨æŒ‡ä»¤æŒ‡ä»¤
-1001	è¡¨ç¤ºï¼šå˜é‡åœ°å€ï¼ˆä¸¤ä¸ªå­—èŠ‚ï¼‰
-01	è¡¨ç¤ºï¼š1	ä¸ªå­—é•¿åº¦æ•°æ®	ï¼ˆ16ä½
-00	02	è¡¨ç¤ºï¼šé”®å€¼	0002
-æŒ‰é”®è¿”å›žï¼ˆéžåŸºæœ¬è§¦æŽ§ï¼‰åœ¨ç³»ç»Ÿ
-	*/
-
-//è§¦æ‘¸å±æ•°æ®è¿”å›ž  
-/*
-æŽ¥æ”¶ç¼“å­˜æ•°æ®è¯»å‡º:
+½ÓÊÕ»º´æÊý¾Ý¶Á³ö:
 ;5A	A5	06	83	00	06	01	01	FE
-	MOV	R1, #æŽ¥æ”¶ç¼“å†²SRAMé¦–å€
-ç¼“å­˜00æ•°æ®è¯»å‡º:
+	MOV	R1, #½ÓÊÕ»º³åSRAMÊ×Ö·
+»º´æ00Êý¾Ý¶Á³ö:
 	MOVX	A, @R1	                                               //5A
-	CJNE	A, #5AH, ç¼“å­˜æ•°æ®éž5A	                                //æ— æŽ¥å¸§å¤´æ•°æ®è¯»å‡º
-ç¼“å­˜01æ•°æ®è¯»å‡º:
+	CJNE	A, #5AH, »º´æÊý¾Ý·Ç5A	                                //ÎÞ½ÓÖ¡Í·Êý¾Ý¶Á³ö
+»º´æ01Êý¾Ý¶Á³ö:
 	INC	R1
 	MOVX	A, @R1	                                               //A5
-	CJNE	A, #0A5H, ç¼“å­˜æ•°æ®éž5A
-ç¼“å­˜02æ•°æ®è¯»å‡º:
+	CJNE	A, #0A5H, »º´æÊý¾Ý·Ç5A
+»º´æ02Êý¾Ý¶Á³ö:
 	INC	R1
-	MOVX	A, @R1	                                               //06	ä¸‹é¢æŽ¥æ”¶æ•°æ®ä¸ªæ•°
-	//MOV	æŽ¥æ”¶æ•°æ®ä¸ªæ•°				,A																																			//06-4å­—èŠ‚=2
-ç¼“å­˜03æ•°æ®è¯»å‡º:
+	MOVX	A, @R1	                                               //06	ÏÂÃæ½ÓÊÕÊý¾Ý¸öÊý
+	//MOV	½ÓÊÕÊý¾Ý¸öÊý				,A																																			//06-4×Ö½Ú=2
+»º´æ03Êý¾Ý¶Á³ö:
 	INC	R1
-	MOVX	A, @R1	                                               //83è¯»å˜é‡å­˜å‚¨å™¨æŒ‡ä»¤
-//	MOV			DGUSæŒ‡ä»¤					,A
-	CJNE	A, #83H, ç¼“å­˜æ•°æ®é”™è¯¯
-ç¼“å­˜04æ•°æ®è¯»å‡º:
+	MOVX	A, @R1	                                               //83¶Á±äÁ¿´æ´¢Æ÷Ö¸Áî
+//	MOV			DGUSÖ¸Áî					,A
+	CJNE	A, #83H, »º´æÊý¾Ý´íÎó
+»º´æ04Êý¾Ý¶Á³ö:
 	INC	R1
-	MOVX	A, @R1	                                               //10å˜é‡åœ°å€H		(16ä½è½¬8ä½
-	MOV	DGUSå˜é‡é¦–å€H, A	                                      //æ•°å€¼ä¸º00
-ç¼“å­˜05æ•°æ®è¯»å‡º:
+	MOVX	A, @R1	                                               ;DGUS±äÁ¿Ê×Ö·H                                    //01±äÁ¿µØÖ·H		(16Î»×ª8Î»
+	MOV	STCÊý¾ÝÊ×Ö·H, A	                                       //ÊýÖµÎª100
+»º´æ05Êý¾Ý¶Á³ö:
 	INC	R1
-	MOVX	A, @R1	                                               //01å˜é‡åœ°å€L			(16ä½è½¬8ä½
+	MOVX	A, @R1	                                               ;DGUS±äÁ¿Ê×Ö·L             				           //01±äÁ¿µØÖ·L			(16Î»×ª8Î»
 	MOV	B, #2
 	MUL	AB
-	MOV	DGUSå˜é‡é¦–å€L, A
-ç¼“å­˜06æ•°æ®è¯»å‡º:
-	INC	R1	                                                    //01å˜é‡åœ°å€L			(16ä½è½¬8ä½
-	MOVX	A, @R1	                                               //01*2	æ•°æ®é•¿åº¦
+	MOV	STCÊý¾ÝÊ×Ö·L, A
+»º´æ06Êý¾Ý¶Á³ö:
+	INC	R1	                                                    //01±äÁ¿µØÖ·L			(16Î»×ª8Î»
+	MOVX	A, @R1	                                               ; DGUS±äÁ¿¸öÊý                                          //01*2	Êý¾Ý³¤¶È
 	MOV	B, #2
 	MUL	AB
-	MOV	DGUSå˜é‡ä¸ªæ•°	, A
-ç¼“å­˜07åŽæ•°æ®è¯»å‡º:
-	MOV	A, DGUSå˜é‡é¦–å€L	                                      //	DGUS0010H=STC20H
-	MOV	R0, A	                                                 //;æŽ¥æ”¶åœ°å€20-2F
-	MOV	R2, DGUSå˜é‡ä¸ªæ•°	                                      ;		æŽ¥æ”¶æ•°æ®é•¿åº¦
+	MOV	STCÊý¾Ý¸öÊý, A
+»º´æ07ºóÊý¾Ý¶Á³ö:
+	MOV	DPH	, STCÊý¾ÝÊ×Ö·H
+	MOV	DPL	, STCÊý¾ÝÊ×Ö·L	                                    //	DGUS0010H=STC20H                                              														 //;½ÓÊÕµØÖ·20-2F
+	MOV	R2, STCÊý¾Ý¸öÊý	                                       ;		½ÓÊÕÊý¾Ý³¤¶È
 
-æœ‰å¸§å¤´æŽ¥æ”¶æ•°æ®:
+	MOV	A, STCÊý¾ÝÊ×Ö·H
+	JNZ	ÓÐÖ¡Í·16Î»½ÓÊÕÊý¾Ý
+	MOV	A, STCÊý¾ÝÊ×Ö·L	                                       //	DGUS0010H=STC20H
+	MOV	R0, A
+
+ÓÐÖ¡Í·½ÓÊÕÊý¾Ý:
 	INC	R1
 	MOVX	A, @R1
 	MOV	@R0, A
 	INC	R0
-	DJNZ	R2, æœ‰å¸§å¤´æŽ¥æ”¶æ•°æ®
-æœ‰å¸§å¤´æŽ¥æ”¶ç»“æŸ:
-	CLR	æŽ¥æ”¶æ•°æ®è¯»å®Œæ ‡è®°
+	DJNZ	R2, ÓÐÖ¡Í·½ÓÊÕÊý¾Ý
+ÓÐÖ¡Í·½ÓÊÕ½áÊø:
+	CLR	½ÓÊÕÊý¾Ý¶ÁÍê±ê¼Ç
 	RET
-ç¼“å­˜æ•°æ®é”™è¯¯:
-	RET
-ç¼“å­˜æ•°æ®éž5A:
-
-	RET
-
-   */
-
-æŽ¥æ”¶ç¼“å­˜æ•°æ®è¯»å‡º:
-;5A	A5	06	83	00	06	01	01	FE
-	MOV	R1, #æŽ¥æ”¶ç¼“å†²SRAMé¦–å€
-ç¼“å­˜00æ•°æ®è¯»å‡º:
-	MOVX	A, @R1	                                               //5A
-	CJNE	A, #5AH, ç¼“å­˜æ•°æ®éž5A	                                //æ— æŽ¥å¸§å¤´æ•°æ®è¯»å‡º
-ç¼“å­˜01æ•°æ®è¯»å‡º:
-	INC	R1
-	MOVX	A, @R1	                                               //A5
-	CJNE	A, #0A5H, ç¼“å­˜æ•°æ®éž5A
-ç¼“å­˜02æ•°æ®è¯»å‡º:
-	INC	R1
-	MOVX	A, @R1	                                               //06	ä¸‹é¢æŽ¥æ”¶æ•°æ®ä¸ªæ•°
-	//MOV	æŽ¥æ”¶æ•°æ®ä¸ªæ•°				,A																																			//06-4å­—èŠ‚=2
-ç¼“å­˜03æ•°æ®è¯»å‡º:
-	INC	R1
-	MOVX	A, @R1	                                               //83è¯»å˜é‡å­˜å‚¨å™¨æŒ‡ä»¤
-//	MOV			DGUSæŒ‡ä»¤					,A
-	CJNE	A, #83H, ç¼“å­˜æ•°æ®é”™è¯¯
-ç¼“å­˜04æ•°æ®è¯»å‡º:
-	INC	R1
-	MOVX	A, @R1	           ;DGUSå˜é‡é¦–å€H                                    //01å˜é‡åœ°å€H		(16ä½è½¬8ä½
-	MOV	STCæ•°æ®é¦–å€H, A	                                      //æ•°å€¼ä¸º100
-ç¼“å­˜05æ•°æ®è¯»å‡º:
-	INC	R1
-	MOVX	A, @R1	 ;DGUSå˜é‡é¦–å€L             				           //01å˜é‡åœ°å€L			(16ä½è½¬8ä½
-	MOV	B, #2
-	MUL	AB
-	MOV	STCæ•°æ®é¦–å€L, A
-ç¼“å­˜06æ•°æ®è¯»å‡º:
-	INC	R1	                                                    //01å˜é‡åœ°å€L			(16ä½è½¬8ä½
-	MOVX	A, @R1	    ; DGUSå˜é‡ä¸ªæ•°                                          //01*2	æ•°æ®é•¿åº¦
-	MOV	B, #2
-	MUL	AB
-	MOV		STCæ•°æ®ä¸ªæ•°, A
-ç¼“å­˜07åŽæ•°æ®è¯»å‡º:   
-	MOV	DPH , STCæ•°æ®é¦–å€H
-	MOV	DPL	, STCæ•°æ®é¦–å€L	                                      //	DGUS0010H=STC20H                                              														 //;æŽ¥æ”¶åœ°å€20-2F
-	MOV	R2, STCæ•°æ®ä¸ªæ•°	                                      ;		æŽ¥æ”¶æ•°æ®é•¿åº¦
-
-   MOV		    A,STCæ•°æ®é¦–å€H
-   JNZ  æœ‰å¸§å¤´16ä½æŽ¥æ”¶æ•°æ® 
-	MOV	A, STCæ•°æ®é¦–å€L                                      //	DGUS0010H=STC20H
-	MOV	R0, A	
-
-æœ‰å¸§å¤´æŽ¥æ”¶æ•°æ®:
+ÓÐÖ¡Í·16Î»½ÓÊÕÊý¾Ý:
 	INC	R1
 	MOVX	A, @R1
-	MOV	@R0, A
-	INC	R0
-	DJNZ	R2, æœ‰å¸§å¤´æŽ¥æ”¶æ•°æ®
-æœ‰å¸§å¤´æŽ¥æ”¶ç»“æŸ:
-	CLR	æŽ¥æ”¶æ•°æ®è¯»å®Œæ ‡è®°
-	RET
-æœ‰å¸§å¤´16ä½æŽ¥æ”¶æ•°æ®:
-	INC	R1
-	MOVX	A, @R1  
-	MOVX	@DPTR ,  A
+	MOVX	@DPTR	, A
 	INC	DPTR
-	DJNZ	R2, æœ‰å¸§å¤´16ä½æŽ¥æ”¶æ•°æ®
+	DJNZ	R2, ÓÐÖ¡Í·16Î»½ÓÊÕÊý¾Ý
 
-ç¼“å­˜æ•°æ®é”™è¯¯:
+»º´æÊý¾Ý´íÎó:
 	RET
-ç¼“å­˜æ•°æ®éž5A:
+»º´æÊý¾Ý·Ç5A:
 	RET
 
 
 
-ä»˜æ¿æŽ¥æ”¶ç¼“å­˜æ•°æ®è¯»å‡º:
+¸¶°å½ÓÊÕ»º´æÊý¾Ý¶Á³ö:
 ;A5	5A	06	83	00	06	01	01	FE
-	MOV	R1, #æŽ¥æ”¶ç¼“å†²SRAMé¦–å€
-ä»˜æ¿ç¼“å­˜00æ•°æ®è¯»å‡º:
+	MOV	R1, #½ÓÊÕ»º³åSRAMÊ×Ö·
+¸¶°å»º´æ00Êý¾Ý¶Á³ö:
 	MOVX	A, @R1	                                               //5A
-	CJNE	A, #0A5H, ä»˜æ¿ç¼“å­˜æ•°æ®é”™è¯¯	                           //æ— æŽ¥å¸§å¤´æ•°æ®è¯»å‡º
-ä»˜æ¿ç¼“å­˜01æ•°æ®è¯»å‡º:
+	CJNE	A, #0A5H, ¸¶°å»º´æÊý¾Ý´íÎó	                           //ÎÞ½ÓÖ¡Í·Êý¾Ý¶Á³ö
+¸¶°å»º´æ01Êý¾Ý¶Á³ö:
 	INC	R1
 	MOVX	A, @R1	                                               //A5
-	CJNE	A, #05AH, ä»˜æ¿ç¼“å­˜æ•°æ®é”™è¯¯
-ä»˜æ¿ç¼“å­˜02æ•°æ®è¯»å‡º:
+	CJNE	A, #05AH, ¸¶°å»º´æÊý¾Ý´íÎó
+¸¶°å»º´æ02Êý¾Ý¶Á³ö:
 	INC	R1
-	MOVX	A, @R1	                                               //06	ä¸‹é¢æŽ¥æ”¶æ•°æ®ä¸ªæ•°
-	//MOV	æŽ¥æ”¶æ•°æ®ä¸ªæ•°				,A																																			//06-4å­—èŠ‚=2
-ä»˜æ¿ç¼“å­˜03æ•°æ®è¯»å‡º:
+	MOVX	A, @R1	                                               //06	ÏÂÃæ½ÓÊÕÊý¾Ý¸öÊý
+	//MOV	½ÓÊÕÊý¾Ý¸öÊý				,A																																			//06-4×Ö½Ú=2
+¸¶°å»º´æ03Êý¾Ý¶Á³ö:
 	INC	R1
-	MOVX	A, @R1	                                               //83è¯»å˜é‡å­˜å‚¨å™¨æŒ‡ä»¤
-//	MOV			DGUSæŒ‡ä»¤					,A
-	CJNE	A, #83H, ä»˜æ¿ç¼“å­˜æ•°æ®é”™è¯¯
-ä»˜æ¿ç¼“å­˜04æ•°æ®è¯»å‡º:
+	MOVX	A, @R1	                                               //83¶Á±äÁ¿´æ´¢Æ÷Ö¸Áî
+//	MOV			DGUSÖ¸Áî					,A
+	CJNE	A, #83H, ¸¶°å»º´æÊý¾Ý´íÎó
+¸¶°å»º´æ04Êý¾Ý¶Á³ö:
 	INC	R1
-	MOVX	A, @R1	                                               //10å˜é‡åœ°å€H		(16ä½è½¬8ä½
-	MOV	DGUSå˜é‡é¦–å€H, A	                                      //æ•°å€¼ä¸º00
-ä»˜æ¿ç¼“å­˜05æ•°æ®è¯»å‡º:
+	MOVX	A, @R1	                                               //10±äÁ¿µØÖ·H		(16Î»×ª8Î»
+	MOV	DGUS±äÁ¿Ê×Ö·H, A	                                      //ÊýÖµÎª00
+¸¶°å»º´æ05Êý¾Ý¶Á³ö:
 	INC	R1
-	MOVX	A, @R1	                                               //01å˜é‡åœ°å€L			(16ä½è½¬8ä½
+	MOVX	A, @R1	                                               //01±äÁ¿µØÖ·L			(16Î»×ª8Î»
 	MOV	B, #2
 	MUL	AB
-	MOV	DGUSå˜é‡é¦–å€L, A
-ä»˜æ¿ç¼“å­˜06æ•°æ®è¯»å‡º:
-	INC	R1	                                                    //01å˜é‡åœ°å€L			(16ä½è½¬8ä½
-	MOVX	A, @R1	                                               //01*2	æ•°æ®é•¿åº¦
+	MOV	DGUS±äÁ¿Ê×Ö·L, A
+¸¶°å»º´æ06Êý¾Ý¶Á³ö:
+	INC	R1	                                                    //01±äÁ¿µØÖ·L			(16Î»×ª8Î»
+	MOVX	A, @R1	                                               //01*2	Êý¾Ý³¤¶È
 	MOV	B, #2
 	MUL	AB
-	MOV	DGUSå˜é‡ä¸ªæ•°	, A
-ä»˜æ¿ç¼“å­˜07åŽæ•°æ®è¯»å‡º:
-	MOV	A, DGUSå˜é‡é¦–å€L	                                      //	DGUS0010H=STC20H
-	MOV	R0, A	                                                 //;æŽ¥æ”¶åœ°å€20-2F
-	MOV	R2, DGUSå˜é‡ä¸ªæ•°	                                      ;		æŽ¥æ”¶æ•°æ®é•¿åº¦
+	MOV	DGUS±äÁ¿¸öÊý	, A
+¸¶°å»º´æ07ºóÊý¾Ý¶Á³ö:
+	MOV	A, DGUS±äÁ¿Ê×Ö·L	                                      //	DGUS0010H=STC20H
+	MOV	R0, A	                                                 //;½ÓÊÕµØÖ·20-2F
+	MOV	R2, DGUS±äÁ¿¸öÊý	                                      ;		½ÓÊÕÊý¾Ý³¤¶È
 
-ä»˜æ¿æœ‰å¸§å¤´æŽ¥æ”¶æ•°æ®:
+¸¶°åÓÐÖ¡Í·½ÓÊÕÊý¾Ý:
 	INC	R1
 	MOVX	A, @R1
 	MOV	@R0, A
 	INC	R0
-	DJNZ	R2, ä»˜æ¿æœ‰å¸§å¤´æŽ¥æ”¶æ•°æ®
-ä»˜æ¿æœ‰å¸§å¤´æŽ¥æ”¶ç»“æŸ:
+	DJNZ	R2, ¸¶°åÓÐÖ¡Í·½ÓÊÕÊý¾Ý
+¸¶°åÓÐÖ¡Í·½ÓÊÕ½áÊø:
 	RET
-ä»˜æ¿ç¼“å­˜æ•°æ®é”™è¯¯:
+¸¶°å»º´æÊý¾Ý´íÎó:
 	RET
 
-//****************å•ç‰‡æœºä¹‹é—´é€šè®¯******************************
+//****************µ¥Æ¬»úÖ®¼äÍ¨Ñ¶******************************
 
 
-;A5	5A	06<4+(å‘é€ä¸ªæ•°*2>	83	1001	01(å‘é€ä¸ªæ•°)	0002
-å‘é€æ•°æ®åˆ°ä»˜æ¿:
-				;	MOV			STCæ•°æ®é¦–å€L	,#10H
-					;MOV			STCæ•°æ®ä¸ªæ•°,#1(16ä½ï¼‰
-				;LCALL		å‘é€æ•°æ®åˆ°è§¦æ‘¸å±
-	SETB	ä¸²å£1å‘é€ä½¿èƒ½
+;A5	5A	06<4+(·¢ËÍ¸öÊý*2>	83	1001	01(·¢ËÍ¸öÊý)	0002
+·¢ËÍÊý¾Ýµ½¸¶°å:
+				;	MOV			STCÊý¾ÝÊ×Ö·L	,#10H
+					;MOV			STCÊý¾Ý¸öÊý,#1(16Î»£©
+				;LCALL		·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ
 	MOV	SBUF, #0A5H
 	JNB	TI, $
 	CLR	TI
 	MOV	SBUF, #05AH
 	JNB	TI, $
 	CLR	TI
-	MOV	A, STCæ•°æ®ä¸ªæ•°	                                        ;å‘é€ä¸ªæ•°
+	MOV	A, STCÊý¾Ý¸öÊý	                                        ;·¢ËÍ¸öÊý
 	MOV	B, #2
 	MUL	AB	                                                    ;A.B=BA'
 	MOV	B, #4
-	ADD	A, B	                                                  ;å‘é€ä¸ªæ•°
+	ADD	A, B	                                                  ;·¢ËÍ¸öÊý
 	MOV	SBUF, A	                                               //#19
 	JNB	TI, $
 	CLR	TI
 	MOV	SBUF, #83H
 	JNB	TI, $
 	CLR	TI
-	MOV	SBUF, #00H	                                            ;	STCæ•°æ®é¦–å€H
+	MOV	SBUF, #00H	                                            ;	STCÊý¾ÝÊ×Ö·H
 	JNB	TI, $
 	CLR	TI
-	MOV	A, STCæ•°æ®é¦–å€L
+	MOV	A, STCÊý¾ÝÊ×Ö·L
 	RR	A	                                                      //40/2=0020
-	MOV	SBUF, A	                                               ;å˜é‡é¦–å€																																									//#00H
+	MOV	SBUF, A	                                               ;±äÁ¿Ê×Ö·																																									//#00H
 	JNB	TI, $
 	CLR	TI
-	MOV	A, STCæ•°æ®ä¸ªæ•°	                                        ;å‘é€ä¸ªæ•°	/	16ä½ä¸ªæ•°
+	MOV	A, STCÊý¾Ý¸öÊý	                                        ;·¢ËÍ¸öÊý	/	16Î»¸öÊý
 	MOV	SBUF, A
 	JNB	TI, $
 	CLR	TI
-	MOV	R0, STCæ•°æ®é¦–å€L	                                      ;å‘é€åœ°å€20H
-	MOV	A, STCæ•°æ®ä¸ªæ•°
+	MOV	R0, STCÊý¾ÝÊ×Ö·L	                                      ;·¢ËÍµØÖ·20H
+	MOV	A, STCÊý¾Ý¸öÊý
 	MOV	B, #2
 	MUL	AB
-	MOV	R2, A	                                                 //#1*2										;å‘é€é•¿åº¦16
-å†™Xå˜é‡å‘é€ä¸­:
+	MOV	R2, A	                                                 //#1*2										;·¢ËÍ³¤¶È16
+Ð´X±äÁ¿·¢ËÍÖÐ:
 	MOV	A, @R0
 	MOV	SBUF, A
 	JNB	TI, $
 	CLR	TI
 	INC	R0
-	DJNZ	R2, å†™Xå˜é‡å‘é€ä¸­
-	CLR	ä¸²å£1å‘é€ä½¿èƒ½
+	DJNZ	R2, Ð´X±äÁ¿·¢ËÍÖÐ
 	RET
-			///////ä»˜æ¿/////////////////////
+			///////¸¶°å/////////////////////
 
-;	5AA5		06=4+(å‘é€ä¸ªæ•°*2>	83	1001		01(å‘é€ä¸ªæ•°)	0002
-å‘é€0011H22H23Håˆ°ä»˜æ¿:
+;	5AA5		06=4+(·¢ËÍ¸öÊý*2>	83	1001		01(·¢ËÍ¸öÊý)	0002
+·¢ËÍ0011H22H23Hµ½¸¶°å:
 ;20-5FH=>0000-001FH
-	MOV	STCæ•°æ®é¦–å€L, #22H
-	MOV	STCæ•°æ®ä¸ªæ•°, #1
-	LCALL	å‘é€æ•°æ®åˆ°ä»˜æ¿
+	MOV	STCÊý¾ÝÊ×Ö·L, #22H
+	MOV	STCÊý¾Ý¸öÊý, #1
+	LCALL	·¢ËÍÊý¾Ýµ½¸¶°å
 	RET
-å‘é€20H21Håˆ°ä¸»æ¿:	                                          ;ä»˜æ¿				ç”¨
+·¢ËÍ20H21Hµ½Ö÷°å:	                                          ;¸¶°å				ÓÃ
 ;20-5FH=>0000-001FH
-	MOV	STCæ•°æ®é¦–å€L, #20H
-	MOV	STCæ•°æ®ä¸ªæ•°, #1
-	LCALL	å‘é€æ•°æ®åˆ°ä»˜æ¿
+	MOV	STCÊý¾ÝÊ×Ö·L, #20H
+	MOV	STCÊý¾Ý¸öÊý, #1
+	LCALL	·¢ËÍÊý¾Ýµ½¸¶°å
 	RET
-////////ä»˜æ¿END//////////////////////////////
+////////¸¶°åEND//////////////////////////////
 
 ;5AA5	<013(#3+X)	82			00	00		>	0060-006F
-å‘é€æ•°æ®åˆ°è§¦æ‘¸å±:
-				;	MOV			STCæ•°æ®é¦–å€L	,#00H
-					;MOV			å‘é€ä¸ªæ•°,#32
-				;LCALL		å‘é€æ•°æ®åˆ°è§¦æ‘¸å±
-	SETB	ä¸²å£1å‘é€ä½¿èƒ½
+·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ:
+				;	MOV			STCÊý¾ÝÊ×Ö·L	,#00H
+					;MOV			·¢ËÍ¸öÊý,#32
+				;LCALL		·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ
 	MOV	SBUF, #5AH
 	JNB	TI, $
 	CLR	TI
@@ -3621,192 +3936,189 @@ NOCARRY16:
 	JNB	TI, $
 	CLR	TI
 	MOV	A, #3
-	ADD	A, STCæ•°æ®ä¸ªæ•°	                                        ;å‘é€ä¸ªæ•°
+	ADD	A, STCÊý¾Ý¸öÊý	                                        ;·¢ËÍ¸öÊý
 	MOV	SBUF, A	                                               //#19
 	JNB	TI, $
 	CLR	TI
 	MOV	SBUF, #82H
 	JNB	TI, $
 	CLR	TI
-	MOV	SBUF, #0                                               ;STCæ•°æ®é¦–å€H
+	MOV	SBUF, #0	                                              ;STCÊý¾ÝÊ×Ö·H
 	JNB	TI, $
 	CLR	TI
-	MOV	A, STCæ•°æ®é¦–å€L
+	MOV	A, STCÊý¾ÝÊ×Ö·L
 	RR	A	                                                      //40/2=0020
-	MOV	SBUF, A	                                               ;å˜é‡é¦–å€																																									//#00H
+	MOV	SBUF, A	                                               ;±äÁ¿Ê×Ö·																																									//#00H
 	JNB	TI, $
 	CLR	TI
-	MOV	R0, STCæ•°æ®é¦–å€L	                                      ;å‘é€åœ°å€20H
-	MOV	R2, STCæ•°æ®ä¸ªæ•°	                                       //#32										;å‘é€é•¿åº¦16
-å†™XXå˜é‡å‘é€ä¸­:
+	MOV	R0, STCÊý¾ÝÊ×Ö·L	                                      ;·¢ËÍµØÖ·20H
+	MOV	R2, STCÊý¾Ý¸öÊý	                                       //#32										;·¢ËÍ³¤¶È16
+Ð´XX±äÁ¿·¢ËÍÖÐ:
 	MOV	A, @R0
 	MOV	SBUF, A
 	JNB	TI, $
 	CLR	TI
 	INC	R0
-	DJNZ	R2, å†™XXå˜é‡å‘é€ä¸­
-	CLR	ä¸²å£1å‘é€ä½¿èƒ½
+	DJNZ	R2, Ð´XX±äÁ¿·¢ËÍÖÐ
 	RET
 
 
 
 
 
-	//***æ”¹*202409****@11.0592MHZä¸²å£å‚æ•°*****
+	//***¸Ä*202409****@11.0592MHZ´®¿Ú²ÎÊý*****
 ;5AA5	013(#4+X)	<82			00	00			0060-006F 
 
-å‘é€20Hè‡³5FHåˆ°è§¦æ‘¸å±:
-å‘é€32ä¸ªæ•°æ®:
+·¢ËÍ20HÖÁ5FHµ½´¥ÃþÆÁ:
+·¢ËÍ32¸öÊý¾Ý:
 ;20-5FH=>0010-0030H
-	MOV	STCæ•°æ®é¦–å€L, #20H
-	MOV	STCæ•°æ®ä¸ªæ•°, #64
-	LCALL	å‘é€æ•°æ®åˆ°è§¦æ‘¸å±
+	MOV	STCÊý¾ÝÊ×Ö·L, #20H
+	MOV	STCÊý¾Ý¸öÊý, #64
+	LCALL	·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ
 	RET
-å‘é€2CHè‡³4FHåˆ°è§¦æ‘¸å±:
-å‘é€34ä¸ªæ•°æ®:
+·¢ËÍ2CHÖÁ4FHµ½´¥ÃþÆÁ:
+·¢ËÍ34¸öÊý¾Ý:
 ;20-5FH=>0010-0030H
-	MOV	STCæ•°æ®é¦–å€L, #2CH
-	MOV	STCæ•°æ®ä¸ªæ•°, #34
-	LCALL	å‘é€æ•°æ®åˆ°è§¦æ‘¸å±
+	MOV	STCÊý¾ÝÊ×Ö·L, #2CH
+	MOV	STCÊý¾Ý¸öÊý, #34
+	LCALL	·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ
 	RET
-å‘é€30è§¦æ‘¸å±:
-	MOV	STCæ•°æ®é¦–å€L, #30
-	MOV	STCæ•°æ®ä¸ªæ•°, #2
-	LCALL	å‘é€æ•°æ®åˆ°è§¦æ‘¸å±
+·¢ËÍ30´¥ÃþÆÁ:
+	MOV	STCÊý¾ÝÊ×Ö·L, #30
+	MOV	STCÊý¾Ý¸öÊý, #2
+	LCALL	·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ
 	RET
 
-å‘é€20Hè‡³24Håˆ°è§¦æ‘¸å±:
+·¢ËÍ20HÖÁ24Hµ½´¥ÃþÆÁ:
 ;20-5FH=>0000-001FH
-	MOV	STCæ•°æ®é¦–å€L, #20H
-	MOV	STCæ•°æ®ä¸ªæ•°, #4
-	LCALL	å‘é€æ•°æ®åˆ°è§¦æ‘¸å±
-	RET
-å‘é€ä¼ æ„Ÿå™¨ä¿¡å·æ ‡è®°è§¦æ‘¸å±:
-	MOV	STCæ•°æ®é¦–å€L, #22H
-	MOV	STCæ•°æ®ä¸ªæ•°, #2
-	LCALL	å‘é€æ•°æ®åˆ°è§¦æ‘¸å±
-	RET
-å‘é€æŒ‰æ‰­æ ‡è®°åˆ°è§¦æ‘¸å±:
-	MOV	STCæ•°æ®é¦–å€L, #2AH
-	MOV	STCæ•°æ®ä¸ªæ•°, #2
-	LCALL	å‘é€æ•°æ®åˆ°è§¦æ‘¸å±
-	RET
-
-
-å‘é€2627è°ƒè¯•æ ‡è®°è§¦æ‘¸å±:
-	MOV	STCæ•°æ®é¦–å€L, #26H
-	MOV	STCæ•°æ®ä¸ªæ•°, #2
-	LCALL	å‘é€æ•°æ®åˆ°è§¦æ‘¸å±
-	RET     
+	MOV	STCÊý¾ÝÊ×Ö·L, #20H
+	MOV	STCÊý¾Ý¸öÊý, #4
+	LCALL	·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ
+	RET   
 
 
 
+·¢ËÍË¢ÐÂ8Êý¾Ý:
+	MOV	STCÊý¾ÝÊ×Ö·L, #16H
+	MOV	STCÊý¾Ý¸öÊý, #2
+	LCALL	·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ
+	RET
 
-å‘é€åž‹å·å€¼åˆ°è§¦æ‘¸å±:
-	MOV	STCæ•°æ®é¦–å€L, #44H
-	MOV	STCæ•°æ®ä¸ªæ•°, #2
-	LCALL	å‘é€æ•°æ®åˆ°è§¦æ‘¸å±
+·¢ËÍ´«¸ÐÆ÷ÐÅºÅ±ê¼Ç´¥ÃþÆÁ:
+	MOV	STCÊý¾ÝÊ×Ö·L, #´«¸ÐÆ÷±ê¼Ç11H
+	MOV	STCÊý¾Ý¸öÊý, #2
+	LCALL	·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ
 	RET
-å‘é€XYå½“å‰æ•°å€¼åˆ°è§¦æ‘¸å±:
-	MOV	STCæ•°æ®é¦–å€L, #48H
-	MOV	STCæ•°æ®ä¸ªæ•°, #4
-	LCALL	å‘é€æ•°æ®åˆ°è§¦æ‘¸å±
+·¢ËÍ°´Å¤±ê¼Çµ½´¥ÃþÆÁ:
+	MOV	STCÊý¾ÝÊ×Ö·L, #°´Å¤±ê¼Ç14H
+	MOV	STCÊý¾Ý¸öÊý, #2
+	LCALL	·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ
 	RET
-å‘é€é•¿åº¦åˆ°è§¦æ‘¸å±:
-	MOV	STCæ•°æ®é¦–å€L, #50H
-	MOV	STCæ•°æ®ä¸ªæ•°, #18
-	LCALL	å‘é€æ•°æ®åˆ°è§¦æ‘¸å±
+
+
+
+
+
+
+
+
+
+
+·¢ËÍÐÍºÅÖµµ½´¥ÃþÆÁ:
+	MOV	STCÊý¾ÝÊ×Ö·L, #44H
+	MOV	STCÊý¾Ý¸öÊý, #2
+	LCALL	·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ
 	RET
-å‘é€å•ä¸ªæ•°æ®åˆ°è§¦æ‘¸å±:
-		//MOV	STCæ•°æ®é¦–å€L, #3H 
-	MOV	A, STCæ•°æ®é¦–å€L
+·¢ËÍXYµ±Ç°ÊýÖµµ½´¥ÃþÆÁ:
+	MOV	STCÊý¾ÝÊ×Ö·L, #48H
+	MOV	STCÊý¾Ý¸öÊý, #4
+	LCALL	·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ
+	RET
+·¢ËÍ³¤¶Èµ½´¥ÃþÆÁ:
+	MOV	STCÊý¾ÝÊ×Ö·L, #50H
+	MOV	STCÊý¾Ý¸öÊý, #18
+	LCALL	·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ
+	RET
+·¢ËÍµ¥¸öÊý¾Ýµ½´¥ÃþÆÁ:
+		//MOV	STCÊý¾ÝÊ×Ö·L, #3H 
+	MOV	A, STCÊý¾ÝÊ×Ö·L
 	MOV	B, #2
 	DIV	AB
-	JZ	åœ°å€ä½ä¸ºé«˜ä½æ­£å¸¸å‘é€
-	MOV	A, STCæ•°æ®é¦–å€L
+	JZ	µØÖ·Î»Îª¸ßÎ»Õý³£·¢ËÍ
+	MOV	A, STCÊý¾ÝÊ×Ö·L
 	DEC	A
-	MOV	STCæ•°æ®é¦–å€L	, A
-åœ°å€ä½ä¸ºé«˜ä½æ­£å¸¸å‘é€:
-	MOV	STCæ•°æ®ä¸ªæ•°, #2
-	LCALL	å‘é€æ•°æ®åˆ°è§¦æ‘¸å±
+	MOV	STCÊý¾ÝÊ×Ö·L	, A
+µØÖ·Î»Îª¸ßÎ»Õý³£·¢ËÍ:
+	MOV	STCÊý¾Ý¸öÊý, #2
+	LCALL	·¢ËÍÊý¾Ýµ½´¥ÃþÆÁ
 	RET
 
 
 
+       	//***¸Ä*202503ÐÂÔö****@11.0592MHZ´®¿Ú²ÎÊý***** 
+//3.20	15W4K48S2<SRAMµØÖ·³£¹æ00H-FFHÀ©Õ¹OOOOH-0EFFH×Ü¹²4K,¶ÁÖ¸ÁîMOVX	@DOTR, MOVX		@Ri
+//3.3.1	ÐÍºÅ×¢½âSRAMÊ×Ö·	0100H-018FH(9*8*2¸ö×Ö½Ú    
+//3.3.2	ÐÍºÅ0:0100H-010FH(16¸ö×Ö½Ú)´¥ÃþÆÁ0100H-0108H(8*2=16¸ö×Ö½Ú)	  
+//3.3.4	ÐÍºÅ1:0110H-011FH(16¸ö×Ö½Ú)´¥ÃþÆÁ0108H-0110H(8*2=16¸ö×Ö½Ú)  
+//3.3.5	ÐÍºÅ0	µ±Ç°ÐÍºÅÓÃ,	0100H-018F  Í³Ò»·¢ËÍ£¬·¢ËÍÊ±STCÊý¾ÝÊ×Ö·H²»³ý2Ðè×¢Òâ 
+;0100H-018F  Í³Ò»·¢ËÍ£¬·¢ËÍÊ±STCÊý¾ÝÊ×Ö·H²»³ý2Ðè×¢Òâ 
 
-
-
-
-
-
-
-       	//***æ”¹*202503æ–°å¢ž****@11.0592MHZä¸²å£å‚æ•°***** 
-//3.20	15W4K48S2<SRAMåœ°å€å¸¸è§„00H-FFHæ‰©å±•OOOOH-0EFFHæ€»å…±4K,è¯»æŒ‡ä»¤MOVX	@DOTR, MOVX		@Ri
-//3.3.1	åž‹å·æ³¨è§£SRAMé¦–å€	0100H-018FH(9*8*2ä¸ªå­—èŠ‚    
-//3.3.2	åž‹å·0:0100H-010FH(16ä¸ªå­—èŠ‚)è§¦æ‘¸å±0100H-0108H(8*2=16ä¸ªå­—èŠ‚)	  
-//3.3.4	åž‹å·1:0110H-011FH(16ä¸ªå­—èŠ‚)è§¦æ‘¸å±0108H-0110H(8*2=16ä¸ªå­—èŠ‚)  
-//3.3.5	åž‹å·0	å½“å‰åž‹å·ç”¨,	0100H-018F  ç»Ÿä¸€å‘é€ï¼Œå‘é€æ—¶STCæ•°æ®é¦–å€Hä¸é™¤2éœ€æ³¨æ„ 
-;0100H-018F  ç»Ÿä¸€å‘é€ï¼Œå‘é€æ—¶STCæ•°æ®é¦–å€Hä¸é™¤2éœ€æ³¨æ„ 
-
-;************å‘é€æ‰©å±•æ•°æ®åˆ°è§¦æ‘¸å±***************************************88
+;************·¢ËÍÀ©Õ¹Êý¾Ýµ½´¥ÃþÆÁ***************************************88
 
 	;5AA5	<013(#3+X)	82			00	00		>	0060-006F
-å‘é€æ‰©å±•æ•°æ®åˆ°è§¦æ‘¸å±:
-				;MOV			STCæ•°æ®é¦–å€H	,#01H
-				;MOV			STCæ•°æ®é¦–å€L	,#00H
-					;MOV		STCæ•°æ®ä¸ªæ•°,#32    ;ä¸èƒ½å¤§äºŽ255-3
-				;LCALL		å‘é€æ‰©å±•æ•°æ®åˆ°è§¦æ‘¸å±
-	SETB	ä¸²å£1å‘é€ä½¿èƒ½
-	MOV	SBUF, #5AH
+·¢ËÍÀ©Õ¹Êý¾Ýµ½´¥ÃþÆÁ:
+				;MOV			STCÊý¾ÝÊ×Ö·H	,#01H
+				;MOV			STCÊý¾ÝÊ×Ö·L	,#00H
+					;MOV		STCÊý¾Ý¸öÊý,#32    ;²»ÄÜ´óÓÚ255-3
+				;LCALL		·¢ËÍÀ©Õ¹Êý¾Ýµ½´¥ÃþÆÁ
+		MOV	SBUF, #5AH
 	JNB	TI, $
 	CLR	TI
 	MOV	SBUF, #0A5H
 	JNB	TI, $
 	CLR	TI
 	MOV	A, #3
-	ADD	A, STCæ•°æ®ä¸ªæ•°	                                        ;å‘é€ä¸ªæ•°
+	ADD	A, STCÊý¾Ý¸öÊý	                                        ;·¢ËÍ¸öÊý
 	MOV	SBUF, A	                                               //#19
 	JNB	TI, $
 	CLR	TI
 	MOV	SBUF, #82H
 	JNB	TI, $
 	CLR	TI
-	MOV	A, STCæ•°æ®é¦–å€H
+	MOV	A, STCÊý¾ÝÊ×Ö·H
  ;MOV	B, #2
 	;DIV	AB            					;0100H*2						
 	MOV	SBUF, A
 	JNB	TI, $
 	CLR	TI
-	MOV	A, STCæ•°æ®é¦–å€L
+	MOV	A, STCÊý¾ÝÊ×Ö·L
 	MOV	B, #2
 	DIV	AB	                                                    //40/2=0020
-	MOV	SBUF, A	                                               ;å˜é‡é¦–å€																																									//#00H
+	MOV	SBUF, A	                                               ;±äÁ¿Ê×Ö·																																									//#00H
 	JNB	TI, $
 	CLR	TI
-	MOV	DPH, STCæ•°æ®é¦–å€H
-	MOV	DPL, STCæ•°æ®é¦–å€L	                                     ;å‘é€åœ°å€20H
-	MOV	R2, STCæ•°æ®ä¸ªæ•°	                                       //#32										;å‘é€é•¿åº¦16
-åå…­ä½å˜é‡å‘é€ä¸­:
+	MOV	DPH, STCÊý¾ÝÊ×Ö·H
+	MOV	DPL, STCÊý¾ÝÊ×Ö·L	                                     ;·¢ËÍµØÖ·20H
+	MOV	R2, STCÊý¾Ý¸öÊý	                                       //#32										;·¢ËÍ³¤¶È16
+Ê®ÁùÎ»±äÁ¿·¢ËÍÖÐ:
 	MOVX	A, @DPTR
 	MOV	SBUF, A
 	JNB	TI, $
 	CLR	TI
 	INC	DPTR
-	DJNZ	R2, åå…­ä½å˜é‡å‘é€ä¸­
-	CLR	ä¸²å£1å‘é€ä½¿èƒ½
-	RET    
+	DJNZ	R2, Ê®ÁùÎ»±äÁ¿·¢ËÍÖÐ
+	RET
 
 
 
 
-;********å‘é€å½“å‰åž‹å·0æ³¨è§£**è½¬ç”¨***** 01X0åˆ°0100è§¦æ‘¸å±
+;********·¢ËÍµ±Ç°ÐÍºÅ0×¢½â**×ªÓÃ***** 01X0µ½0100´¥ÃþÆÁ
 ;5AA5	<013(#3+X)	82			00	00		>	0060-006F
-å‘é€å½“å‰åž‹å·æ³¨è§£åˆ°è§¦æ‘¸å±:
-				;MOV			STCæ•°æ®é¦–å€H	,#01H
-				;MOV			STCæ•°æ®é¦–å€L	,#00H
-					;MOV		STCæ•°æ®ä¸ªæ•°,#32    ;ä¸èƒ½å¤§äºŽ255-3
-				;LCALL		å‘é€æ‰©å±•æ•°æ®åˆ°è§¦æ‘¸å±
-	SETB	ä¸²å£1å‘é€ä½¿èƒ½
+·¢ËÍµ±Ç°ÐÍºÅ×¢½âµ½´¥ÃþÆÁ:
+				;MOV			STCÊý¾ÝÊ×Ö·H	,#01H
+				;MOV			STCÊý¾ÝÊ×Ö·L	,#00H
+					;MOV		STCÊý¾Ý¸öÊý,#32    ;²»ÄÜ´óÓÚ255-3
+				;LCALL		·¢ËÍÀ©Õ¹Êý¾Ýµ½´¥ÃþÆÁ
 	MOV	SBUF, #5AH
 	JNB	TI, $
 	CLR	TI
@@ -3814,122 +4126,121 @@ NOCARRY16:
 	JNB	TI, $
 	CLR	TI
 	MOV	A, #3
-	ADD	A, STCæ•°æ®ä¸ªæ•°	                                        ;å‘é€ä¸ªæ•°
+	ADD	A, STCÊý¾Ý¸öÊý	                                        ;·¢ËÍ¸öÊý
 	MOV	SBUF, A	                                               //#19
 	JNB	TI, $
 	CLR	TI
 	MOV	SBUF, #82H
 	JNB	TI, $
 	CLR	TI
-	MOV	A,#01H; è§¦æ‘¸å±å½“å‰åž‹å·æ³¨è§£é¦–å€H	 ;     
+	MOV	A, #01H	                                               ; ´¥ÃþÆÁµ±Ç°ÐÍºÅ×¢½âÊ×Ö·H	 ;     
 	MOV	SBUF, A
 	JNB	TI, $
 	CLR	TI
-	MOV	A,#00H; è§¦æ‘¸å±å½“å‰åž‹å·æ³¨è§£é¦–å€H;                                            
-	MOV	SBUF, A	                                               ;å˜é‡é¦–å€																																									//#00H
+	MOV	A, #00H	                                               ; ´¥ÃþÆÁµ±Ç°ÐÍºÅ×¢½âÊ×Ö·H;                                            
+	MOV	SBUF, A	                                               ;±äÁ¿Ê×Ö·																																									//#00H
 	JNB	TI, $
 	CLR	TI
-	MOV	DPH, STCæ•°æ®é¦–å€H
-	MOV	DPL, STCæ•°æ®é¦–å€L	                                     ;å‘é€åœ°å€20H
-	MOV	R2, STCæ•°æ®ä¸ªæ•°	                                       //#32										;å‘é€é•¿åº¦16
-æ³¨è§£åå…­ä½å˜é‡å‘é€ä¸­:
+	MOV	DPH, STCÊý¾ÝÊ×Ö·H
+	MOV	DPL, STCÊý¾ÝÊ×Ö·L	                                     ;·¢ËÍµØÖ·20H
+	MOV	R2, STCÊý¾Ý¸öÊý	                                       //#32										;·¢ËÍ³¤¶È16
+×¢½âÊ®ÁùÎ»±äÁ¿·¢ËÍÖÐ:
 	MOVX	A, @DPTR
 	MOV	SBUF, A
 	JNB	TI, $
 	CLR	TI
 	INC	DPTR
-	DJNZ	R2, æ³¨è§£åå…­ä½å˜é‡å‘é€ä¸­
-	CLR	ä¸²å£1å‘é€ä½¿èƒ½
+	DJNZ	R2, ×¢½âÊ®ÁùÎ»±äÁ¿·¢ËÍÖÐ
 	RET
 
 
 
 ;5AA5	013(#4+X)	<82	01	00			0100-018FF 
-å‘é€åž‹å·è¡¨æ ¼æ³¨è§£:
-å‘é€100Hè‡³18FHåˆ°100Hè§¦æ‘¸å±:
-;å‘é€143ä¸ªæ•°æ®:    ;
+·¢ËÍÐÍºÅ±í¸ñ×¢½â:
+·¢ËÍ100HÖÁ18FHµ½100H´¥ÃþÆÁ:
+;·¢ËÍ143¸öÊý¾Ý:    ;
 ;0100-018F=>0100-0147H   
-	MOV	STCæ•°æ®é¦–å€H	, #01H
-	MOV	STCæ•°æ®é¦–å€L	, #00H
-	MOV	STCæ•°æ®ä¸ªæ•°, #8FH	                                     ;ä¸èƒ½å¤§äºŽ255-3(å‘é€æ—¶è¿˜è¦åŠ 3,ä¸èƒ½å¤§äºŽFF)   
-	LCALL	å‘é€æ‰©å±•æ•°æ®åˆ°è§¦æ‘¸å±
+	MOV	STCÊý¾ÝÊ×Ö·H	, #01H
+	MOV	STCÊý¾ÝÊ×Ö·L	, #00H
+	MOV	STCÊý¾Ý¸öÊý, #8FH	                                     ;²»ÄÜ´óÓÚ255-3(·¢ËÍÊ±»¹Òª¼Ó3,²»ÄÜ´óÓÚFF)   
+	LCALL	·¢ËÍÀ©Õ¹Êý¾Ýµ½´¥ÃþÆÁ
 	ret
 
-å‘é€å½“å‰åž‹å·æ³¨è§£:
+·¢ËÍµ±Ç°ÐÍºÅ×¢½â:
 ;0100-011F=>0100-0107H  
-	MOV	STCæ•°æ®é¦–å€H	, #01H  
-	MOV		A ,åž‹å·å½“å‰å€¼
- MOV		B,#10H
- MUL		AB
-	MOV	STCæ•°æ®é¦–å€L	, A
-	MOV	STCæ•°æ®ä¸ªæ•°, #0FH	                                     ;ä¸èƒ½å¤§äºŽ255-3(å‘é€æ—¶è¿˜è¦åŠ 3,ä¸èƒ½å¤§äºŽFF)
-	LCALL	å‘é€å½“å‰åž‹å·æ³¨è§£åˆ°è§¦æ‘¸å±
+	MOV	STCÊý¾ÝÊ×Ö·H	, #01H
+	MOV	A	, ÐÍºÅµ±Ç°Öµ
+	MOV	B, #10H
+	MUL	AB
+	MOV	STCÊý¾ÝÊ×Ö·L	, A
+	MOV	STCÊý¾Ý¸öÊý, #0FH	                                     ;²»ÄÜ´óÓÚ255-3(·¢ËÍÊ±»¹Òª¼Ó3,²»ÄÜ´óÓÚFF)
+	LCALL	·¢ËÍµ±Ç°ÐÍºÅ×¢½âµ½´¥ÃþÆÁ
 	ret
 
 
 ;******************************************
-åž‹å·è¡¨æ ¼æ³¨è§£åˆå§‹åŒ–:
-åž‹å·0æ³¨è§£åˆå§‹åŒ–:
+ÐÍºÅ±í¸ñ×¢½â³õÊ¼»¯:
+ÐÍºÅ0×¢½â³õÊ¼»¯:
 	MOV	P_SW1	, #00H
-	MOV	DPTR, #è¡¨æ ¼Aæ³¨è§£TAB
+	MOV	DPTR, #±í¸ñA×¢½âTAB
 	MOV	P_SW1	, #01H
 	MOV	DPTR, #100H
 	MOV	P_SW1	, #00H
-	LCALL	åž‹å·16å­—èŠ‚è¡¨æ ¼æ³¨è§£æŸ¥è¡¨
-	MOV	DPTR, #è¡¨æ ¼1æ³¨è§£TAB
+	LCALL	ÐÍºÅ16×Ö½Ú±í¸ñ×¢½â²é±í
+	MOV	DPTR, #±í¸ñ1×¢½âTAB
 	MOV	P_SW1	, #01H
 	MOV	DPTR, #110H
 	MOV	P_SW1	, #00H
-	LCALL	åž‹å·16å­—èŠ‚è¡¨æ ¼æ³¨è§£æŸ¥è¡¨
-	MOV	DPTR, #è¡¨æ ¼2æ³¨è§£TAB
+	LCALL	ÐÍºÅ16×Ö½Ú±í¸ñ×¢½â²é±í
+	MOV	DPTR, #±í¸ñ2×¢½âTAB
 	MOV	P_SW1	, #01H
 	MOV	DPTR, #120H
 	MOV	P_SW1	, #00H
-	LCALL	åž‹å·16å­—èŠ‚è¡¨æ ¼æ³¨è§£æŸ¥è¡¨
-	MOV	DPTR, #è¡¨æ ¼3æ³¨è§£TAB
+	LCALL	ÐÍºÅ16×Ö½Ú±í¸ñ×¢½â²é±í
+	MOV	DPTR, #±í¸ñ3×¢½âTAB
 	MOV	P_SW1	, #01H
 	MOV	DPTR, #130H
 	MOV	P_SW1	, #00H
-	LCALL	åž‹å·16å­—èŠ‚è¡¨æ ¼æ³¨è§£æŸ¥è¡¨
-	MOV	DPTR, #è¡¨æ ¼4æ³¨è§£TAB
+	LCALL	ÐÍºÅ16×Ö½Ú±í¸ñ×¢½â²é±í
+	MOV	DPTR, #±í¸ñ4×¢½âTAB
 	MOV	P_SW1	, #01H
 	MOV	DPTR, #140H
 	MOV	P_SW1	, #00H
-	LCALL	åž‹å·16å­—èŠ‚è¡¨æ ¼æ³¨è§£æŸ¥è¡¨
-	MOV	DPTR, #è¡¨æ ¼5æ³¨è§£TAB
+	LCALL	ÐÍºÅ16×Ö½Ú±í¸ñ×¢½â²é±í
+	MOV	DPTR, #±í¸ñ5×¢½âTAB
 	MOV	P_SW1	, #01H
 	MOV	DPTR, #150H
 	MOV	P_SW1	, #00H
-	LCALL	åž‹å·16å­—èŠ‚è¡¨æ ¼æ³¨è§£æŸ¥è¡¨
-	MOV	DPTR, #è¡¨æ ¼6æ³¨è§£TAB
+	LCALL	ÐÍºÅ16×Ö½Ú±í¸ñ×¢½â²é±í
+	MOV	DPTR, #±í¸ñ6×¢½âTAB
 	MOV	P_SW1	, #01H
 	MOV	DPTR, #160H
 	MOV	P_SW1	, #00H
-	LCALL	åž‹å·16å­—èŠ‚è¡¨æ ¼æ³¨è§£æŸ¥è¡¨
-	MOV	DPTR, #è¡¨æ ¼7æ³¨è§£TAB
+	LCALL	ÐÍºÅ16×Ö½Ú±í¸ñ×¢½â²é±í
+	MOV	DPTR, #±í¸ñ7×¢½âTAB
 	MOV	P_SW1	, #01H
 	MOV	DPTR, #170H
 	MOV	P_SW1	, #00H
-	LCALL	åž‹å·16å­—èŠ‚è¡¨æ ¼æ³¨è§£æŸ¥è¡¨
-	MOV	DPTR, #è¡¨æ ¼8æ³¨è§£TAB
+	LCALL	ÐÍºÅ16×Ö½Ú±í¸ñ×¢½â²é±í
+	MOV	DPTR, #±í¸ñ8×¢½âTAB
 	MOV	P_SW1	, #01H
 	MOV	DPTR, #180H
 	MOV	P_SW1	, #00H
-	LCALL	åž‹å·16å­—èŠ‚è¡¨æ ¼æ³¨è§£æŸ¥è¡¨
+	LCALL	ÐÍºÅ16×Ö½Ú±í¸ñ×¢½â²é±í
 	RET
 
 
 
 
-åž‹å·16å­—èŠ‚è¡¨æ ¼æ³¨è§£æŸ¥è¡¨:
-;MOV	DPTR, #è¡¨æ ¼æ³¨è§£TAB
+ÐÍºÅ16×Ö½Ú±í¸ñ×¢½â²é±í:
+;MOV	DPTR, #±í¸ñ×¢½âTAB
 ;MOV	P_SW1	, #00H
-;MOV	DPH,  	STCæ•°æ®é¦–å€H	 
-;MOV	DPL, 		STCæ•°æ®é¦–å€L	 
+;MOV	DPH,  	STCÊý¾ÝÊ×Ö·H	 
+;MOV	DPL, 		STCÊý¾ÝÊ×Ö·L	 
 ;MOV	P_SW1	, #01H          
 	MOV	R0, #00H
 	MOV	R1, #0FH
-è¡¨æ ¼æ³¨è§£å†™å…¥:
+±í¸ñ×¢½âÐ´Èë:
 	MOV	A, R0
 	MOVC	A, @A+DPTR
 	MOV	P_SW1	, #01H
@@ -3937,49 +4248,48 @@ NOCARRY16:
 	INC	DPTR
 	MOV	P_SW1	, #00H
 	INC	R0
-	DJNZ	R1, è¡¨æ ¼æ³¨è§£å†™å…¥
+	DJNZ	R1, ±í¸ñ×¢½âÐ´Èë
 	RET
 
-è¡¨æ ¼Aæ³¨è§£TAB:
-	DB	"-----------------"   ;ä¸ç”¨
-è¡¨æ ¼1æ³¨è§£TAB:
-	DB	"ç”µç£¨-1000000000000"
-è¡¨æ ¼2æ³¨è§£TAB:
-	DB	"å¹é£Žæœº-2000000000"
-è¡¨æ ¼3æ³¨è§£TAB:
-	DB	"æ‰‹ç”µé’»-300000000"
-è¡¨æ ¼4æ³¨è§£TAB:
-	DB	"æ°´é’»-4000000000"
-è¡¨æ ¼5æ³¨è§£TAB:
-	DB	"ç£¨å…‰æœº-5000000000"
-è¡¨æ ¼6æ³¨è§£TAB:
-	DB	"ç”µåˆ¨-6000000000"
-è¡¨æ ¼7æ³¨è§£TAB:
-	DB	"æŠ›å…‰æœº-7000000000"
-è¡¨æ ¼8æ³¨è§£TAB:
-	DB	"ç”µé•-8000000000"
-è¡¨æ ¼9æ³¨è§£TAB:
-	DB	"å†²å‡»é’»-9000000000"
+±í¸ñA×¢½âTAB:
+	DB	"-----------------"	                                    ;²»ÓÃ
+±í¸ñ1×¢½âTAB:
+	DB	"µçÄ¥-10 0000000000"
+±í¸ñ2×¢½âTAB:
+	DB	"´µ·ç»ú-2000000000"
+±í¸ñ3×¢½âTAB:
+	DB	"ÊÖµç×ê-300000000"
+±í¸ñ4×¢½âTAB:
+	DB	"Ë®×ê-4000000000"
+±í¸ñ5×¢½âTAB:
+	DB	"Ä¥¹â»ú-5000000000"
+±í¸ñ6×¢½âTAB:
+	DB	"µçÅÙ-6000000000"
+±í¸ñ7×¢½âTAB:
+	DB	"Å×¹â»ú-7000000000"
+±í¸ñ8×¢½âTAB:
+	DB	"µç¸ä-8000000000"
+±í¸ñ9×¢½âTAB:
+	DB	"³å»÷×ê-9000000000"
 
 
-;*************END*******æ”¹*202503æ–°å¢ž****@11.0592MHZä¸²å£å‚æ•°*********************** 
+;*************END*******¸Ä*202503ÐÂÔö****@11.0592MHZ´®¿Ú²ÎÊý*********************** 
 
 
 
 /*
-å†™DGUSå±å¯„å­˜å™¨æŒ‡ä»¤ï¼ˆ80ï¼‰
-				æ­¤å¤„ä»¥åˆ‡æ¢å›¾ç‰‡ä¸ºä¾‹,å¦‚ä»Žå½“å‰é¡µé¢åˆ‡æ¢åˆ°ç¬¬6å¹…å›¾ç‰‡,å‘å±å‘æŒ‡ä»¤å¦‚ä¸‹ï¼š
+Ð´DGUSÆÁ¼Ä´æÆ÷Ö¸Áî£¨80£©
+				´Ë´¦ÒÔÇÐ»»Í¼Æ¬ÎªÀý,Èç´Óµ±Ç°Ò³ÃæÇÐ»»µ½µÚ6·ùÍ¼Æ¬,ÏòÆÁ·¢Ö¸ÁîÈçÏÂ£º
 5A	A5	04	80	03	0005
-5A	A5		è¡¨ç¤ºï¼šå¸§å¤´
-04					è¡¨ç¤ºï¼šæ•°æ®é•¿åº¦
-80					è¡¨ç¤ºï¼šå†™DGUSå±å¯„å­˜å™¨
-03					è¡¨ç¤ºï¼šå¯„å­˜å™¨ï¼ˆå­˜å‚¨DGUS	å±é¡µé¢å¯„å­˜å™¨ï¼ˆ03å’Œ04å¯„å­˜å™¨å­˜æ”¾çš„é¡µé¢ï¼‰ï¼‰
-0005			è¡¨ç¤ºï¼šå‘å¯„å­˜å™¨03å’Œ04åˆ†åˆ«å†™00å’Œ05,ä¹Ÿå°±æ˜¯åˆ‡æ¢åˆ°ç¬¬5é¡µ
+5A	A5		±íÊ¾£ºÖ¡Í·
+04					±íÊ¾£ºÊý¾Ý³¤¶È
+80					±íÊ¾£ºÐ´DGUSÆÁ¼Ä´æÆ÷
+03					±íÊ¾£º¼Ä´æÆ÷£¨´æ´¢DGUS	ÆÁÒ³Ãæ¼Ä´æÆ÷£¨03ºÍ04¼Ä´æÆ÷´æ·ÅµÄÒ³Ãæ£©£©
+0005			±íÊ¾£ºÏò¼Ä´æÆ÷03ºÍ04·Ö±ðÐ´00ºÍ05,Ò²¾ÍÊÇÇÐ»»µ½µÚ5Ò³
 */
-å†™DGUSå±å¯„å­˜å™¨:
-;MOV	æ˜¾ç¤ºç”»é¢,
-DGUSåˆ‡æ¢å›¾ç‰‡:
-	SETB	ä¸²å£1å‘é€ä½¿èƒ½
+Ð´DGUSÆÁ¼Ä´æÆ÷:
+;MOV	ÏÔÊ¾»­Ãæ,
+DGUSÇÐ»»Í¼Æ¬:  
 	MOV	SBUF, #5AH
 	JNB	TI, $
 	CLR	TI
@@ -3998,29 +4308,27 @@ DGUSåˆ‡æ¢å›¾ç‰‡:
 	MOV	SBUF, #00H
 	JNB	TI, $
 	CLR	TI
-	MOV	SBUF, æ˜¾ç¤ºç”»é¢	                                        ;æŠ¥è­¦ä»£å·;#05H
+	MOV	SBUF, ÏÔÊ¾»­Ãæ	                                        ;±¨¾¯´úºÅ;#05H
 	JNB	TI, $
 	CLR	TI
-	CLR	ä¸²å£1å‘é€ä½¿èƒ½
 	RET
 
 
 
 	/*
-	//***å¼€å§‹*****ä¸²å£è¯»å˜é‡***********
-è¯»å˜é‡å­˜å‚¨å™¨æŒ‡ä»¤æŒ‡ä»¤ï¼ˆ0X83ï¼‰
-æ­¤å¤„ä»¥è¯»	1000	å˜é‡åœ°å€é‡Œçš„æ•°å€¼ï¼ˆå‡è®¾å½“å‰æ•°å€¼ä¸º	2ï¼‰ä¸ºä¾‹ï¼š
+	//***¿ªÊ¼*****´®¿Ú¶Á±äÁ¿***********
+¶Á±äÁ¿´æ´¢Æ÷Ö¸ÁîÖ¸Áî£¨0X83£©
+´Ë´¦ÒÔ¶Á	1000	±äÁ¿µØÖ·ÀïµÄÊýÖµ£¨¼ÙÉèµ±Ç°ÊýÖµÎª	2£©ÎªÀý£º
 5A	A5	04	83	0010	01
-5A	A5	è¡¨ç¤ºï¼šå¸§å¤´
-04	è¡¨ç¤ºï¼šæ•°æ®é•¿åº¦
-83	è¡¨ç¤ºï¼šè¯»æ•°æ®å­˜å‚¨åŒºæŒ‡ä»¤
-0010	è¡¨ç¤ºï¼šå˜é‡åœ°å€ï¼ˆä¸¤ä¸ªå­—èŠ‚ï¼‰
-01	è¡¨ç¤ºï¼šä»Ž	1000	åœ°å€å¼€å§‹è¯»	1	ä¸ªå­—é•¿åº¦,æ•°æ®æŒ‡ä»¤æœ€å¤§å®¹è®¸é•¿åº¦	0X7C
+5A	A5	±íÊ¾£ºÖ¡Í·
+04	±íÊ¾£ºÊý¾Ý³¤¶È
+83	±íÊ¾£º¶ÁÊý¾Ý´æ´¢ÇøÖ¸Áî
+0010	±íÊ¾£º±äÁ¿µØÖ·£¨Á½¸ö×Ö½Ú£©
+01	±íÊ¾£º´Ó	1000	µØÖ·¿ªÊ¼¶Á	1	¸ö×Ö³¤¶È,Êý¾ÝÖ¸Áî×î´óÈÝÐí³¤¶È	0X7C
 	*/
-
-è¯»å˜é‡åœ°å€æ•°æ®:
+      
+¶Á±äÁ¿µØÖ·Êý¾Ý:
 //5A	A5	04	83	0010	40
-	SETB	ä¸²å£1å‘é€ä½¿èƒ½
 	MOV	SBUF, #5AH
 	JNB	TI, $
 	CLR	TI
@@ -4036,20 +4344,18 @@ DGUSåˆ‡æ¢å›¾ç‰‡:
 	MOV	SBUF, #00H
 	JNB	TI, $
 	CLR	TI
-	MOV	SBUF, #18H
+	MOV	SBUF, #15H
 	JNB	TI, $
 	CLR	TI
 	MOV	SBUF, #32	                                             //X(	16	)	*2	=
 	JNB	TI, $
 	CLR	TI
-	CLR	ä¸²å£1å‘é€ä½¿èƒ½
 	LCALL	DY100MS
 	RET
-//***ç»“æŸ*****ä¸²å£è¯»å˜é‡***********
+//***½áÊø*****´®¿Ú¶Á±äÁ¿***********
     
-è¯»å˜é‡åœ°å€0100hæ•°æ®:
+¶Á±äÁ¿µØÖ·0100hÊý¾Ý:
 //5A	A5	04	83	0010	40
-	SETB	ä¸²å£1å‘é€ä½¿èƒ½
 	MOV	SBUF, #5AH
 	JNB	TI, $
 	CLR	TI
@@ -4068,13 +4374,12 @@ DGUSåˆ‡æ¢å›¾ç‰‡:
 	MOV	SBUF, #00H
 	JNB	TI, $
 	CLR	TI
-	MOV	SBUF, #47H;#8FH	                                         //X(	16	)	*2	=
+	MOV	SBUF, #47H	                                            ;#8FH	                                         //X(	16	)	*2	=
 	JNB	TI, $
 	CLR	TI
-	CLR	ä¸²å£1å‘é€ä½¿èƒ½
 	LCALL	DY200MS
 	RET
-//***ç»“æŸ*****ä¸²å£è¯»å˜é‡***********
+//***½áÊø*****´®¿Ú¶Á±äÁ¿***********
 
 
 
@@ -4084,214 +4389,259 @@ DGUSåˆ‡æ¢å›¾ç‰‡:
                                                                   
 
 	
-//***å¼€å§‹*****å‘é€æç¤ºç¬¦	**************************************8**** 
-//**æ³¨æ„å‘é€æç¤ºå­—ç¬¦,æŸ¥è¡¨å‘é€å¹¶åˆ¤æ–­00Håœæ­¢å‘é€
-//*****è§¦æ‘¸å±æ•°æ®åˆ†é…****************
-//1.10	å‘é€æç¤ºå­—ç¬¦,æŸ¥è¡¨å‘é€å¹¶åˆ¤æ–­00Håœæ­¢å‘é€ ,æ‰€ä»¥åœ°å€ä¹Ÿä¸èƒ½æœ‰00H.
-//1.1.1	è§¦æ‘¸å±ç‰ˆæœ¬å·æ˜¾ç¤º0201H-0210H,(32ä¸ªå­—èŠ‚) 
-//1.1.2	è§¦æ‘¸å±æŠ¥è­¦&æç¤º0211-0230H  (64ä¸ªå­—èŠ‚,32ä¸ªä¸­æ–‡å­—)
-//1.1.3	è§¦æ‘¸å±åž‹å·æ³¨è§£ä¸­æ–‡æ˜¾ç¤º0100-014FH(9*16ä¸ªå­—èŠ‚)   >> 
+//***¿ªÊ¼*****·¢ËÍÌáÊ¾·û	**************************************8**** 
+//**×¢Òâ·¢ËÍÌáÊ¾×Ö·û,²é±í·¢ËÍ²¢ÅÐ¶Ï00HÍ£Ö¹·¢ËÍ
+//*****´¥ÃþÆÁÊý¾Ý·ÖÅä****************
+//1.10	·¢ËÍÌáÊ¾×Ö·û,²é±í·¢ËÍ²¢ÅÐ¶Ï00HÍ£Ö¹·¢ËÍ ,ËùÒÔµØÖ·Ò²²»ÄÜÓÐ00H.
+//1.1.1	´¥ÃþÆÁ°æ±¾ºÅÏÔÊ¾0201H-0210H,(32¸ö×Ö½Ú) 
+//1.1.2	´¥ÃþÆÁ±¨¾¯&ÌáÊ¾0211-0230H  (64¸ö×Ö½Ú,32¸öÖÐÎÄ×Ö)
+//1.1.3	´¥ÃþÆÁÐÍºÅ×¢½âÖÐÎÄÏÔÊ¾0100-014FH(9*16¸ö×Ö½Ú)   >> 
+
+µ÷ÊÔÎïÁÏÈ¡Î»ÖÃTAB:
+;Ö¡Í·
+	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
+	DB	" X,Y1»ú¹¹¿ìËÙÒÆ¶¯µ½ÎïÁÏ×¥È¡Î»ÖÃ£¬×¢Òâ°²È«¡£"
+	DB	00H, 0FFH
+µ÷ÊÔÎïÁÏÈ¡»Ø¹éTAB:
+	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
+	DB	" Y1»ú¹¹ÎïÁÏ×¥È¡Î»ÖÃµ÷ÊÔ³É¹¦£¬¿ìËÙ»Ø¹é£¬×¢Òâ°²È«¡£"
+	DB	00H, 0FFH
+µ÷ÊÔÖÐ¼ä¼Ó¹¤Î»ÖÃ·ÅTAB:
+	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
+	DB	" X,Y1»ú¹¹¿ìËÙÒÆ¶¯µ½¼Ó¹¤Î»ÖÃ£¬ÎïÁÏ×¥È¡Î»ÖÃ£¬×¢Òâ°²È«¡£"
+	DB	00H, 0FFH
+µ÷ÊÔÖÐ¼ä¼Ó¹¤Î»ÖÃ·Å»Ø¹éTAB:
+	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
+	DB	" Y1»ú¹¹¼Ó¹¤Î»ÖÃµ÷ÊÔ³É¹¦£¬ÎïÁÏËÉ¿ª£¬¿ìËÙ»Ø¹é£¬×¢Òâ°²È«¡£"
+	DB	00H, 0FFH
+µ÷ÊÔÖÐ¼ä¼Ó¹¤Î»ÖÃÈ¡TAB:
+	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
+	DB	" X,Y2»ú¹¹¿ìËÙÒÆ¶¯µ½¼Ó¹¤Î»ÖÃ²¢×¥È¡ÎïÁÏ£¬×¢Òâ°²È«¡£"
+	DB	00H, 0FFH
+µ÷ÊÔÖÐ¼ä¼Ó¹¤Î»ÖÃÈ¡»Ø¹éTAB:
+	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
+	DB	" X,Y2»ú¹¹¿ìËÙÒÆ¶¯µ½ÓÒ±ß³ÉÆ·ÎïÁÏËÍ³öÎ»ÖÃ£¬×¢Òâ°²È«¡£"
+	DB	00H, 0FFH
+µ÷ÊÔ×ó±ßÎ»ÖÃ·ÅTAB:
+	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
+	DB	" Y2»ú¹¹¿ìËÙÒÆ¶¯µ½³ÉÆ·ÎïÁÏËÍ³öÎ»ÖÃ£¬×¢Òâ°²È«¡£"
+	DB	00H, 0FFH
+µ÷ÊÔ×ó±ßÎ»ÖÃ·Å»Ø¹éTAB:
+	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
+	DB	" Y2»ú¹¹¿ì³ÉÆ·ÎïÁÏËÍ³öÎ»ÖÃµ÷ÊÔ³É¹¦£¬¿ìËÙ»Ø¹é£¬×¢Òâ°²È«¡£"
+	DB	00H, 0FFH
+µ÷ÊÔ½áÊø¹éÁãTAB:
+	;Ö¡Í·
+	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
+	;82H·¢ËÍ;·¢ËÍ¸öÊý23,80H½ÓÊÕ;0100H½ÓÊÕµØÖ·
+	DB	" µ÷ÊÔÍê³É£¬ X,Y1,Y2»ú¹¹¿ìËÙ»Ø¹éÁãÎ»£¬×¢Òâ°²È«¡£"
+	;×Ö·û²»ÄÜ³¬12*4=48¸ö
+	DB	00H, 0FFH
+;**********************************************************
+
+
+
+
+
 
  
-æ€¥åœå¼€å…³TAB:
-	;å¸§å¤´
+¼±Í£¿ª¹ØTAB:
+	;Ö¡Í·
 	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
-	;82Hå‘é€;å‘é€ä¸ªæ•°23,80HæŽ¥æ”¶;0100HæŽ¥æ”¶åœ°å€
-	DB	"æŠ¥è­¦:æ€¥åœå¼€å…³è§¦ç‚¹æŽ¥é€šã€‚"
-	;å­—ç¬¦ä¸èƒ½è¶…12*4=48ä¸ª
-	DB	00H, 0FFH	                                              ;FFH,		ç©ºç™½
+	;82H·¢ËÍ;·¢ËÍ¸öÊý23,80H½ÓÊÕ;0100H½ÓÊÕµØÖ·
+	DB	"±¨¾¯:¼±Í£¿ª¹Ø´¥µã½ÓÍ¨¡£"
+	;×Ö·û²»ÄÜ³¬12*4=48¸ö
+	DB	00H, 0FFH	                                              ;FFH,		¿Õ°×
  
-//MOV	DPTR,	#æç¤ºç¬¦TAB 
-//LCALL		ä¸­æ–‡å‘é€åˆ°0121
-æŒ‰æ€¥åœæŒ‰é’®é€€å‡ºTAB:
-;å¸§å¤´
+//MOV	DPTR,	#ÌáÊ¾·ûTAB 
+//LCALL		ÖÐÎÄ·¢ËÍµ½0121
+°´¼±Í£°´Å¥ÍË³öTAB:
+;Ö¡Í·
 	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
-	DB	"æç¤º:è¯·æŒ‰æ€¥åœæŒ‰é’®é€€å‡º"
-	//DB	"å†…éƒ¨å‚æ•°ä¿®æ”¹è¯·è”ç³»0579-87280018 "
+	DB	"ÌáÊ¾:Çë°´¼±Í£°´Å¥ÍË³ö"
+	//DB	"ÄÚ²¿²ÎÊýÐÞ¸ÄÇëÁªÏµ0579-87280018 "
 	DB	00H	, 0FFH
-;FFH,		ç©ºç™½
+;FFH,		¿Õ°×
 
-æ–¹å‘å½’é›¶TAB:
-	;å¸§å¤´
+·½Ïò¹éÁãTAB:
+	;Ö¡Í·
 	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
-	;82Hå‘é€;å‘é€ä¸ªæ•°23,80HæŽ¥æ”¶;0100HæŽ¥æ”¶åœ°å€
-	DB	"æ­£åœ¨æ‰§è¡Œç²¾å‡†å®šä½å½’é›¶åŠ¨ä½œ,è¯·æ³¨æ„å®‰å…¨ã€‚"
+	;82H·¢ËÍ;·¢ËÍ¸öÊý23,80H½ÓÊÕ;0100H½ÓÊÕµØÖ·
+	DB	"ÕýÔÚÖ´ÐÐ¾«×¼¶¨Î»¹éÁã¶¯×÷,Çë×¢Òâ°²È«¡£"
 	DB	00H	, 0FFH
-	;FFH,		ç©ºç™½
-åž‚ç›´æ–¹å‘å½’é›¶TAB:
-	;å¸§å¤´
+	;FFH,		¿Õ°×
+´¹Ö±·½Ïò¹éÁãTAB:
+	;Ö¡Í·
 	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
-	;82Hå‘é€;å‘é€ä¸ªæ•°23,80HæŽ¥æ”¶;0100HæŽ¥æ”¶åœ°å€
-	DB	"æ­£åœ¨æ‰§è¡Œåž‚ç›´æ–¹å‘å½’é›¶åŠ¨ä½œ,è¯·æ³¨æ„å®‰å…¨ã€‚"
+	;82H·¢ËÍ;·¢ËÍ¸öÊý23,80H½ÓÊÕ;0100H½ÓÊÕµØÖ·
+	DB	"ÕýÔÚÖ´ÐÐ´¹Ö±·½Ïò¹éÁã¶¯×÷,Çë×¢Òâ°²È«¡£"
 	DB	00H	, 0FFH
-	;FFH,		ç©ºç™½
-æ°´å¹³æ–¹å‘å½’é›¶TAB:
-	;å¸§å¤´
+	;FFH,		¿Õ°×
+Ë®Æ½·½Ïò¹éÁãTAB:
+	;Ö¡Í·
 	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
-	;82Hå‘é€;å‘é€ä¸ªæ•°23,80HæŽ¥æ”¶;0121HæŽ¥æ”¶åœ°å€
-	DB	"æ­£åœ¨æ‰§è¡Œæ°´å¹³æ–¹å‘å½’é›¶åŠ¨ä½œ,è¯·æ³¨æ„å®‰å…¨ã€‚"
+	;82H·¢ËÍ;·¢ËÍ¸öÊý23,80H½ÓÊÕ;0121H½ÓÊÕµØÖ·
+	DB	"ÕýÔÚÖ´ÐÐË®Æ½·½Ïò¹éÁã¶¯×÷,Çë×¢Òâ°²È«¡£"
 	DB	00H	, 0FFH
-;FFH,		ç©ºç™½
+;FFH,		¿Õ°×
 
-å¼€æœºå¤ä½å®ŒæˆTAB:
-	;å¸§å¤´
+¿ª»ú¸´Î»Íê³ÉTAB:
+	;Ö¡Í·
 	DB	05AH, 0A5H, 064H	, 082H	, 02H, 11H
-	;82Hå‘é€;å‘é€ä¸ªæ•°23,80HæŽ¥æ”¶;0121HæŽ¥æ”¶åœ°å€
-	DB	"å¼€æœºå¤ä½å®Œæˆã€‚"
+	;82H·¢ËÍ;·¢ËÍ¸öÊý23,80H½ÓÊÕ;0121H½ÓÊÕµØÖ·
+	DB	"¿ª»ú¸´Î»Íê³É¡£"
 	DB	00H	, 0FFH
-;FFH,		ç©ºç™½
+;FFH,		¿Õ°×
 
-è¿è¡Œé•¿åº¦é”™è¯¯TAB:
-	;å¸§å¤´          æŽ¥æ”¶åœ°å€ =0121H
+ÔËÐÐ³¤¶È´íÎóTAB:
+	;Ö¡Í·          ½ÓÊÕµØÖ· =0121H
 	DB	05AH, 0A5H, 064H, 082H, 02H, 11H
-	DB	" æ³¨æ„:è¿è¡Œé•¿åº¦å¤ªçŸ­,è¿è¡Œé€Ÿåº¦å¤ªé«˜,æ­£åœ¨è‡ªåŠ¨è®¡ç®—è¿è¡Œé€Ÿåº¦ã€‚"
-	DB	00H, 0FFH	                                              ;FFH,		ç©ºç™½
+	DB	" ×¢Òâ:ÔËÐÐ³¤¶ÈÌ«¶Ì,ÔËÐÐËÙ¶ÈÌ«¸ß,ÕýÔÚ×Ô¶¯¼ÆËãÔËÐÐËÙ¶È¡£"
+	DB	00H, 0FFH	                                              ;FFH,		¿Õ°×
 
 
 
-å‘é€ç‰ˆæœ¬å·:	                                                //0101
-	MOV	DPTR, #ç‰ˆæœ¬å·TAB
-	LCALL	å‘é€æç¤ºå­—ç¬¦
+·¢ËÍ°æ±¾ºÅ:	                                                //0101
+	MOV	DPTR, #°æ±¾ºÅTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
 	RET
-ç‰ˆæœ¬å·TAB:
-	;å¸§å¤´          æŽ¥æ”¶åœ°å€ =0101H
+°æ±¾ºÅTAB:
+	;Ö¡Í·          ½ÓÊÕµØÖ· =0101H
 	DB	05AH, 0A5H, 023H, 082H, 02H, 01H
-	DB	"æœºæ¢°æ‰‹STC20251.0.C"
-	DB	00H, 0FFH	                                              ;FFH,		ç©ºç™½
+	DB	"»úÐµÊÖSTC20251.0.C"
+	DB	00H, 0FFH	                                              ;FFH,		¿Õ°×
 
-;MOV	DPTR, #æç¤ºç¬¦TAB
-;LCALL		  å‘é€æç¤ºå­—ç¬¦
-å‘é€æç¤ºå­—ç¬¦:
-//å‘é€ä¸ªæ•° , æŽ¥æ”¶åœ°å€ ,åœ¨å¸§å¤´é‡Œæ”¹   
-//å•å­—ç¬¦ä¸ºé›¶æ—¶ç»§ç»­å‘é€FFHå¡«è¡¥
-;MOV	DPTR, #TAB (æŸ¥è¡¨åœ°å€å†™å…¥DPTR)
+;MOV	DPTR, #ÌáÊ¾·ûTAB
+;LCALL		  ·¢ËÍÌáÊ¾×Ö·û
+·¢ËÍÌáÊ¾×Ö·û:
+//·¢ËÍ¸öÊý , ½ÓÊÕµØÖ· ,ÔÚÖ¡Í·Àï¸Ä   
+//µ¥×Ö·ûÎªÁãÊ±¼ÌÐø·¢ËÍFFHÌî²¹
+;MOV	DPTR, #TAB (²é±íµØÖ·Ð´ÈëDPTR)
 	MOV	A, #2H
 	MOVC	A, @A+DPTR
 	ADD	A, #3H
-	MOV	å‘é€ä¸ªæ•°, A
+	MOV	·¢ËÍ¸öÊý, A
 	MOV	R0, #0H
-æç¤ºç¬¦ç»§ç»­å‘é€:
+ÌáÊ¾·û¼ÌÐø·¢ËÍ:
 	MOV	A, R0
 	MOVC	A, @A+DPTR
-	JZ	ç»§ç»­ç©ºç™½ç¬¦å‘é€	                                         //åˆ¤æ–­å­—ç¬¦ä¸ºé›¶æ—¶è·³è½¬
+	JZ	¼ÌÐø¿Õ°×·û·¢ËÍ	                                         //ÅÐ¶Ï×Ö·ûÎªÁãÊ±Ìø×ª
 	MOV	SBUF, A
 	JNB	TI, $
 	CLR	TI
 	INC	R0
 	MOV	A, R0
-	CJNE	A, å‘é€ä¸ªæ•°	, æç¤ºç¬¦ç»§ç»­å‘é€	                         ;     #29H     ;å‘é€ä¸ªæ•°+6                                //  #2FH
-//å‘é€ç»“æŸ:    
+	CJNE	A, ·¢ËÍ¸öÊý	, ÌáÊ¾·û¼ÌÐø·¢ËÍ	                         ;     #29H     ;·¢ËÍ¸öÊý+6                                //  #2FH
+//·¢ËÍ½áÊø:    
 	RET
-ç»§ç»­ç©ºç™½ç¬¦å‘é€:
+¼ÌÐø¿Õ°×·û·¢ËÍ:
 	MOV	SBUF, #0FFH
 	JNB	TI, $
 	CLR	TI
 	INC	R0
 	MOV	A, R0
-	CJNE	A, å‘é€ä¸ªæ•°	, ç»§ç»­ç©ºç™½ç¬¦å‘é€
+	CJNE	A, ·¢ËÍ¸öÊý	, ¼ÌÐø¿Õ°×·û·¢ËÍ
 	RET
-//*****ç»“æŸ*****å‘é€æç¤ºç¬¦	*************************************
+//*****½áÊø*****·¢ËÍÌáÊ¾·û	*************************************
 //
 ;5AA5 <013(#3+X) 82   00 00  > 0060-006F
-ä¸²å£2å‘é€æ•°æ®:
-    ; MOV   STCæ•°æ®é¦–å€L ,#00H
-     ;MOV   å‘é€ä¸ªæ•°,#32
-    ;LCALL  ä¸²å£2å‘é€æ•°æ®
-	SETB	ä¸²å£2å‘é€ä½¿èƒ½
+´®¿Ú2·¢ËÍÊý¾Ý:
+    ; MOV   STCÊý¾ÝÊ×Ö·L ,#00H
+     ;MOV   ·¢ËÍ¸öÊý,#32
+    ;LCALL  ´®¿Ú2·¢ËÍÊý¾Ý
 	MOV	S2BUF, #5AH
-	JB	ä¸²å£2TIå‘é€å¿™æ ‡è®°, $	                                   //ç­‰å¾…å‰é¢çš„æ•°æ®å‘é€å®Œæˆ
-	SETB	ä¸²å£2TIå‘é€å¿™æ ‡è®°
+	JB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç, $	                                   //µÈ´ýÇ°ÃæµÄÊý¾Ý·¢ËÍÍê³É
+	SETB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç
 	MOV	S2BUF, #0A5H
-	JB	ä¸²å£2TIå‘é€å¿™æ ‡è®°, $	                                   //ç­‰å¾…å‰é¢çš„æ•°æ®å‘é€å®Œæˆ
-	SETB	ä¸²å£2TIå‘é€å¿™æ ‡è®°
+	JB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç, $	                                   //µÈ´ýÇ°ÃæµÄÊý¾Ý·¢ËÍÍê³É
+	SETB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç
 	MOV	A, #3
-	ADD	A, STCæ•°æ®ä¸ªæ•°	                                        ;å‘é€ä¸ªæ•°
+	ADD	A, STCÊý¾Ý¸öÊý	                                        ;·¢ËÍ¸öÊý
 	MOV	S2BUF, A	                                              //#19
-	JB	ä¸²å£2TIå‘é€å¿™æ ‡è®°, $	                                   //ç­‰å¾…å‰é¢çš„æ•°æ®å‘é€å®Œæˆ
-	SETB	ä¸²å£2TIå‘é€å¿™æ ‡è®°
+	JB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç, $	                                   //µÈ´ýÇ°ÃæµÄÊý¾Ý·¢ËÍÍê³É
+	SETB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç
 	MOV	S2BUF, #82H
-	JB	ä¸²å£2TIå‘é€å¿™æ ‡è®°, $	                                   //ç­‰å¾…å‰é¢çš„æ•°æ®å‘é€å®Œæˆ
-	SETB	ä¸²å£2TIå‘é€å¿™æ ‡è®°
+	JB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç, $	                                   //µÈ´ýÇ°ÃæµÄÊý¾Ý·¢ËÍÍê³É
+	SETB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç
 	MOV	S2BUF, #00H
-	JB	ä¸²å£2TIå‘é€å¿™æ ‡è®°, $	                                   //ç­‰å¾…å‰é¢çš„æ•°æ®å‘é€å®Œæˆ
-	SETB	ä¸²å£2TIå‘é€å¿™æ ‡è®°
-	MOV	A, STCæ•°æ®é¦–å€L
+	JB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç, $	                                   //µÈ´ýÇ°ÃæµÄÊý¾Ý·¢ËÍÍê³É
+	SETB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç
+	MOV	A, STCÊý¾ÝÊ×Ö·L
 	RR	A	                                                      //40/2=0020
-	MOV	S2BUF, A	                                              ;å˜é‡é¦–å€                                         //#00H
-	JB	ä¸²å£2TIå‘é€å¿™æ ‡è®°, $	                                   //ç­‰å¾…å‰é¢çš„æ•°æ®å‘é€å®Œæˆ
-	SETB	ä¸²å£2TIå‘é€å¿™æ ‡è®°
-	MOV	R0, STCæ•°æ®é¦–å€L	                                      ;å‘é€åœ°å€20H
-	MOV	R2, STCæ•°æ®ä¸ªæ•°	                                       //#32          ;å‘é€é•¿åº¦16
-ä¸²å£2å†™XXå˜é‡å‘é€ä¸­:
+	MOV	S2BUF, A	                                              ;±äÁ¿Ê×Ö·                                         //#00H
+	JB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç, $	                                   //µÈ´ýÇ°ÃæµÄÊý¾Ý·¢ËÍÍê³É
+	SETB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç
+	MOV	R0, STCÊý¾ÝÊ×Ö·L	                                      ;·¢ËÍµØÖ·20H
+	MOV	R2, STCÊý¾Ý¸öÊý	                                       //#32          ;·¢ËÍ³¤¶È16
+´®¿Ú2Ð´XX±äÁ¿·¢ËÍÖÐ:
 	MOV	A, @R0
 	MOV	S2BUF, A
-	JB	ä¸²å£2TIå‘é€å¿™æ ‡è®°, $	                                   //ç­‰å¾…å‰é¢çš„æ•°æ®å‘é€å®Œæˆ
-	SETB	ä¸²å£2TIå‘é€å¿™æ ‡è®°
+	JB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç, $	                                   //µÈ´ýÇ°ÃæµÄÊý¾Ý·¢ËÍÍê³É
+	SETB	´®¿Ú2TI·¢ËÍÃ¦±ê¼Ç
 	INC	R0
-	DJNZ	R2, ä¸²å£2å†™XXå˜é‡å‘é€ä¸­
-	CLR	ä¸²å£2å‘é€ä½¿èƒ½
+	DJNZ	R2, ´®¿Ú2Ð´XX±äÁ¿·¢ËÍÖÐ
 	RET
 
-	//***æ”¹*202409****@11.0592MHZä¸²å£å‚æ•°*****
+	//***¸Ä*202409****@11.0592MHZ´®¿Ú²ÎÊý*****
 ;5AA5	013(#4+X)	<82			00	00			0060-006F
-ä¸²å£2å‘é€20Hè‡³5FHåˆ°å˜é‡åœ°å€:
-ä¸²å£2å‘é€32ä¸ªæ•°æ®:
+´®¿Ú2·¢ËÍ20HÖÁ5FHµ½±äÁ¿µØÖ·:
+´®¿Ú2·¢ËÍ32¸öÊý¾Ý:
 ;20-5FH=>0000-001FH
-	MOV	STCæ•°æ®é¦–å€L, #50H
-	MOV	STCæ•°æ®ä¸ªæ•°, #16
-	LCALL	ä¸²å£2å‘é€æ•°æ®
+	MOV	STCÊý¾ÝÊ×Ö·L, #50H
+	MOV	STCÊý¾Ý¸öÊý, #16
+	LCALL	´®¿Ú2·¢ËÍÊý¾Ý
 	RET
 
 
 
 
-ä¸²å£2æŽ¥æ”¶ç¼“å­˜æ•°æ®è¯»å‡º:
+´®¿Ú2½ÓÊÕ»º´æÊý¾Ý¶Á³ö:
 ;5A	A5	06	83	00	06	01	01	FE
-	MOV	R1, #ä¸²å£2æŽ¥æ”¶ç¼“å†²SRAMé¦–å€
-ä¸²å£2ç¼“å­˜00æ•°æ®è¯»å‡º:
+	MOV	R1, #´®¿Ú2½ÓÊÕ»º³åSRAMÊ×Ö·
+´®¿Ú2»º´æ00Êý¾Ý¶Á³ö:
 	MOVX	A, @R1	                                               //5A
-	CJNE	A, #5AH, ä¸²å£2ç¼“å­˜æ•°æ®é”™è¯¯	                           //æ— æŽ¥å¸§å¤´æ•°æ®è¯»å‡º
-ä¸²å£2ç¼“å­˜01æ•°æ®è¯»å‡º:
+	CJNE	A, #5AH, ´®¿Ú2»º´æÊý¾Ý´íÎó	                           //ÎÞ½ÓÖ¡Í·Êý¾Ý¶Á³ö
+´®¿Ú2»º´æ01Êý¾Ý¶Á³ö:
 	INC	R1
 	MOVX	A, @R1	                                               //A5
-	CJNE	A, #0A5H, ä¸²å£2ç¼“å­˜æ•°æ®é”™è¯¯
-ä¸²å£2ç¼“å­˜02æ•°æ®è¯»å‡º:
+	CJNE	A, #0A5H, ´®¿Ú2»º´æÊý¾Ý´íÎó
+´®¿Ú2»º´æ02Êý¾Ý¶Á³ö:
 	INC	R1
-	MOVX	A, @R1	                                               //06	ä¸‹é¢æŽ¥æ”¶æ•°æ®ä¸ªæ•°
-	//MOV	æŽ¥æ”¶æ•°æ®ä¸ªæ•°				,A																																			//06-4å­—èŠ‚=2
-ä¸²å£2ç¼“å­˜03æ•°æ®è¯»å‡º:
+	MOVX	A, @R1	                                               //06	ÏÂÃæ½ÓÊÕÊý¾Ý¸öÊý
+	//MOV	½ÓÊÕÊý¾Ý¸öÊý				,A																																			//06-4×Ö½Ú=2
+´®¿Ú2»º´æ03Êý¾Ý¶Á³ö:
 	INC	R1
-	MOVX	A, @R1	                                               //83è¯»å˜é‡å­˜å‚¨å™¨æŒ‡ä»¤
-//	MOV			DGUSæŒ‡ä»¤					,A
-ä¸²å£2ç¼“å­˜04æ•°æ®è¯»å‡º:
+	MOVX	A, @R1	                                               //83¶Á±äÁ¿´æ´¢Æ÷Ö¸Áî
+//	MOV			DGUSÖ¸Áî					,A
+´®¿Ú2»º´æ04Êý¾Ý¶Á³ö:
 	INC	R1
-	MOVX	A, @R1	                                               //10å˜é‡åœ°å€H		(16ä½è½¬8ä½
-	MOV	DGUSå˜é‡é¦–å€H, A	                                      //æ•°å€¼ä¸º00
-ä¸²å£2ç¼“å­˜05æ•°æ®è¯»å‡º:
+	MOVX	A, @R1	                                               //10±äÁ¿µØÖ·H		(16Î»×ª8Î»
+	MOV	DGUS±äÁ¿Ê×Ö·H, A	                                      //ÊýÖµÎª00
+´®¿Ú2»º´æ05Êý¾Ý¶Á³ö:
 	INC	R1
-	MOVX	A, @R1	                                               //01å˜é‡åœ°å€L			(16ä½è½¬8ä½
+	MOVX	A, @R1	                                               //01±äÁ¿µØÖ·L			(16Î»×ª8Î»
 	MOV	B, #2
 	MUL	AB
-	MOV	DGUSå˜é‡é¦–å€L, A
-ä¸²å£2ç¼“å­˜06æ•°æ®è¯»å‡º:
-	INC	R1	                                                    //01å˜é‡åœ°å€L			(16ä½è½¬8ä½
-	MOVX	A, @R1	                                               //01*2	æ•°æ®é•¿åº¦
+	MOV	DGUS±äÁ¿Ê×Ö·L, A
+´®¿Ú2»º´æ06Êý¾Ý¶Á³ö:
+	INC	R1	                                                    //01±äÁ¿µØÖ·L			(16Î»×ª8Î»
+	MOVX	A, @R1	                                               //01*2	Êý¾Ý³¤¶È
 	MOV	B, #2
 	MUL	AB
-	MOV	DGUSå˜é‡ä¸ªæ•°	, A
-ä¸²å£2ç¼“å­˜07åŽæ•°æ®è¯»å‡º:
-	MOV	A, DGUSå˜é‡é¦–å€L	                                      //	DGUS0010H=STC20H
-	MOV	R0, A	                                                 //;æŽ¥æ”¶åœ°å€20-2F
-	MOV	R2, DGUSå˜é‡ä¸ªæ•°	                                      ;		æŽ¥æ”¶æ•°æ®é•¿åº¦
-ä¸²å£2æœ‰å¸§å¤´æŽ¥æ”¶æ•°æ®:
+	MOV	DGUS±äÁ¿¸öÊý	, A
+´®¿Ú2»º´æ07ºóÊý¾Ý¶Á³ö:
+	MOV	A, DGUS±äÁ¿Ê×Ö·L	                                      //	DGUS0010H=STC20H
+	MOV	R0, A	                                                 //;½ÓÊÕµØÖ·20-2F
+	MOV	R2, DGUS±äÁ¿¸öÊý	                                      ;		½ÓÊÕÊý¾Ý³¤¶È
+´®¿Ú2ÓÐÖ¡Í·½ÓÊÕÊý¾Ý:
 	INC	R1
 	MOVX	A, @R1
 	MOV	@R0, A
 	INC	R0
-	DJNZ	R2, ä¸²å£2æœ‰å¸§å¤´æŽ¥æ”¶æ•°æ®
-ä¸²å£2æœ‰å¸§å¤´æŽ¥æ”¶ç»“æŸ:
+	DJNZ	R2, ´®¿Ú2ÓÐÖ¡Í·½ÓÊÕÊý¾Ý
+´®¿Ú2ÓÐÖ¡Í·½ÓÊÕ½áÊø:
 	RET
-ä¸²å£2ç¼“å­˜æ•°æ®é”™è¯¯:
+´®¿Ú2»º´æÊý¾Ý´íÎó:
 	RET
  
 
@@ -4299,152 +4649,152 @@ DGUSåˆ‡æ¢å›¾ç‰‡:
 	END
 
 
-///////////SMCæ•°æ®æ ¡éªŒè®¡ç®—åŠå‘é€ã€‚å¼€å§‹/////////// 
-//SMCæ•°æ®æ ¡éªŒè®¡ç®—åŠå‘é€  
+///////////SMCÊý¾ÝÐ£Ñé¼ÆËã¼°·¢ËÍ¡£¿ªÊ¼/////////// 
+//SMCÊý¾ÝÐ£Ñé¼ÆËã¼°·¢ËÍ  
 /*   ////
-	MOV	IDå·, #01
-	MOV	SMCé€šè®¯å‘½ä»¤, #10
-	MOV	SMCé€šè®¯åœ°å€H, #00
-	MOV	SMCé€šè®¯åœ°å€L, #1E
-	MOV	SMCé€šè®¯ä¸ªæ•°H, #00
-	MOV	SMCé€šè®¯ä¸ªæ•°L, #02
-	MOV	SMCé€šè®¯æ•°æ®å­—èŠ‚ä¸ªæ•°, #04
-//MOV		SMCé€šè®¯æ•°æ®1H,#01 
-//MOV		SMCé€šè®¯æ•°æ®1L,#01   
-//MOV		SMCé€šè®¯æ•°æ®2H,#02 
-//MOV		SMCé€šè®¯æ•°æ®2L,#02   
+	MOV	IDºÅ, #01
+	MOV	SMCÍ¨Ñ¶ÃüÁî, #10
+	MOV	SMCÍ¨Ñ¶µØÖ·H, #00
+	MOV	SMCÍ¨Ñ¶µØÖ·L, #1E
+	MOV	SMCÍ¨Ñ¶¸öÊýH, #00
+	MOV	SMCÍ¨Ñ¶¸öÊýL, #02
+	MOV	SMCÍ¨Ñ¶Êý¾Ý×Ö½Ú¸öÊý, #04
+//MOV		SMCÍ¨Ñ¶Êý¾Ý1H,#01 
+//MOV		SMCÍ¨Ñ¶Êý¾Ý1L,#01   
+//MOV		SMCÍ¨Ñ¶Êý¾Ý2H,#02 
+//MOV		SMCÍ¨Ñ¶Êý¾Ý2L,#02   
    */
-SMCæ•°æ®æ ¡éªŒè®¡ç®—åŠå‘é€:
-	MOV	A, SMCé€šè®¯æ•°æ®å­—èŠ‚ä¸ªæ•°
+SMCÊý¾ÝÐ£Ñé¼ÆËã¼°·¢ËÍ:
+	MOV	A, SMCÍ¨Ñ¶Êý¾Ý×Ö½Ú¸öÊý
 	ADD	A, #9
-	MOV	CRCæ ¡éªŒæ•°æ®ä¸ªæ•°	, A
-	MOV	CRCæ ¡éªŒæ•°æ®é¦–å€	, #	IDå·
-	MOV	R0, CRCæ ¡éªŒæ•°æ®é¦–å€
-	MOV	R1, CRCæ ¡éªŒæ•°æ®ä¸ªæ•°
-	LCALL	åå…­ä½CRCæ ¡éªŒç è®¡ç®—
-	MOV	A	, CRCæ ¡éªŒæ•°æ®é¦–å€	                                   //æ•°æ®é•¿åº¦    
-	ADD	A, CRCæ ¡éªŒæ•°æ®ä¸ªæ•°
+	MOV	CRCÐ£ÑéÊý¾Ý¸öÊý	, A
+	MOV	CRCÐ£ÑéÊý¾ÝÊ×Ö·	, #	IDºÅ
+	MOV	R0, CRCÐ£ÑéÊý¾ÝÊ×Ö·
+	MOV	R1, CRCÐ£ÑéÊý¾Ý¸öÊý
+	LCALL	Ê®ÁùÎ»CRCÐ£ÑéÂë¼ÆËã
+	MOV	A	, CRCÐ£ÑéÊý¾ÝÊ×Ö·	                                   //Êý¾Ý³¤¶È    
+	ADD	A, CRCÐ£ÑéÊý¾Ý¸öÊý
 	MOV	R0	, A
-	MOV	@R0	, CRCæ ¡éªŒç L
+	MOV	@R0	, CRCÐ£ÑéÂëL
 	INC	R0
-	MOV	@R0, CRCæ ¡éªŒç H
+	MOV	@R0, CRCÐ£ÑéÂëH
 // 	RET
-SMCå¸¦æ ¡éªŒæ•°æ®å‘é€:
-	MOV	R0, CRCæ ¡éªŒæ•°æ®é¦–å€	                                   //  æ•°æ®é¦–å€
-	MOV	A	, #4	                                                //æ•°æ®é•¿åº¦    
-	ADD	A, CRCæ ¡éªŒæ•°æ®ä¸ªæ•°
+SMC´øÐ£ÑéÊý¾Ý·¢ËÍ:
+	MOV	R0, CRCÐ£ÑéÊý¾ÝÊ×Ö·	                                   //  Êý¾ÝÊ×Ö·
+	MOV	A	, #4	                                                //Êý¾Ý³¤¶È    
+	ADD	A, CRCÐ£ÑéÊý¾Ý¸öÊý
 	MOV	R2, A
-	LCALL	å‘é€è¯»SMCå‘½ä»¤
-ç»§ç»­å‘é€SMCæ•°æ®:
+	LCALL	·¢ËÍ¶ÁSMCÃüÁî
+¼ÌÐø·¢ËÍSMCÊý¾Ý:
 	MOV	A, @R0
 	MOV	SBUF, A
-	JB	å‘é€TIæ ‡è®°, $	                                          //ç­‰å¾…å‰é¢çš„æ•°æ®å‘é€å®Œæˆ             
-	SETB	å‘é€TIæ ‡è®°
+	JB	·¢ËÍTI±ê¼Ç, $	                                          //µÈ´ýÇ°ÃæµÄÊý¾Ý·¢ËÍÍê³É             
+	SETB	·¢ËÍTI±ê¼Ç
 	INC	R0
-	DJNZ	R2, ç»§ç»­å‘é€SMCæ•°æ®
+	DJNZ	R2, ¼ÌÐø·¢ËÍSMCÊý¾Ý
 	RET
 
-// CRCæ ¡éªŒæ•°æ®é¦–å€   EQU	7DH
-//	CRCæ ¡éªŒæ•°æ®ä¸ªæ•°   EQU	7CH
-//	CRCæ ¡éªŒç H	EQU	7BH
-//	CRCæ ¡éªŒç L	EQU	7AH 
-//  	MOV CRCæ ¡éªŒæ•°æ®é¦–å€  ,
-//   MOV	CRCæ ¡éªŒæ•°æ®ä¸ªæ•°  ,
-åå…­ä½CRCæ ¡éªŒç è®¡ç®—:
-	MOV	R0, CRCæ ¡éªŒæ•°æ®é¦–å€
-	MOV	R1, CRCæ ¡éªŒæ•°æ®ä¸ªæ•°
-ç¬¬1æ­¥:	MOV	CRCæ ¡éªŒç H, #0FFH
-	MOV	CRCæ ¡éªŒç L, #0FFH
-ç¬¬2æ­¥:	MOV	R2, #8	                                          ;æ ¡éªŒæ¬¡æ•° 		
+// CRCÐ£ÑéÊý¾ÝÊ×Ö·   EQU	7DH
+//	CRCÐ£ÑéÊý¾Ý¸öÊý   EQU	7CH
+//	CRCÐ£ÑéÂëH	EQU	7BH
+//	CRCÐ£ÑéÂëL	EQU	7AH 
+//  	MOV CRCÐ£ÑéÊý¾ÝÊ×Ö·  ,
+//   MOV	CRCÐ£ÑéÊý¾Ý¸öÊý  ,
+Ê®ÁùÎ»CRCÐ£ÑéÂë¼ÆËã:
+	MOV	R0, CRCÐ£ÑéÊý¾ÝÊ×Ö·
+	MOV	R1, CRCÐ£ÑéÊý¾Ý¸öÊý
+µÚ1²½:	MOV	CRCÐ£ÑéÂëH, #0FFH
+	MOV	CRCÐ£ÑéÂëL, #0FFH
+µÚ2²½:	MOV	R2, #8	                                          ;Ð£Ñé´ÎÊý 		
 	MOV	A, @R0
-	XRL	A, CRCæ ¡éªŒç L
-	MOV	CRCæ ¡éªŒç L, A
-ç¬¬3æ­¥:	CLR	CY
-CRCå·¦ç§»ä¸€ä½:
-	MOV	A, CRCæ ¡éªŒç H
+	XRL	A, CRCÐ£ÑéÂëL
+	MOV	CRCÐ£ÑéÂëL, A
+µÚ3²½:	CLR	CY
+CRC×óÒÆÒ»Î»:
+	MOV	A, CRCÐ£ÑéÂëH
 	RRC	A
-	MOV	CRCæ ¡éªŒç H, A
+	MOV	CRCÐ£ÑéÂëH, A
 	MOV	B, A
-	MOV	A, CRCæ ¡éªŒç L
+	MOV	A, CRCÐ£ÑéÂëL
 	RRC	A
-	MOV	CRCæ ¡éªŒç L, A
-åˆ¤æ–­CRC0ä½æ˜¯1å¦:
-	JNB	CY, åˆ¤æ–­å·¦ç§»8æ¬¡
-CRC0ä½æ˜¯1ä¸ŽA001å¼‚æˆ–:
+	MOV	CRCÐ£ÑéÂëL, A
+ÅÐ¶ÏCRC0Î»ÊÇ1·ñ:
+	JNB	CY, ÅÐ¶Ï×óÒÆ8´Î
+CRC0Î»ÊÇ1ÓëA001Òì»ò:
 	CLR	CY
-	MOV	A, CRCæ ¡éªŒç H
+	MOV	A, CRCÐ£ÑéÂëH
 	XRL	A, #0A0H
-	MOV	CRCæ ¡éªŒç H, A
+	MOV	CRCÐ£ÑéÂëH, A
 	MOV	B, A
-	MOV	A, CRCæ ¡éªŒç L
+	MOV	A, CRCÐ£ÑéÂëL
 	XRL	A, #01H
-	MOV	CRCæ ¡éªŒç L, A
-åˆ¤æ–­å·¦ç§»8æ¬¡:
-	DJNZ	R2, ç¬¬3æ­¥
+	MOV	CRCÐ£ÑéÂëL, A
+ÅÐ¶Ï×óÒÆ8´Î:
+	DJNZ	R2, µÚ3²½
 	INC	R0
-	DJNZ	R1, ç¬¬2æ­¥
+	DJNZ	R1, µÚ2²½
 	RET
 
 
 /*
-	MOV	STCSTCæ•°æ®é¦–å€H	, #02H
-	MOV	STCå‘é€é¦–å€L	, #00H
-	MOV	DWå±å˜é‡åœ°å€H	, #1H
-	MOV	DWå±å˜é‡åœ°å€L, #80H
-	MOV	DWå±æ•°æ®é•¿åº¦, #70H
-	LCALL		å‘é€è¯»SMCå‘½ä»¤
+	MOV	STCSTCÊý¾ÝÊ×Ö·H	, #02H
+	MOV	STC·¢ËÍÊ×Ö·L	, #00H
+	MOV	DWÆÁ±äÁ¿µØÖ·H	, #1H
+	MOV	DWÆÁ±äÁ¿µØÖ·L, #80H
+	MOV	DWÆÁÊý¾Ý³¤¶È, #70H
+	LCALL		·¢ËÍ¶ÁSMCÃüÁî
   */
-å‘é€è¯»SMCå‘½ä»¤:
-	//MOV	DPH, STCå‘é€é¦–å€H
-	//MOV	DPL, STCå‘é€é¦–å€L
-;	MOV	DPTR, #100H                                             //å‘é€é¦–å€        ;å‘é€åœ°å€20H 
-	//MOV	R2, DWå±æ•°æ®é•¿åº¦	                                      //#32	         ;å‘é€é•¿åº¦16
-	SETB	æŽ§åˆ¶å£485DERE15
-	SETB	æŽ§åˆ¶å£485DERE34
-	SETB	æŽ§åˆ¶å£485DERE35
+·¢ËÍ¶ÁSMCÃüÁî:
+	//MOV	DPH, STC·¢ËÍÊ×Ö·H
+	//MOV	DPL, STC·¢ËÍÊ×Ö·L
+;	MOV	DPTR, #100H                                             //·¢ËÍÊ×Ö·        ;·¢ËÍµØÖ·20H 
+	//MOV	R2, DWÆÁÊý¾Ý³¤¶È	                                      //#32	         ;·¢ËÍ³¤¶È16
+	SETB	¿ØÖÆ¿Ú485DERE15
+	SETB	¿ØÖÆ¿Ú485DERE34
+	SETB	¿ØÖÆ¿Ú485DERE35
 	MOV	R0, #0H
-ç»§ç»­å‘é€SMCå‘½ä»¤A:
+¼ÌÐø·¢ËÍSMCÃüÁîA:
 	MOV	A, R0
 	MOVC	A, @A+DPTR
 	MOV	SBUF, A
-	JB	å‘é€TIæ ‡è®°, $	                                          //ç­‰å¾…å‰é¢çš„æ•°æ®å‘é€å®Œæˆ             
-	SETB	å‘é€TIæ ‡è®°
+	JB	·¢ËÍTI±ê¼Ç, $	                                          //µÈ´ýÇ°ÃæµÄÊý¾Ý·¢ËÍÍê³É             
+	SETB	·¢ËÍTI±ê¼Ç
 	INC	R0
-	DJNZ	R2, ç»§ç»­å‘é€SMCå‘½ä»¤A
-	CLR	æŽ§åˆ¶å£485DERE15
-	CLR	æŽ§åˆ¶å£485DERE34
-	CLR	æŽ§åˆ¶å£485DERE35
+	DJNZ	R2, ¼ÌÐø·¢ËÍSMCÃüÁîA
+	CLR	¿ØÖÆ¿Ú485DERE15
+	CLR	¿ØÖÆ¿Ú485DERE34
+	CLR	¿ØÖÆ¿Ú485DERE35
 	//LCALL	DY2MS
 	RET
 
-æŽ¥æ”¶SMCåé¦ˆæ•°æ®:
-	LCALL	DWå±é€šè®¯åœ°å€åŠ 100Hé€‰æ‹©
-	MOV	T2X100MSè®¡æ—¶æ•°å€¼	, #6	                                 //#T2X100MSè®¡æ—¶åŸºæ•°
-	CLR	T2è®¡æ—¶X100MSæ ‡è®°
-ç­‰å¾…ID1SMCåé¦ˆX:
-	JB	T2è®¡æ—¶X100MSæ ‡è®°, ç­‰å¾…ID1SMCåé¦ˆé”™è¯¯X	                  //éœ€å¢žåŠ å»¶æ—¶æ£€æµ‹  
-	JB	æŽ¥æ”¶RIæ ‡è®°, ç­‰å¾…ID1SMCåé¦ˆX
-ç»§ç»­æŽ¥æ”¶SMCæ•°æ®åé¦ˆX:
-	JB	æŽ¥æ”¶RIæ ‡è®°, $
-	SETB	æŽ¥æ”¶RIæ ‡è®°
+½ÓÊÕSMC·´À¡Êý¾Ý:
+	LCALL	DWÆÁÍ¨Ñ¶µØÖ·¼Ó100HÑ¡Ôñ
+	MOV	T2X100MS¼ÆÊ±ÊýÖµ	, #6	                                 //#T2X100MS¼ÆÊ±»ùÊý
+	CLR	T2¼ÆÊ±X100MS±ê¼Ç
+µÈ´ýID1SMC·´À¡X:
+	JB	T2¼ÆÊ±X100MS±ê¼Ç, µÈ´ýID1SMC·´À¡´íÎóX	                  //ÐèÔö¼ÓÑÓÊ±¼ì²â  
+	JB	½ÓÊÕRI±ê¼Ç, µÈ´ýID1SMC·´À¡X
+¼ÌÐø½ÓÊÕSMCÊý¾Ý·´À¡X:
+	JB	½ÓÊÕRI±ê¼Ç, $
+	SETB	½ÓÊÕRI±ê¼Ç
 	MOV	A, SBUF
 	MOVX	@DPTR, A
 	INC	DPTR
-	DJNZ	R2, ç»§ç»­æŽ¥æ”¶SMCæ•°æ®åé¦ˆX
+	DJNZ	R2, ¼ÌÐø½ÓÊÕSMCÊý¾Ý·´À¡X
 	LCALL	DY10MS
-;	LCALL	SMC40Xå†™å…¥23H25Hæ ‡è®°
-	SETB	SMCæ— ä¸­æ–­æ ‡è®°
-	SETB	T2è®¡æ—¶X100MSæ ‡è®°
+;	LCALL	SMC40XÐ´Èë23H25H±ê¼Ç
+	SETB	SMCÎÞÖÐ¶Ï±ê¼Ç
+	SETB	T2¼ÆÊ±X100MS±ê¼Ç
 	RET
-ç­‰å¾…ID1SMCåé¦ˆé”™è¯¯X:
-	CLR	SMCæ— ä¸­æ–­æ ‡è®°
-	SETB	T2è®¡æ—¶X100MSæ ‡è®°
+µÈ´ýID1SMC·´À¡´íÎóX:
+	CLR	SMCÎÞÖÐ¶Ï±ê¼Ç
+	SETB	T2¼ÆÊ±X100MS±ê¼Ç
 	LCALL	DY20MS
-	RET    
+	RET
 
 
-é€Ÿåº¦å¯¹åº”çš„å®šæ—¶å€¼TAB:
-;	0-1000mm/så¯¹åº”T0å€¼ ï¼ˆ2000ä¸ªè„‰å†²=1è½¬(20é½¿*M5ï¼‰=100MM								
+ËÙ¶È¶ÔÓ¦µÄ¶¨Ê±ÖµTAB:
+;	0-1000mm/s¶ÔÓ¦T0Öµ £¨2000¸öÂö³å=1×ª(20³Ý*M5£©=100MM								
 	DW	0281FH, 0281FH, 0281FH, 0281FH, 04C19H, 065CCH, 07913H, 08810H, 0940FH, 09DDFH
 	DW	0A60CH, 0ACF7H, 0B2E5H, 0B809H, 0BC89H, 0C080H, 0C407H, 0C72FH, 0CA07H, 0CC98H
 	dw	0CEEFH, 0D111H, 0D305H, 0D4D2H, 0D67BH, 0D804H, 0D972H, 0DAC6H, 0DC04H, 0DD2DH
@@ -4548,116 +4898,116 @@ CRC0ä½æ˜¯1ä¸ŽA001å¼‚æˆ–:
 
 
 
-/////Xæ–¹å‘Y1Y2å½’é›¶	//////
-æœºæ¢°æ‰‹å½’é›¶:
+/////X·½ÏòY1Y2¹éÁã	//////
+»úÐµÊÖ¹éÁã:
 
-	MOV	DPTR, #åž‚ç›´æ–¹å‘å³å½’é›¶TAB
-	LCALL	å‘é€æç¤ºå­—ç¬¦
-	MOV	æ˜¾ç¤ºç”»é¢, #æç¤ºè¯­ç”»é¢
-	LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	MOV	å½“å‰æ•°å€¼L	, #02
-	MOV	STCæ•°æ®é¦–å€L, #å½“å‰æ•°å€¼L
-	LCALL	å‘é€å•ä¸ªæ•°æ®åˆ°è§¦æ‘¸å±
+	MOV	DPTR, #´¹Ö±·½ÏòÓÒ¹éÁãTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
+	MOV	ÏÔÊ¾»­Ãæ, #ÌáÊ¾Óï»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
+	MOV	µ±Ç°ÊýÖµL	, #02
+	MOV	STCÊý¾ÝÊ×Ö·L, #µ±Ç°ÊýÖµL
+	LCALL	·¢ËÍµ¥¸öÊý¾Ýµ½´¥ÃþÆÁ
 	LCALL	DY500MS
 	
-	LCALL	Y1æ–¹å‘å½’é›¶
+	LCALL	Y1·½Ïò¹éÁã
 
-	MOV	å½“å‰æ•°å€¼L	, #04
-	MOV	STCæ•°æ®é¦–å€L, #å½“å‰æ•°å€¼L
-	LCALL	å‘é€å•ä¸ªæ•°æ®åˆ°è§¦æ‘¸å±
-	MOV	DPTR, #åž‚ç›´æ–¹å‘å·¦å½’é›¶TAB
-	LCALL	å‘é€æç¤ºå­—ç¬¦
+	MOV	µ±Ç°ÊýÖµL	, #04
+	MOV	STCÊý¾ÝÊ×Ö·L, #µ±Ç°ÊýÖµL
+	LCALL	·¢ËÍµ¥¸öÊý¾Ýµ½´¥ÃþÆÁ
+	MOV	DPTR, #´¹Ö±·½Ïò×ó¹éÁãTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
 	LCALL	DY500MS
-	LCALL	Y2æ–¹å‘å½’é›¶
+	LCALL	Y2·½Ïò¹éÁã
 
-	MOV	å½“å‰æ•°å€¼L	, #06
-	MOV	STCæ•°æ®é¦–å€L, #å½“å‰æ•°å€¼L
-	LCALL	å‘é€å•ä¸ªæ•°æ®åˆ°è§¦æ‘¸å±
-	MOV	DPTR, #æ°´å¹³æ–¹å‘å½’é›¶TAB
-	LCALL	å‘é€æç¤ºå­—ç¬¦
+	MOV	µ±Ç°ÊýÖµL	, #06
+	MOV	STCÊý¾ÝÊ×Ö·L, #µ±Ç°ÊýÖµL
+	LCALL	·¢ËÍµ¥¸öÊý¾Ýµ½´¥ÃþÆÁ
+	MOV	DPTR, #Ë®Æ½·½Ïò¹éÁãTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
 	LCALL	DY500MS
-	LCALL	Xæ–¹å‘å½’é›¶
+	LCALL	X·½Ïò¹éÁã
 
-	MOV	å½“å‰æ•°å€¼L	, #09
-	MOV	STCæ•°æ®é¦–å€L, #å½“å‰æ•°å€¼L
-	LCALL	å‘é€å•ä¸ªæ•°æ®åˆ°è§¦æ‘¸å±
-	MOV	DPTR, #å¼€æœºå¤ä½å®ŒæˆTAB
-	LCALL	å‘é€æç¤ºå­—ç¬¦
- 	LCALL	DY100MS
-   RET
-	MOV	æ˜¾ç¤ºç”»é¢, #ç­‰å¾…ç”»é¢
-LCALL	DGUSåˆ‡æ¢å›¾ç‰‡
-	RET
-
-//////Xæ–¹å‘Y1Y2å½’é›¶	//////
-Xæ–¹å‘å½’é›¶:
-	
-	JNB	Xå³é™ä½	, Xæ–¹å‘ç²¾ç»†å½’é›¶
-	MOV	å½“å‰é€Ÿåº¦H	, #HIGH	å½’é›¶é€Ÿåº¦
-	MOV	å½“å‰é€Ÿåº¦L	, #LOW	å½’é›¶é€Ÿåº¦
-	LCALL	è®¡ç®—é€Ÿåº¦è½¬å®šæ—¶å™¨å¹¶èµ‹å€¼
-Xæ–¹å‘ç»§ç»­å½’é›¶:    
-	CLR	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-	CLR	Xè½´æ–¹å‘
-	CLR	Xè„‰å†²è¾“å‡ºæ ‡è®°
-	JB	Xå³é™ä½	, $
-	SETB	Xè„‰å†²è¾“å‡ºæ ‡è®°  
-	setb	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-	//RET
-Xæ–¹å‘ç²¾ç»†å½’é›¶:
-
-	MOV	åŒ€é€Ÿè¿è¡Œé•¿åº¦H	, #HIGH	200
-	MOV	åŒ€é€Ÿè¿è¡Œé•¿åº¦L	, #LOW	200
-	MOV	å½“å‰é€Ÿåº¦H	, #HIGH	å½’é›¶é€Ÿåº¦
-	MOV	å½“å‰é€Ÿåº¦L	, #LOW	å½’é›¶é€Ÿåº¦   
-CLR	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-	SETB	Xè½´æ–¹å‘
-	CLR	Xè„‰å†²è¾“å‡ºæ ‡è®°
-	LCALL	è®¡æ•°åŒ€é€Ÿè¿è¡Œ
-	CLR	Xè„‰å†²è¾“å‡ºæ ‡è®°  
-	setb	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
+	MOV	µ±Ç°ÊýÖµL	, #09
+	MOV	STCÊý¾ÝÊ×Ö·L, #µ±Ç°ÊýÖµL
+	LCALL	·¢ËÍµ¥¸öÊý¾Ýµ½´¥ÃþÆÁ
+	MOV	DPTR, #¿ª»ú¸´Î»Íê³ÉTAB
+	LCALL	·¢ËÍÌáÊ¾×Ö·û
 	LCALL	DY100MS
-	CLR	Xè½´æ–¹å‘
-	MOV	å½“å‰é€Ÿåº¦H	, #HIGH	å½’é›¶é€Ÿåº¦
-	MOV	å½“å‰é€Ÿåº¦L	, #LOW	å½’é›¶é€Ÿåº¦
-	LCALL	è®¡ç®—é€Ÿåº¦è½¬å®šæ—¶å™¨å¹¶èµ‹å€¼
-Xæ–¹å‘ç»§ç»­ç²¾ç»†å½’é›¶:  
-CLR	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-	CLR	Xè„‰å†²è¾“å‡ºæ ‡è®°
-	JB	Xå³é™ä½	, $
-	SETB	Xè„‰å†²è¾“å‡ºæ ‡è®°   
-	setb	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
+	RET
+	MOV	ÏÔÊ¾»­Ãæ, #µÈ´ý»­Ãæ
+	LCALL	DGUSÇÐ»»Í¼Æ¬
 	RET
 
-
-
-Y1æ–¹å‘å½’é›¶:
-	MOV	å½“å‰é€Ÿåº¦H	, #HIGH	å½’é›¶é€Ÿåº¦
-	MOV	å½“å‰é€Ÿåº¦L	, #LOW	å½’é›¶é€Ÿåº¦
-	LCALL	è®¡ç®—é€Ÿåº¦è½¬å®šæ—¶å™¨å¹¶èµ‹å€¼
-
-Y1å½’é›¶åˆ°ä½æ£€æŸ¥:
-	CLR	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-	CLR	Y1è½´å³æ–¹å‘
-	CLR	Y1è„‰å†²è¾“å‡ºæ ‡è®°
-	JB	Y1å³é›¶ä½	, Y1å½’é›¶åˆ°ä½æ£€æŸ¥
-	SETB	Y1è„‰å†²è¾“å‡ºæ ‡è®°
-	SETB	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-	RET
-
-
-Y2æ–¹å‘å½’é›¶:
-	MOV	å½“å‰é€Ÿåº¦H	, #HIGH	å½’é›¶é€Ÿåº¦
-	MOV	å½“å‰é€Ÿåº¦L	, #LOW	å½’é›¶é€Ÿåº¦
-	LCALL	è®¡ç®—é€Ÿåº¦è½¬å®šæ—¶å™¨å¹¶èµ‹å€¼
+//////X·½ÏòY1Y2¹éÁã	//////
+X·½Ïò¹éÁã:
 	
-Y2å½’é›¶åˆ°ä½æ£€æŸ¥:
-	CLR	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
-	CLR	Y2è½´å·¦æ–¹å‘
-	CLR	Y2è„‰å†²è¾“å‡ºæ ‡è®°
-	JB	Y2å·¦é›¶ä½	, Y2å½’é›¶åˆ°ä½æ£€æŸ¥
-	SETB	Y2è„‰å†²è¾“å‡ºæ ‡è®°
-	SETB	è„‰å†²è¾“å‡ºæ€»å¼€å…³æ ‡è®°
+	JNB	XÓÒÏÞÎ»	, X·½Ïò¾«Ï¸¹éÁã
+	MOV	µ±Ç°ËÙ¶ÈH	, #HIGH	¹éÁãËÙ¶È
+	MOV	µ±Ç°ËÙ¶ÈL	, #LOW	¹éÁãËÙ¶È
+	LCALL	¼ÆËãµ±Ç°ËÙ¶È×ªT0¸³Öµ
+X·½Ïò¼ÌÐø¹éÁã:
+	CLR	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	CLR	XÖá·½Ïò
+	CLR	XÂö³åÊä³ö±ê¼Ç
+	JB	XÓÒÏÞÎ»	, $
+	SETB	XÂö³åÊä³ö±ê¼Ç
+	setb	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	//RET
+X·½Ïò¾«Ï¸¹éÁã:
+
+	MOV	ÔÈËÙÔËÐÐ³¤¶ÈH	, #HIGH	200
+	MOV	ÔÈËÙÔËÐÐ³¤¶ÈL	, #LOW	200
+	MOV	µ±Ç°ËÙ¶ÈH	, #HIGH	¹éÁãËÙ¶È
+	MOV	µ±Ç°ËÙ¶ÈL	, #LOW	¹éÁãËÙ¶È
+	CLR	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	SETB	XÖá·½Ïò
+	CLR	XÂö³åÊä³ö±ê¼Ç
+	LCALL	¼ÆÊýÔÈËÙÔËÐÐ
+	CLR	XÂö³åÊä³ö±ê¼Ç
+	setb	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	LCALL	DY100MS
+	CLR	XÖá·½Ïò
+	MOV	µ±Ç°ËÙ¶ÈH	, #HIGH	¹éÁãËÙ¶È
+	MOV	µ±Ç°ËÙ¶ÈL	, #LOW	¹éÁãËÙ¶È
+	LCALL	¼ÆËãµ±Ç°ËÙ¶È×ªT0¸³Öµ
+X·½Ïò¼ÌÐø¾«Ï¸¹éÁã:
+	CLR	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	CLR	XÂö³åÊä³ö±ê¼Ç
+	JB	XÓÒÏÞÎ»	, $
+	SETB	XÂö³åÊä³ö±ê¼Ç
+	setb	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
 	RET
 
-//////Xæ–¹å‘Y1Y2å½’é›¶	/////*/
+
+
+Y1·½Ïò¹éÁã:
+	MOV	µ±Ç°ËÙ¶ÈH	, #HIGH	¹éÁãËÙ¶È
+	MOV	µ±Ç°ËÙ¶ÈL	, #LOW	¹éÁãËÙ¶È
+	LCALL	¼ÆËãµ±Ç°ËÙ¶È×ªT0¸³Öµ
+
+Y1¹éÁãµ½Î»¼ì²é:
+	CLR	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	CLR	Y1ÖáÓÒ·½Ïò
+	CLR	Y1Âö³åÊä³ö±ê¼Ç
+	JB	Y1ÓÒÁãÎ»	, Y1¹éÁãµ½Î»¼ì²é
+	SETB	Y1Âö³åÊä³ö±ê¼Ç
+	SETB	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	RET
+
+
+Y2·½Ïò¹éÁã:
+	MOV	µ±Ç°ËÙ¶ÈH	, #HIGH	¹éÁãËÙ¶È
+	MOV	µ±Ç°ËÙ¶ÈL	, #LOW	¹éÁãËÙ¶È
+	LCALL	¼ÆËãµ±Ç°ËÙ¶È×ªT0¸³Öµ
+	
+Y2¹éÁãµ½Î»¼ì²é:
+	CLR	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	CLR	Y2Öá×ó·½Ïò
+	CLR	Y2Âö³åÊä³ö±ê¼Ç
+	JB	Y2×óÁãÎ»	, Y2¹éÁãµ½Î»¼ì²é
+	SETB	Y2Âö³åÊä³ö±ê¼Ç
+	SETB	Âö³åÊä³ö×Ü¿ª¹Ø±ê¼Ç
+	RET
+
+//////X·½ÏòY1Y2¹éÁã	/////*/

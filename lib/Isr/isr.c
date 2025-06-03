@@ -2,7 +2,6 @@
 #include <delay.h>
 #include <../../include/stc15.h> 
 #include <../../include/main.h>
-extern volatile __bit interruptButtonFlag = 0; //按键中断
 
 //初始化按键中断
 void Interrupt0_Init(void)
