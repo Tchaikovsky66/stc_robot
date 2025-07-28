@@ -23,6 +23,8 @@ static const unsigned char 工件5[8] = {0xB9, 0xA4, 0xBC, 0xFE, 0x35, 0x00};
 static const unsigned char 工件6[8] = {0xB9, 0xA4, 0xBC, 0xFE, 0x36, 0x00};
 static const unsigned char 工件7[8] = {0xB9, 0xA4, 0xBC, 0xFE, 0x37, 0x00};
 static const unsigned char 工件8[8] = {0xB9, 0xA4, 0xBC, 0xFE, 0x38, 0x00};
+//static const unsigned char 版本号[] = "v1.0.0";
+
 #define IAP型号 0x2600
 #define IAP_ADDRESS 0x2400
 
@@ -40,14 +42,52 @@ static const unsigned char 初始型号数组[] = {
 
 void LVD_ISR(void) __interrupt(6)
 {
-    P1 = 0;
     GoToPage(60);
     while (1)
         ;
 }
 /*************  主函数  *****************/
+// __sbit __at(0x90) 加工设备有无工件; // P20 Y3
+// __sbit __at(0x91) 加工设备异常;     // P21 Y2
+// __sbit __at(0x92) 加工设备原位置;   // P22  Y1
 void main(void)
 {
+    //模拟加工设备输出
+    // P1M0 = 0x00; P1M1 = 0x00;
+    // 加工设备有无工件 = 1; // 模拟加工设备无工件
+    // 加工设备原位置 = 1; // 模拟加工设备未到原位置
+    // 加工设备异常 = 1; // 模拟加工设备无异常
+    // while(1)
+    // {
+    //     if(Button20_Pressed())
+    //     {
+    //         加工设备有无工件 = 1; // 模拟加工设备有工件
+    //         加工设备原位置 = 0; // 模拟加工设备原位置
+    //         加工设备异常 = 0; // 模拟加工设备无异常
+    //         DelayMs(100);
+    //         加工设备有无工件 = 1; // 模拟加工设备无工件
+    //         加工设备原位置 = 1; // 模拟加工设备未到原位置
+    //         加工设备异常 = 1; // 模拟加工设备异常
+    //     }
+    //     if(Button21_Pressed())
+    //     {
+    //         加工设备有无工件 = 0; // 模拟加工设备无工件
+    //         加工设备原位置 = 0; // 模拟加工设备未到原位置
+    //         加工设备异常 = 0; // 模拟加工设备异常
+    //         DelayMs(100);
+    //         加工设备有无工件 = 1; // 模拟加工设备无工件
+    //         加工设备原位置 = 1; // 模拟加工设备未到原位置
+    //         加工设备异常 = 1; // 模拟加工设备异常
+    //     }
+    //     DelayMs(100);
+    //     P41 = !P41;
+    // }
+    //模拟结束
+
+    // P4M0 &= ~0x14;
+    // P4M1 &= ~0x14;
+    P4M0 |= 0x14;
+    P4M1 &= ~0x14;
     Blick();
     LVD_Init();
     Uart1_Init();
@@ -105,16 +145,10 @@ void main(void)
     给迪文上传数据(Addr迪文14标志, 0xffff);
     DelayMs(20);
     从缓存区发送数据给迪文();
+
+    //发送中文(0x201,版本号, sizeof(版本号) - 1);
     while (1)
     {
-        // if (Button20_Pressed())
-        // {
-        //     GoToPage(test_page--);
-        // }
-        // if (Button21_Pressed())
-        // {
-        //     GoToPage(test_page++);
-        // }
         /***************************恢复出厂设置***********************************/
         if (恢复出厂设置标志位)
         {
@@ -302,13 +336,13 @@ void main(void)
         if (复位并运行)
         {
             复位并运行 = 0;
-            DelayMs(20);
+            // DelayMs(20);
             给迪文上传数据(Addr迪文14标志, 0xffff);
-            // GoToPage(70);
+            GoToPage(70);
             电机复位();
             获取迪文所有数据();
             DelayMs(20);
-            运行();
+            运行1();
         }
         /***************************测试运行***********************************/
         if (测试运行)

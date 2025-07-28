@@ -1,5 +1,6 @@
 __sbit __at(0xC1) EN_485; // 使能485发送
 
+#define Addr图标标志位 0x11*2
 #define Addr当前脉冲数 0x0B * 2
 #define Addr每10ms计数 0x0C * 2
 #define Addr计算速度 0x0D * 2
@@ -43,7 +44,11 @@ extern __bit 参数调试;
 extern __bit 保存;
 extern __bit 开始调试;
 extern __bit 恢复出厂设置标志位;
+extern __bit 实时测量夹取位置;
 
+extern int 图标标志位;
+
+extern int 实时测量夹取位置_脉冲数;
 extern __xdata int 开机初始化bar;
 volatile extern __xdata int 工件序号;
 extern int 当前脉冲数;

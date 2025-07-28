@@ -6,6 +6,8 @@
 #include "common.h"
 #include "delay.h"
 // 在源文件中定义变量 - SDCC 方式
+__sbit __at(0xB3) Y1工件检测; // y1工件检测 P33
+
 __data int 中断次数 = 0;
 __data int 当前总步数 = 0;
 __data int 当前y1轴最大脉冲数 = 0;
@@ -203,8 +205,10 @@ void timer0_isr(void) __interrupt(1)
         // 电机总开关 = 0;
         限位开关标志位 = 1;
     }
+    
     if (电机总开关)
     {
+        
         if (当前脉冲数 >= 当前总步数)
         {
             TR0 = 0; // 停止定时器
@@ -227,6 +231,22 @@ void timer0_isr(void) __interrupt(1)
             {
                 中断次数 = 0;
                 当前脉冲数++;
+                /*检测工件长度*/
+                if (实时测量夹取位置)
+                {
+                    if (Y1工件检测 == 0)
+                    {
+                        if (X_DIR == 0)
+                        {
+                            实时测量夹取位置_脉冲数++;
+                        }
+                        else
+                        {
+                            实时测量夹取位置_脉冲数--;
+                        }
+                    }
+                }
+                /*检测结束*/
                 if (X_DIR == 0)
                 {
                     x轴脉冲总值--;
@@ -331,9 +351,9 @@ char motor_go(char num, char 方向, int 距离, int 速度)
             //     给迪文上传数据(Addr当前脉冲数, y2轴脉冲总值);
             // }
             给迪文上传数据(Addr当前脉冲数, 当前脉冲数);
-            //给迪文上传数据(Addr每10ms计数, 每10ms计数);
-            // 给迪文上传数据(Addr当前X位置, 当前X位置);
-            // 给迪文上传数据(Addr当前Y位置, 当前Y位置);
+            // 给迪文上传数据(Addr每10ms计数, 每10ms计数);
+            //  给迪文上传数据(Addr当前X位置, 当前X位置);
+            //  给迪文上传数据(Addr当前Y位置, 当前Y位置);
         }
 
         if (电机运行结束标志位)
@@ -433,7 +453,7 @@ void 电机复位(void)
     DelayMs(20);
     给迪文上传数据(Addr开机初始化bar, 0);
     正在归位标志位 = 1;
-    if (motor_go(Y1_MOTOR, GO_UP, 5000, 300) == ERR)
+    if (motor_go(Y1_MOTOR, GO_UP, 5000, 200) == ERR)
     {
         给迪文上传数据(Addr开机初始化bar, 1);
 
@@ -450,7 +470,7 @@ void 电机复位(void)
     正在归位标志位 = 1;
     DelayMs(10);
 
-    if (motor_go(Y2_MOTOR, GO_UP, 5000, 300) == ERR)
+    if (motor_go(Y2_MOTOR, GO_UP, 5000, 200) == ERR)
     {
         给迪文上传数据(Addr开机初始化bar, 4);
 
@@ -466,7 +486,7 @@ void 电机复位(void)
     }
     正在归位标志位 = 1;
     DelayMs(10);
-    if (motor_go(X_MOTOR, GO_RIGHT, 8000, 250) == ERR)
+    if (motor_go(X_MOTOR, GO_RIGHT, 8000, 100) == ERR)
     {
         给迪文上传数据(Addr开机初始化bar, 7);
 
