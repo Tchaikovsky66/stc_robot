@@ -1,5 +1,6 @@
 #include "common.h"
 
+__bit 自动端面检测 = 1; // 自动端面检测标志位
 __bit 测试运行 = 0;
 __bit 保存工件名称 = 0;
 __bit 复位并运行 = 0;
@@ -8,7 +9,7 @@ __bit 开始调试 = 0;
 __bit 保存 = 0;
 __bit 恢复出厂设置标志位 = 0;
 __bit 实时测量夹取位置 = 0;
-
+int 图标标志位 = 0;
 int 实时测量夹取位置_脉冲数 = 0;
 __xdata int 开机初始化bar;
 int 每10ms计数 = 0;
@@ -41,3 +42,4 @@ __xdata char 型号5[] = {0xB9, 0xA4, 0xBC, 0xFE, 0x35, 0x00};
 __xdata char 型号6[] = {0xB9, 0xA4, 0xBC, 0xFE, 0x36, 0x00};
 __xdata char 型号7[] = {0xB9, 0xA4, 0xBC, 0xFE, 0x37, 0x00};
 __xdata char 型号8[] = {0xB9, 0xA4, 0xBC, 0xFE, 0x38, 0x00};
+ 

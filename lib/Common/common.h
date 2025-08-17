@@ -1,10 +1,22 @@
 __sbit __at(0xC1) EN_485; // 使能485发送
 
 #define Addr图标标志位 0x11*2
+#define 图标L_X1 0b00000001
+#define 图标L_X2 0b00000010
+#define 图标L_Y1 0b00000100
+#define 图标L_Y2 0b00001000
+#define 图标L_Y3 0b00010000
+#define 图标H_右工件 0b00000001
+#define 图标H_左工件 0b00000010
+#define 图标H_加工工件 0b00000100
+#define 图标H_右状态 0b00001000
+#define 图标H_左状态 0b00010000
+
 #define Addr当前脉冲数 0x0B * 2
 #define Addr每10ms计数 0x0C * 2
 #define Addr计算速度 0x0D * 2
 #define Addr迪文14标志 0x14 * 2
+#define Addr自动端面检测 0x15 * 2
 #define Addr未加工到右限位距离 0x16 * 2
 #define Addr开机初始化bar 0x17 * 2
 #define Addr两端上下距离 0x18 * 2
@@ -37,6 +49,7 @@ __sbit __at(0xC1) EN_485; // 使能485发送
 #define Addr型号7 0x38 * 2
 #define Addr型号8 0x40 * 2
 // dwin
+extern __bit 自动端面检测;
 extern __bit 测试运行;
 extern __bit 保存工件名称;
 extern __bit 复位并运行;
