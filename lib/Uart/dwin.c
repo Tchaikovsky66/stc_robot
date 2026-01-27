@@ -5,6 +5,9 @@
 #include "eeprom.h"
 static const unsigned char 错误[8] = {0xB4, 0xED, 0xCE, 0xF3, 0x45, 0x52, 0x52};
 __xdata char tmp[8];
+
+
+
 void Blick(void)
 {
     EN_485 = 0;
@@ -24,6 +27,30 @@ void InitValue(unsigned char address, unsigned int data)
     CFGBUF[address + 1] = low_byte;
 }
 
+void 更新图标L(__bit 增加或减少,char 图标)
+{
+    if(增加或减少 == 增加)  //将图标置位给图标标志位L
+    {
+        图标标志位L |= 图标;
+    }
+    else
+    {
+        图标标志位L &= ~图标;
+    }
+    给迪文上传数据(Addr图标标志位, ((unsigned int)图标标志位H << 8) | 图标标志位L);
+}
+void 更新图标H(__bit 增加或减少,char 图标)
+{
+    if(增加或减少 == 增加)  //将图标置位给图标标志位H
+    {
+        图标标志位H |= 图标;
+    }
+    else
+    {
+        图标标志位H &= ~图标;
+    }
+    给迪文上传数据(Addr图标标志位, ((unsigned int)图标标志位H << 8) | 图标标志位L);
+}
 /**
  * @brief 获取显示屏所有数据
  * @note 发送获取数据命令到显示屏

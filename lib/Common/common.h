@@ -1,4 +1,21 @@
 __sbit __at(0xC1) EN_485; // 使能485发送
+__sbit __at(0x95) X中间传感器;
+__sbit __at(0x96) 成品位置有工件;
+__sbit __at(0x97) 物料位置有工件;
+
+__sbit __at(0xB3) Y1工件检测;     // y1工件检测 P33
+__sbit __at(0xB4) Y1零位;  // 0到达限位 ，1未到达 P34
+__sbit __at(0xB5) Y2零位;  // 0到达限位 ，1未到达 P35
+__sbit __at(0xB6) Y2工件检测;     // y2工件检测 P36
+
+__sbit __at(0xA0) 加工设备有无工件; // P20 Y3
+__sbit __at(0xA1) 加工设备异常;     // P21 Y2
+__sbit __at(0xA2) 加工设备原位置;   // P22  Y1
+__sbit __at(0xA3) 加工设备复位;     // P23  // X1
+__sbit __at(0xA4) 加工设备运行;     // P24 // X2
+
+__sbit __at(0xC2) 左吸爪;
+__sbit __at(0xC4) 右吸爪;
 
 #define Addr图标标志位 0x11*2
 #define 图标L_X1 0b00000001
@@ -11,6 +28,8 @@ __sbit __at(0xC1) EN_485; // 使能485发送
 #define 图标H_加工工件 0b00000100
 #define 图标H_右状态 0b00001000
 #define 图标H_左状态 0b00010000
+
+
 
 #define Addr当前脉冲数 0x0B * 2
 #define Addr每10ms计数 0x0C * 2
@@ -60,6 +79,8 @@ extern __bit 恢复出厂设置标志位;
 extern __bit 实时测量夹取位置;
 
 extern int 图标标志位;
+extern char 图标标志位H;
+extern char 图标标志位L;
 
 extern int 实时测量夹取位置_脉冲数;
 extern __xdata int 开机初始化bar;
