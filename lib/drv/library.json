@@ -1,0 +1,6 @@
+{
+  "name": "drv",
+  "build": {
+    "flags": ["-I../../include", "-I../hal", "-I../drv", "-I../app"]
+  }
+}

@@ -1,6 +1,7 @@
 #ifndef _MAIN_H
 #define _MAIN_H
 
+// 
 #define ERR 1
 #define FINISH 0
 #define OK 0

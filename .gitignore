@@ -3,3 +3,15 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# 旧代码备份
+_old_lib/
+*.bk
+
+# 厂商资料 / 旧固件
+STC15W4K32S4-STCMCU.pdf
+firmware——*.hex
